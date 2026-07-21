@@ -30,16 +30,16 @@ export default function DashboardPage() {
           <span className="text-white text-base select-none">✦</span>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-white text-[15px] font-medium">Ari is ready</div>
+          <div className="text-white text-[15px] font-medium">Maya is ready</div>
           <div className="text-white/50 text-[13px]">
-            Your executive intelligence assistant
+            Your executive intelligence
           </div>
         </div>
         <Link
           href="/ari"
           className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-[13px] rounded-lg transition-colors flex-shrink-0"
         >
-          Open Ari
+          Open
         </Link>
       </div>
 

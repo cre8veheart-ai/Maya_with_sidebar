@@ -180,7 +180,7 @@ const NAV_SECTIONS: NavSection[] = [
     collapsible: false,
     items: [
       { label: "Dashboard", href: "/", Icon: DashboardIcon },
-      { label: "Ari", href: "/ari", Icon: AriIcon },
+      { label: "Maya", href: "/ari", Icon: AriIcon },
     ],
   },
   {

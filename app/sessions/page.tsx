@@ -12,7 +12,7 @@ function EmptyState({ hint }: { hint: string }) {
 export default function SessionsPage() {
   return (
     <PageShell title="Sessions" subtitle="Review past working sessions">
-      <EmptyState hint="Sessions with Ari and your team will be archived here." />
+      <EmptyState hint="Sessions with Maya and your team will be archived here." />
     </PageShell>
   );
 }

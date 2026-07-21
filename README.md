@@ -57,25 +57,25 @@ MAYA is a Next.js 14 App Router application. The intelligence layer is designed 
 ```
 app/
 ├── api/ari/route.ts          # Streaming LLM endpoint — model-agnostic
-├── ari/page.tsx              # Chat UI with session memory + dictation
+├── ari/page.tsx              # Maya intelligence UI — conversation + dictation
 ├── [executive]/page.tsx      # CEO, CFO, COO, CRO, CMO, Creative Director
 ├── workflows/                # Workflow canvas (list, create, manage)
 └── decisions, projects, ...  # Executive workspace modules
 
 lib/
 ├── ari/
-│   ├── types.ts              # AriMessage, AriSession, IAriStorage interface
+│   ├── types.ts              # Message, Session, IStorage interface
 │   ├── LocalStorageAriAdapter.ts  # Phase 1 — swappable to any backend
-│   └── systemPrompt.ts       # Executive reasoning prompt + workspace context
+│   └── systemPrompt.ts       # Maya reasoning prompt + workspace context
 ├── storage/
-│   ├── IWorkflowStorage.ts   # Storage abstraction (same pattern as Ari)
+│   ├── IWorkflowStorage.ts   # Storage abstraction (same pattern)
 │   └── LocalStorageWorkflowAdapter.ts
 └── hooks/
     ├── useDictation.ts       # Web Speech API — no external dependency
-    └── useLocalStorage.ts    # Typed localStorage with SSR safety
+    └── useLocalStorage.ts    # Typed localStorage with SSR-safe sync init
 ```
 
-Every storage layer is behind an interface. Phase 1 uses `localStorage` for zero-latency, zero-infrastructure beta testing. Phase 2 swaps in a backend adapter without touching the UI.
+Every storage layer is behind an interface. Phase 1 uses `localStorage` — conversation history persists on-device across sessions. Phase 2 swaps in a backend adapter for cross-device persistence without touching the UI.
 
 ---
 
@@ -103,7 +103,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Required | Description |
 |---|---|---|
-| `OPENAI_API_KEY` | Yes | OpenAI API key — powers Ari's responses |
+| `OPENAI_API_KEY` | Yes | OpenAI API key — powers Maya's responses |
 
 ---
 

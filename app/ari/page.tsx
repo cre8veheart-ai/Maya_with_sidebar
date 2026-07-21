@@ -104,7 +104,7 @@ function EmptyState({ onPrompt }: { onPrompt: (p: string) => void }) {
         </div>
         <h2 className="text-[20px] font-semibold text-[#1D1D1F] mb-2">What can I help with?</h2>
         <p className="text-[14px] text-[#6E6E73] leading-relaxed max-w-xs">
-          Strategy, decisions, analysis, communication. Ari thinks with you.
+          Strategy, decisions, analysis, communication. Maya thinks with you.
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -288,8 +288,8 @@ export default function AriPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-8 pt-8 pb-4 flex-shrink-0">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1D1D1F] tracking-tight leading-tight">Ari</h1>
-          <p className="mt-1 text-[14px] text-[#6E6E73]">Your executive intelligence assistant</p>
+          <h1 className="text-[22px] font-semibold text-[#1D1D1F] tracking-tight leading-tight">Maya</h1>
+          <p className="mt-1 text-[14px] text-[#6E6E73]">Your executive intelligence</p>
         </div>
         {!isEmpty && (
           <button
@@ -340,7 +340,7 @@ export default function AriPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening…" : "Ask Ari anything…"}
+              placeholder={isListening ? "Listening…" : "Ask Maya anything…"}
               rows={1}
               disabled={streaming}
               className="w-full px-5 pt-4 pb-1 text-[14px] text-[#1D1D1F] placeholder:text-[#AEAEB2] bg-transparent resize-none outline-none leading-relaxed"
