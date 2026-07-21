@@ -4,6 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useDictation } from "@/lib/hooks/useDictation";
 import type { AriMessage } from "@/lib/ari/types";
+import { buildContext } from "@/lib/ari/buildContext";
+import { useKnowledgeStorage } from "@/lib/storage/KnowledgeStorageContext";
+import { useDecisionStorage } from "@/lib/storage/DecisionStorageContext";
+import { useMemoryStorage } from "@/lib/storage/MemoryStorageContext";
+import type { MemoryFact } from "@/lib/types/memory";
 
 // ── Suggested prompts ─────────────────────────────────────────────────────────
 
@@ -128,17 +133,26 @@ function generateId() {
   return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// Extract memory every N completed exchanges — fire-and-forget background task
+const MEMORY_EXTRACT_INTERVAL = 4;
+
 export default function AriPage() {
   const [messages, setMessages] = useLocalStorage<AriMessage[]>("maya-ari-messages", []);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const knowledgeStorage = useKnowledgeStorage();
+  const decisionStorage  = useDecisionStorage();
+  const memoryStorage    = useMemoryStorage();
+
   const bottomRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef    = useRef<AbortController | null>(null);
   // Accumulate interim dictation so we can replace it with the final transcript
   const interimRef  = useRef("");
+  // Track session ID for memory attribution
+  const sessionIdRef = useRef(`session_${Date.now()}`);
 
   // Auto-scroll on new content
   useEffect(() => {
@@ -152,6 +166,54 @@ export default function AriPage() {
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, [input]);
+
+  // ── Background memory extraction ─────────────────────────────────────────
+  // Runs silently after every Nth completed exchange. Extracts durable org
+  // intelligence and persists it so the next session already knows.
+
+  const extractMemory = useCallback(async (completedMessages: AriMessage[]) => {
+    try {
+      const existingFacts = await memoryStorage.list();
+      const res = await fetch("/api/memory/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: completedMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          sessionId: sessionIdRef.current,
+          existingFacts,
+        }),
+      });
+      if (!res.ok) return;
+      const data = await res.json() as { facts?: MemoryFact[] };
+      if (Array.isArray(data.facts)) {
+        for (const fact of data.facts) {
+          await memoryStorage.save(fact);
+        }
+      }
+    } catch {
+      // Memory extraction is best-effort — never surface errors to the user
+    }
+  }, [memoryStorage]);
+
+  // ── Build context string ─────────────────────────────────────────────────
+  // Loads all persistent knowledge and assembles it for injection into the
+  // system prompt — the mechanism that eliminates daily re-onboarding.
+
+  const buildCurrentContext = useCallback(async (): Promise<string> => {
+    try {
+      const [knowledge, decisions, memory] = await Promise.all([
+        knowledgeStorage.list(),
+        decisionStorage.list(),
+        memoryStorage.list(),
+      ]);
+      return buildContext(knowledge, decisions, memory);
+    } catch {
+      return "";
+    }
+  }, [knowledgeStorage, decisionStorage, memoryStorage]);
 
   // ── Dictation ───────────────────────────────────────────────────────────────
 
@@ -209,6 +271,9 @@ export default function AriPage() {
     const abort = new AbortController();
     abortRef.current = abort;
 
+    // Load persistent org context — injected silently so MAYA never starts fresh
+    const context = await buildCurrentContext();
+
     try {
       const res = await fetch("/api/ari", {
         method: "POST",
@@ -218,6 +283,7 @@ export default function AriPage() {
             role: m.role,
             content: m.content,
           })),
+          context: context || undefined,
         }),
         signal: abort.signal,
       });
@@ -243,11 +309,19 @@ export default function AriPage() {
         }
       }
 
-      // Persist final message with full content
-      setMessages([
+      const finalMessages: AriMessage[] = [
         ...messagesWithUser,
         { ...ariPlaceholder, content: accumulated, timestamp: new Date().toISOString() },
-      ]);
+      ];
+
+      // Persist final message with full content
+      setMessages(finalMessages);
+
+      // Background memory extraction — every Nth exchange, fire-and-forget
+      const exchangeCount = Math.floor(finalMessages.length / 2);
+      if (exchangeCount > 0 && exchangeCount % MEMORY_EXTRACT_INTERVAL === 0) {
+        extractMemory(finalMessages);
+      }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
         // User cancelled — keep partial content as-is
@@ -260,7 +334,7 @@ export default function AriPage() {
       setStreaming(false);
       abortRef.current = null;
     }
-  }, [messages, setMessages, streaming]);
+  }, [messages, setMessages, streaming, buildCurrentContext, extractMemory]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {

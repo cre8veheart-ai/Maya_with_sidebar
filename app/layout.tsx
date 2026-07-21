@@ -4,6 +4,7 @@ import SidebarLayout from "@/components/SidebarLayout";
 import { WorkflowStorageProvider } from "@/lib/storage/WorkflowStorageContext";
 import { DecisionStorageProvider } from "@/lib/storage/DecisionStorageContext";
 import { KnowledgeStorageProvider } from "@/lib/storage/KnowledgeStorageContext";
+import { MemoryStorageProvider } from "@/lib/storage/MemoryStorageContext";
 
 export const metadata: Metadata = {
   title: "MAYA — Executive Intelligence OS",
@@ -21,7 +22,9 @@ export default function RootLayout({
         <WorkflowStorageProvider>
           <DecisionStorageProvider>
             <KnowledgeStorageProvider>
-              <SidebarLayout>{children}</SidebarLayout>
+              <MemoryStorageProvider>
+                <SidebarLayout>{children}</SidebarLayout>
+              </MemoryStorageProvider>
             </KnowledgeStorageProvider>
           </DecisionStorageProvider>
         </WorkflowStorageProvider>

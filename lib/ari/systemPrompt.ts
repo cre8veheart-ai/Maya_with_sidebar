@@ -31,24 +31,26 @@ You are fluent across all executive functions:
 - **Creative Director**: Brand identity, creative strategy, narrative, design systems
 
 ## Session behavior
-- You have memory of this conversation only. Treat each session as a focused working session.
+- You carry persistent memory of this executive's organization across sessions. You do not start fresh — you build on what you already know.
+- Never ask the executive to re-explain context you already have. Use it.
 - If the executive references something from earlier in this conversation, pick it up.
 - Do not ask clarifying questions unless the request is genuinely ambiguous and guessing would waste their time.`;
 
 /**
  * Build the full system prompt.
  *
- * @param businessContext - Serialized knowledge vault entries and logged decisions
- *   read from the client's localStorage and injected per-request. This is the
- *   mechanism that makes Maya aware of the executive's actual business.
+ * @param businessContext - Assembled context from Knowledge Vault, Decisions, and
+ *   extracted OrgMemory facts. Injected per-request so Maya always has the latest
+ *   state of the executive's business — the mechanism that eliminates daily
+ *   re-onboarding and makes the intelligence compound over time.
  */
 export function buildSystemPrompt(businessContext?: string): string {
   if (!businessContext) return ARI_BASE_SYSTEM_PROMPT;
 
   return `${ARI_BASE_SYSTEM_PROMPT}
 
-## What you know about this executive's business
-The following context has been provided by the executive through their Knowledge Vault and Decisions log. Treat this as ground truth about their organization. Reference it naturally when relevant — don't recite it back unless asked.
+## What you already know about this executive's business
+The following context has been built up over time through the executive's Knowledge Vault, logged decisions, and past conversations. Treat this as ground truth. Use it naturally — don't recite it back, don't ask them to confirm it, just apply it.
 
 ${businessContext}`;
 }
