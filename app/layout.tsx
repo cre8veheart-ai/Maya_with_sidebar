@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import SidebarLayout from "@/components/SidebarLayout";
+import { WorkflowStorageProvider } from "@/lib/storage/WorkflowStorageContext";
 
 export const metadata: Metadata = {
   title: "MAYA — Executive Intelligence OS",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <SidebarLayout>{children}</SidebarLayout>
+        <WorkflowStorageProvider>
+          <SidebarLayout>{children}</SidebarLayout>
+        </WorkflowStorageProvider>
       </body>
     </html>
   );
