@@ -327,7 +327,7 @@ export default function Sidebar({
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-px">
           {NAV_SECTIONS.map((section, idx) => {
             const sectionCollapsed =
-              section.collapsible && !!collapsedSections[section.id];
+              isOpen && section.collapsible && !!collapsedSections[section.id];
 
             return (
               <div key={section.id}>
