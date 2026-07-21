@@ -36,27 +36,19 @@ You are fluent across all executive functions:
 - Do not ask clarifying questions unless the request is genuinely ambiguous and guessing would waste their time.`;
 
 /**
- * Build the full system prompt, optionally injected with workspace context.
- * This is the integration point for future executive module context (CEO, CFO, etc.)
+ * Build the full system prompt.
+ *
+ * @param businessContext - Serialized knowledge vault entries and logged decisions
+ *   read from the client's localStorage and injected per-request. This is the
+ *   mechanism that makes Maya aware of the executive's actual business.
  */
-export function buildSystemPrompt(context?: string): string {
-  if (!context) return ARI_BASE_SYSTEM_PROMPT;
+export function buildSystemPrompt(businessContext?: string): string {
+  if (!businessContext) return ARI_BASE_SYSTEM_PROMPT;
 
-  const contextBlocks: Record<string, string> = {
-    CEO: "The executive is currently in the **CEO workspace**. They are likely thinking about company direction, organizational decisions, board dynamics, or strategic priorities.",
-    CFO: "The executive is currently in the **CFO workspace**. They are likely working through financial decisions, capital allocation, forecasting, or fundraising.",
-    COO: "The executive is currently in the **COO workspace**. They are focused on operational execution, scaling, process improvement, or team performance.",
-    CRO: "The executive is currently in the **CRO workspace**. They are thinking about revenue growth, pipeline health, sales strategy, or customer retention.",
-    CMO: "The executive is currently in the **CMO workspace**. They are working on brand, marketing strategy, demand generation, or market positioning.",
-    "Creative Director": "The executive is currently in the **Creative Director workspace**. They are focused on brand identity, creative strategy, or design direction.",
-    "Titans Council": "The executive is in the **Titans Council workspace** — a space for cross-functional executive alignment and collective strategic decisions.",
-    Workflows: "The executive is working inside **Workflows** — they may want help designing processes, sequencing work, or thinking through execution plans.",
-    Decisions: "The executive is in the **Decisions workspace** — they are likely evaluating options, weighing tradeoffs, or need help structuring a decision.",
-    Projects: "The executive is managing **Projects** — help with prioritization, resourcing, timelines, or stakeholder communication is likely relevant.",
-  };
+  return `${ARI_BASE_SYSTEM_PROMPT}
 
-  const contextNote = contextBlocks[context]
-    ?? `The executive is currently in the **${context} workspace**.`;
+## What you know about this executive's business
+The following context has been provided by the executive through their Knowledge Vault and Decisions log. Treat this as ground truth about their organization. Reference it naturally when relevant — don't recite it back unless asked.
 
-  return `${ARI_BASE_SYSTEM_PROMPT}\n\n## Current workspace context\n${contextNote}`;
+${businessContext}`;
 }
