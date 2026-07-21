@@ -1,45 +1,113 @@
-export default function Home() {
+import Link from "next/link";
+import PageShell from "@/components/PageShell";
+
+const execLinks = [
+  { label: "CEO", href: "/ceo", desc: "Chief Executive" },
+  { label: "CFO", href: "/cfo", desc: "Chief Financial" },
+  { label: "COO", href: "/coo", desc: "Chief Operating" },
+  { label: "CRO", href: "/cro", desc: "Chief Revenue" },
+  { label: "CMO", href: "/cmo", desc: "Chief Marketing" },
+  {
+    label: "Creative Director",
+    href: "/creative-director",
+    desc: "Creative & Brand",
+  },
+  { label: "Titans Council", href: "/titans-council", desc: "Executive Council" },
+];
+
+const workspaceLinks = [
+  { label: "Workflows", href: "/workflows" },
+  { label: "Decisions", href: "/decisions" },
+  { label: "Projects", href: "/projects" },
+];
+
+export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6 p-8">
-      <div>
-        <h1 className="text-3xl font-bold text-[#89b4fa] mb-2">
-          Welcome to Maya
-        </h1>
-        <p className="text-[#cdd6f4] text-lg">
-          Your intelligent assistant — ready to help.
-        </p>
+    <PageShell title="Dashboard" subtitle="MAYA Executive Intelligence OS">
+      {/* Ari feature card */}
+      <div className="bg-[#1D1D1F] rounded-2xl p-6 mb-8 flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+          <span className="text-white text-base select-none">✦</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-white text-[15px] font-medium">Ari is ready</div>
+          <div className="text-white/50 text-[13px]">
+            Your executive intelligence assistant
+          </div>
+        </div>
+        <Link
+          href="/ari"
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-[13px] rounded-lg transition-colors flex-shrink-0"
+        >
+          Open Ari
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {[
-          {
-            title: "💬 Chat",
-            desc: "Start a conversation with Maya.",
-          },
-          {
-            title: "📋 Tasks",
-            desc: "Manage your to-dos and projects.",
-          },
-          {
-            title: "🔍 Search",
-            desc: "Find anything instantly.",
-          },
-          {
-            title: "⚙️ Settings",
-            desc: "Customize your experience.",
-          },
-        ].map((card) => (
-          <div
-            key={card.title}
-            className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 hover:border-[#89b4fa] transition-colors cursor-pointer"
-          >
-            <h2 className="text-lg font-semibold text-[#cdd6f4] mb-1">
-              {card.title}
-            </h2>
-            <p className="text-sm text-[#a6adc8]">{card.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+      {/* Executive Suite */}
+      <section className="mb-8">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8E8E93] mb-3">
+          Executive Suite
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {execLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group bg-[#F9F9FB] hover:bg-[#F0F0F2] border border-[#E5E5EA] rounded-xl p-4 transition-colors"
+            >
+              <div className="text-[14px] font-medium text-[#1D1D1F] group-hover:text-[#0066CC] transition-colors">
+                {link.label}
+              </div>
+              <div className="text-[12px] text-[#8E8E93] mt-0.5">{link.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Workspace */}
+      <section className="mb-8">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8E8E93] mb-3">
+          Workspace
+        </h2>
+        <div className="grid grid-cols-3 gap-3">
+          {workspaceLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group bg-[#F9F9FB] hover:bg-[#F0F0F2] border border-[#E5E5EA] rounded-xl p-4 transition-colors"
+            >
+              <div className="text-[14px] font-medium text-[#1D1D1F] group-hover:text-[#0066CC] transition-colors">
+                {link.label}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Library */}
+      <section>
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8E8E93] mb-3">
+          Library
+        </h2>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Sessions", href: "/sessions" },
+            { label: "Documents", href: "/documents" },
+            { label: "Knowledge Vault", href: "/knowledge-vault" },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group bg-[#F9F9FB] hover:bg-[#F0F0F2] border border-[#E5E5EA] rounded-xl p-4 transition-colors"
+            >
+              <div className="text-[14px] font-medium text-[#1D1D1F] group-hover:text-[#0066CC] transition-colors">
+                {link.label}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </PageShell>
   );
 }
+
