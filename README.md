@@ -1,40 +1,52 @@
-# MAYA — Executive Intelligence OS
+# MAYA
 
-> *The speed of leadership should be measured by decisions, not keystrokes.*
+**Executive Intelligence for Better Decisions.**
 
-MAYA is an Executive Intelligence Operating System — a workspace built for senior business leaders who need strategic intelligence at their fingertips without sacrificing the space to lead.
+MAYA is an executive intelligence workspace designed to help leaders think more clearly, evaluate complex decisions, and preserve organizational knowledge.
 
----
+Rather than acting as another AI chatbot, MAYA serves as a structured decision environment where specialized executive perspectives work together to analyze challenges, identify risks, surface opportunities, and document reasoning before action is taken.
 
-## What MAYA is
-
-Most productivity tools are built for workers. MAYA is built for executives.
-
-The distinction matters. An executive's leverage isn't in doing more tasks — it's in making better decisions faster, with less cognitive overhead. MAYA is designed around that reality: a collapsible sidebar that stays out of the way until it's needed, an AI assistant that thinks at the level of consequence, and a workspace that remembers context without demanding it be re-entered.
-
-The interface takes its cues from Apple's design language: dense information when you need it, nothing when you don't. The sidebar collapses to a 56px icon rail. The canvas expands. The executive stays in flow.
+Every recommendation is designed to be transparent, reviewable, and grounded in evidence.
 
 ---
 
-## Ari — The Intelligence Behind the Interface
+## Why MAYA Exists
 
-At the center of MAYA is **Ari**, an executive AI built to think with you — not at you.
+Modern organizations generate more information than people can effectively process.
 
-Ari is not a general-purpose chatbot. It is a strategic thought partner embedded in your workspace. It knows the difference between a CEO question and a CFO question. It leads with the bottom line. It applies frameworks without announcing them. It gives direct answers when there are direct answers, and lays out tradeoffs when there aren't.
+Ideas become scattered across documents, conversations, emails, and meetings. Critical reasoning is often lost, decisions are repeated, and institutional knowledge disappears over time.
 
-Every conversation with Ari is a focused working session. Session memory persists within MAYA so context doesn't need to be rebuilt. Future versions will carry memory across sessions, across devices, and across the executive team.
+MAYA was created to solve that problem.
+
+It provides a single workspace where strategy, operations, finance, marketing, risk, creativity, and execution converge into one living system.
 
 ---
 
-## Voice — Because Thought Should Never Wait for a Keyboard
+## Core Principles
 
-Thought should never wait for a keyboard.
+- Think before acting.
+- Evidence over assumptions.
+- Transparency over black boxes.
+- Preserve organizational memory.
+- Improve decision quality through structured collaboration.
+- Keep humans in control.
 
-The moment an executive has a question, that question has value. Every second spent unlocking a phone, opening an app, finding a cursor, and typing is friction between insight and action.
+---
 
-MAYA eliminates that friction. Speak naturally. Keep walking. Keep leading. Ari captures the thought, performs the analysis, and returns an answer before the moment is lost.
+## What Makes MAYA Different
 
-Because the speed of leadership should be measured by decisions — not keystrokes.
+MAYA is not another conversational AI assistant.
+
+It is an operating system for executive thinking.
+
+Its purpose is to help organizations:
+
+- Organize knowledge
+- Evaluate important decisions
+- Compare multiple executive viewpoints
+- Capture institutional memory
+- Build repeatable decision frameworks
+- Execute with confidence
 
 ---
 
@@ -111,6 +123,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Status
 
-MAYA is in active development, approaching executive beta.
+MAYA is currently in active beta development.
 
-The foundational intelligence layer — Ari's reasoning engine, session memory, streaming responses, and voice input — is complete. Executive workspace modules (CEO, CFO, COO, CRO, CMO, Creative Director) are scaffolded and ready for content. Cross-device sync and persistent session history are the next infrastructure milestone.
+The platform is evolving through iterative testing, user feedback, and continuous refinement as we build toward a comprehensive Executive Intelligence Platform.
