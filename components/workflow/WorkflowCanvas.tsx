@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import type { Workflow, WorkflowStatus } from "@/lib/types/workflow";
+import type { Workflow, WorkflowStatus, WorkflowPhase, PhaseStatus } from "@/lib/types/workflow";
+import { DEFAULT_PHASES } from "@/lib/types/workflow";
 
 const STATUS_STYLES: Record<WorkflowStatus, string> = {
   active: "bg-[#E8F5E9] text-[#1B5E20]",
@@ -39,6 +40,104 @@ interface WorkflowCanvasProps {
   onDelete: () => void;
 }
 
+const PHASE_STATUS_STYLES: Record<PhaseStatus, string> = {
+  pending: "bg-[#F5F5F7] text-[#6E6E73]",
+  "in-progress": "bg-[#FFF9C4] text-[#7B6B00]",
+  complete: "bg-[#E8F5E9] text-[#1B5E20]",
+};
+
+const PHASE_STATUS_LABELS: Record<PhaseStatus, string> = {
+  pending: "Pending",
+  "in-progress": "In Progress",
+  complete: "Complete",
+};
+
+interface PhaseTrackProps {
+  phases: WorkflowPhase[];
+  onUpdate: (id: string, patch: Partial<WorkflowPhase>) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+}
+
+function PhaseTrack({ phases, onUpdate, onAdd, onRemove }: PhaseTrackProps) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <label className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#AEAEB2]">
+          Campaign Phases
+        </label>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="text-[12px] text-[#0066CC] hover:text-[#0051A2] font-medium transition-colors"
+        >
+          + Add Phase
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {phases.map((phase, index) => (
+          <div
+            key={phase.id}
+            className="flex items-center gap-3 p-3 rounded-xl border border-[#F0F0F5] hover:border-[#E5E5EA] bg-[#FAFAFA] group transition-colors"
+          >
+            {/* Phase number */}
+            <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[11px] font-semibold text-[#AEAEB2] bg-white border border-[#E5E5EA] rounded-full">
+              {index + 1}
+            </span>
+
+            {/* Phase name */}
+            <input
+              type="text"
+              value={phase.name}
+              onChange={(e) => onUpdate(phase.id, { name: e.target.value })}
+              className="flex-1 text-[14px] font-medium text-[#1D1D1F] bg-transparent border-none outline-none placeholder-[#C7C7CC] min-w-0"
+              placeholder="Phase name"
+            />
+
+            {/* Due date */}
+            <input
+              type="date"
+              value={phase.dueDate ?? ""}
+              onChange={(e) => onUpdate(phase.id, { dueDate: e.target.value || undefined })}
+              className="text-[12px] text-[#6E6E73] bg-transparent border-none outline-none cursor-pointer focus:ring-0 w-[130px] flex-shrink-0"
+              title="Due date"
+            />
+
+            {/* Status pill */}
+            <select
+              value={phase.status}
+              onChange={(e) => onUpdate(phase.id, { status: e.target.value as PhaseStatus })}
+              className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-0 cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-[#0066CC]/30 transition flex-shrink-0 ${PHASE_STATUS_STYLES[phase.status]}`}
+            >
+              {(Object.keys(PHASE_STATUS_LABELS) as PhaseStatus[]).map((s) => (
+                <option key={s} value={s}>{PHASE_STATUS_LABELS[s]}</option>
+              ))}
+            </select>
+
+            {/* Remove */}
+            <button
+              type="button"
+              onClick={() => onRemove(phase.id)}
+              className="opacity-0 group-hover:opacity-100 text-[#AEAEB2] hover:text-[#FF3B30] transition-all flex-shrink-0 text-[16px] leading-none"
+              title="Remove phase"
+              aria-label="Remove phase"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+
+        {phases.length === 0 && (
+          <p className="text-[13px] text-[#AEAEB2] py-4 text-center">
+            No phases yet — add one above.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function WorkflowCanvas({
   workflow,
   onSave,
@@ -47,6 +146,11 @@ export default function WorkflowCanvas({
   const [title, setTitle] = useState(workflow.title);
   const [description, setDescription] = useState(workflow.description ?? "");
   const [status, setStatus] = useState<WorkflowStatus>(workflow.status);
+  const [phases, setPhases] = useState<WorkflowPhase[]>(
+    workflow.phases && workflow.phases.length > 0
+      ? workflow.phases
+      : DEFAULT_PHASES.map((p, i) => ({ ...p, id: `phase_${i}` }))
+  );
   const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
 
@@ -55,6 +159,11 @@ export default function WorkflowCanvas({
     setTitle(workflow.title);
     setDescription(workflow.description ?? "");
     setStatus(workflow.status);
+    setPhases(
+      workflow.phases && workflow.phases.length > 0
+        ? workflow.phases
+        : DEFAULT_PHASES.map((p, i) => ({ ...p, id: `phase_${i}` }))
+    );
     setDirty(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workflow.id]); // intentionally reset only when switching to a different workflow
@@ -68,12 +177,13 @@ export default function WorkflowCanvas({
       title: title.trim(),
       description: description.trim() || undefined,
       status,
+      phases,
       updatedAt: new Date().toISOString(),
     });
     setDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
-  }, [workflow, title, description, status, onSave]);
+  }, [workflow, title, description, status, phases, onSave]);
 
   // Save on Ctrl/Cmd+S
   useEffect(() => {
@@ -86,6 +196,26 @@ export default function WorkflowCanvas({
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [handleSave]);
+
+  const updatePhase = (id: string, patch: Partial<WorkflowPhase>) => {
+    setPhases((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    markDirty();
+  };
+
+  const addPhase = () => {
+    const newPhase: WorkflowPhase = {
+      id: `phase_${Date.now()}`,
+      name: "New Phase",
+      status: "pending",
+    };
+    setPhases((prev) => [...prev, newPhase]);
+    markDirty();
+  };
+
+  const removePhase = (id: string) => {
+    setPhases((prev) => prev.filter((p) => p.id !== id));
+    markDirty();
+  };
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -169,7 +299,7 @@ export default function WorkflowCanvas({
           <div className="border-t border-[#F5F5F7] mb-8" />
 
           {/* Description */}
-          <div className="mb-6">
+          <div className="mb-10">
             <label className="block text-[11px] font-semibold uppercase tracking-[0.09em] text-[#AEAEB2] mb-3">
               Description
             </label>
@@ -178,13 +308,24 @@ export default function WorkflowCanvas({
               onChange={(e) => { setDescription(e.target.value); markDirty(); }}
               onBlur={handleSave}
               placeholder="Describe this workflow's purpose, scope, and goals…"
-              rows={6}
+              rows={4}
               className="w-full text-[15px] text-[#1D1D1F] bg-transparent border-none outline-none placeholder-[#C7C7CC] leading-relaxed resize-none"
             />
           </div>
 
+          {/* Divider */}
+          <div className="border-t border-[#F5F5F7] mb-8" />
+
+          {/* Phase Track */}
+          <PhaseTrack
+            phases={phases}
+            onUpdate={updatePhase}
+            onAdd={addPhase}
+            onRemove={removePhase}
+          />
+
           {/* Keyboard hint */}
-          <p className="text-[11px] text-[#C7C7CC]">
+          <p className="mt-10 text-[11px] text-[#C7C7CC]">
             Changes auto-save on blur · ⌘S to save manually
           </p>
         </div>

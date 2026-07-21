@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { use } from "react";
 import { useWorkflowStorage } from "@/lib/storage/WorkflowStorageContext";
 import WorkflowCanvas from "@/components/workflow/WorkflowCanvas";
 import type { Workflow } from "@/lib/types/workflow";
 
 interface WorkflowPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 function NotFound() {
@@ -35,7 +36,7 @@ function LoadingState() {
 }
 
 export default function WorkflowPage({ params }: WorkflowPageProps) {
-  const { id } = params;
+  const { id } = use(params);
   const storage = useWorkflowStorage();
   const router = useRouter();
   const [workflow, setWorkflow] = useState<Workflow | null | undefined>(
