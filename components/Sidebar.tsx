@@ -123,6 +123,13 @@ const VaultIcon = () => (
   </svg>
 );
 
+const ShieldIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M8 1.5L2.5 4v4c0 3 2.5 5.5 5.5 6 3-.5 5.5-3 5.5-6V4z"/>
+    <path d="M5.5 8l1.5 1.5L10.5 6"/>
+  </svg>
+);
+
 const GearIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="8" cy="8" r="2.5"/>
@@ -215,6 +222,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: "Sessions", href: "/sessions", Icon: ClockIcon },
       { label: "Documents", href: "/documents", Icon: DocIcon },
       { label: "Knowledge Vault", href: "/knowledge-vault", Icon: VaultIcon },
+      { label: "Intel Vault", href: "/vault", Icon: ShieldIcon },
     ],
   },
   {

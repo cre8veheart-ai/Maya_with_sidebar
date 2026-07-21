@@ -5,6 +5,7 @@ import { WorkflowStorageProvider } from "@/lib/storage/WorkflowStorageContext";
 import { DecisionStorageProvider } from "@/lib/storage/DecisionStorageContext";
 import { KnowledgeStorageProvider } from "@/lib/storage/KnowledgeStorageContext";
 import { MemoryStorageProvider } from "@/lib/storage/MemoryStorageContext";
+import { VaultStorageProvider } from "@/lib/storage/VaultStorageContext";
 
 export const metadata: Metadata = {
   title: "MAYA — Executive Intelligence OS",
@@ -23,7 +24,9 @@ export default function RootLayout({
           <DecisionStorageProvider>
             <KnowledgeStorageProvider>
               <MemoryStorageProvider>
-                <SidebarLayout>{children}</SidebarLayout>
+                <VaultStorageProvider>
+                  <SidebarLayout>{children}</SidebarLayout>
+                </VaultStorageProvider>
               </MemoryStorageProvider>
             </KnowledgeStorageProvider>
           </DecisionStorageProvider>

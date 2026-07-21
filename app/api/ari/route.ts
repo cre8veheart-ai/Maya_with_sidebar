@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Request body must be an object." }, { status: 400 });
   }
 
-  const { messages, context } = body as Record<string, unknown>;
+  const { messages, context, execLens } = body as Record<string, unknown>;
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json(
@@ -54,8 +54,12 @@ export async function POST(req: NextRequest) {
   const contextString =
     typeof context === "string" && context.trim() ? context.trim() : undefined;
 
+  // execLens sharpens Maya toward a specific executive function (ceo, cfo, etc.)
+  const lensString =
+    typeof execLens === "string" && execLens.trim() ? execLens.trim() : undefined;
+
   // ── Build prompt and call OpenAI ──────────────────────────────────────────
-  const systemPrompt = buildSystemPrompt(contextString);
+  const systemPrompt = buildSystemPrompt(contextString, lensString);
   const client = new OpenAI({ apiKey });
 
   let streamResponse: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;

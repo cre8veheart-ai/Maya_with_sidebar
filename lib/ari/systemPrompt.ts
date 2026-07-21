@@ -2,6 +2,8 @@
 // This is the core of Ari's reasoning character. Kept in one place so it can
 // be iterated independently of the API route or UI.
 
+import { isExecLens, EXEC_LENS_PROMPTS } from "./contextPrompts";
+
 export const ARI_BASE_SYSTEM_PROMPT = `You are Maya — the executive intelligence inside MAYA, an Operating System built for senior business leaders.
 
 ## Your identity
@@ -43,11 +45,19 @@ You are fluent across all executive functions:
  *   extracted OrgMemory facts. Injected per-request so Maya always has the latest
  *   state of the executive's business — the mechanism that eliminates daily
  *   re-onboarding and makes the intelligence compound over time.
+ * @param execLens - Optional executive function lens (e.g. "cfo", "cmo"). When
+ *   provided, sharpens Maya's reasoning toward that function's priorities without
+ *   changing her core identity. One intelligence, optional functional focus.
  */
-export function buildSystemPrompt(businessContext?: string): string {
-  if (!businessContext) return ARI_BASE_SYSTEM_PROMPT;
+export function buildSystemPrompt(businessContext?: string, execLens?: string): string {
+  const lensPrompt =
+    execLens && isExecLens(execLens) ? `\n\n${EXEC_LENS_PROMPTS[execLens]}` : "";
 
-  return `${ARI_BASE_SYSTEM_PROMPT}
+  const base = `${ARI_BASE_SYSTEM_PROMPT}${lensPrompt}`;
+
+  if (!businessContext) return base;
+
+  return `${base}
 
 ## What you already know about this executive's business
 The following context has been built up over time through the executive's Knowledge Vault, logged decisions, and past conversations. Treat this as ground truth. Use it naturally — don't recite it back, don't ask them to confirm it, just apply it.
