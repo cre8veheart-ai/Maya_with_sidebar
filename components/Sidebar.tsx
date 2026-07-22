@@ -180,6 +180,27 @@ type NavSection = {
   items: NavItem[];
 };
 
+const CampaignIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M1.5 3.5h13M1.5 3.5v9a1 1 0 001 1h11a1 1 0 001-1v-9"/>
+    <path d="M5.5 6.5v4M8 5.5v5M10.5 7.5v3"/>
+  </svg>
+);
+
+const SuggestionIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M8 1.5a6 6 0 100 11 6 6 0 000-11z"/>
+    <path d="M8 5v3.5M8 10.5v.5"/>
+  </svg>
+);
+
+const OutlookIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="1.5" y="3.5" width="13" height="9" rx="1"/>
+    <path d="M1.5 6l6.5 4 6.5-4"/>
+  </svg>
+);
+
 const NAV_SECTIONS: NavSection[] = [
   {
     id: "main",
@@ -209,9 +230,11 @@ const NAV_SECTIONS: NavSection[] = [
     heading: "Workspace",
     collapsible: true,
     items: [
+      { label: "Campaigns", href: "/campaigns", Icon: CampaignIcon },
       { label: "Workflows", href: "/workflows", Icon: WorkflowIcon },
       { label: "Decisions", href: "/decisions", Icon: DecisionIcon },
       { label: "Projects", href: "/projects", Icon: FolderIcon },
+      { label: "Suggestions", href: "/suggestions", Icon: SuggestionIcon },
     ],
   },
   {
@@ -223,6 +246,14 @@ const NAV_SECTIONS: NavSection[] = [
       { label: "Documents", href: "/documents", Icon: DocIcon },
       { label: "Knowledge Vault", href: "/knowledge-vault", Icon: VaultIcon },
       { label: "Intel Vault", href: "/vault", Icon: ShieldIcon },
+    ],
+  },
+  {
+    id: "integrations",
+    heading: "Integrations",
+    collapsible: true,
+    items: [
+      { label: "Outlook", href: "/integrations/outlook", Icon: OutlookIcon },
     ],
   },
   {
@@ -280,7 +311,7 @@ export default function Sidebar({
         className={[
           "fixed md:relative z-50 md:z-auto",
           "flex flex-col h-screen flex-shrink-0",
-          "bg-[#F5F5F7] border-r border-[#E5E5EA]",
+          "bg-white border-r border-[#EBEBED]",
           "transition-all duration-250 ease-in-out",
           // Desktop width
           isOpen ? "w-60" : "md:w-14",
@@ -291,7 +322,7 @@ export default function Sidebar({
         {/* Header */}
         <div
           className={[
-            "flex items-center h-14 border-b border-[#E5E5EA] flex-shrink-0 px-3",
+            "flex items-center h-14 border-b border-[#EBEBED] flex-shrink-0 px-3",
             isOpen ? "justify-between" : "justify-center",
           ].join(" ")}
         >
@@ -315,7 +346,7 @@ export default function Sidebar({
               <button
                 onClick={onToggle}
                 aria-label="Collapse sidebar"
-                className="p-1.5 rounded-md text-[#8E8E93] hover:bg-[#E5E5EA] hover:text-[#1D1D1F] transition-colors flex-shrink-0"
+                className="p-1.5 rounded-md text-[#8E8E93] hover:bg-[#F5F5F7] hover:text-[#1D1D1F] transition-colors flex-shrink-0"
               >
                 <CollapseIcon />
               </button>
@@ -324,7 +355,7 @@ export default function Sidebar({
             <button
               onClick={onToggle}
               aria-label="Expand sidebar"
-              className="p-1.5 rounded-md text-[#8E8E93] hover:bg-[#E5E5EA] hover:text-[#1D1D1F] transition-colors"
+              className="p-1.5 rounded-md text-[#8E8E93] hover:bg-[#F5F5F7] hover:text-[#1D1D1F] transition-colors"
             >
               <ExpandIcon />
             </button>
@@ -341,7 +372,7 @@ export default function Sidebar({
               <div key={section.id}>
                 {/* Divider */}
                 {idx > 0 && (
-                  <div className="my-2 border-t border-[#E5E5EA]" />
+                  <div className="my-2 border-t border-[#F0F0F2]" />
                 )}
 
                 {/* Section heading */}
@@ -349,7 +380,7 @@ export default function Sidebar({
                   <button
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={!sectionCollapsed}
-                    className="w-full flex items-center justify-between px-2 py-1.5 mb-0.5 group rounded-md hover:bg-[#EBEBED] transition-colors"
+                    className="w-full flex items-center justify-between px-2 py-1.5 mb-0.5 group rounded-md hover:bg-[#F5F5F7] transition-colors"
                   >
                     <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[#8E8E93] group-hover:text-[#6E6E73]">
                       {section.heading}
@@ -378,8 +409,8 @@ export default function Sidebar({
                           "flex items-center gap-2.5 px-2 py-[7px] rounded-md text-[13.5px] transition-colors duration-100",
                           isOpen ? "" : "justify-center",
                           active
-                            ? "bg-[#E5F0FF] text-[#0066CC] font-medium"
-                            : "text-[#3D3D3D] hover:bg-[#EBEBED] hover:text-[#1D1D1F]",
+                            ? "bg-[#F0F5FF] text-[#0066CC] font-medium"
+                            : "text-[#3D3D3D] hover:bg-[#F5F5F7] hover:text-[#1D1D1F]",
                         ].join(" ")}
                       >
                         <span
@@ -403,7 +434,7 @@ export default function Sidebar({
 
         {/* Footer */}
         {isOpen && (
-          <div className="px-4 py-3 border-t border-[#E5E5EA] text-[11px] text-[#AEAEB2]">
+          <div className="px-4 py-3 border-t border-[#F0F0F2] text-[11px] text-[#AEAEB2]">
             MAYA v1.0
           </div>
         )}

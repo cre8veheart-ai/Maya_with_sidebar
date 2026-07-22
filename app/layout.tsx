@@ -7,6 +7,7 @@ import { KnowledgeStorageProvider } from "@/lib/storage/KnowledgeStorageContext"
 import { MemoryStorageProvider } from "@/lib/storage/MemoryStorageContext";
 import { VaultStorageProvider } from "@/lib/storage/VaultStorageContext";
 import { CampaignStorageProvider } from "@/lib/storage/CampaignStorageContext";
+import { SuggestionStorageProvider } from "@/lib/storage/SuggestionStorageContext";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 
 export const metadata: Metadata = {
@@ -29,7 +30,9 @@ export default function RootLayout({
                 <MemoryStorageProvider>
                   <VaultStorageProvider>
                     <CampaignStorageProvider>
-                      <SidebarLayout>{children}</SidebarLayout>
+                      <SuggestionStorageProvider>
+                        <SidebarLayout>{children}</SidebarLayout>
+                      </SuggestionStorageProvider>
                     </CampaignStorageProvider>
                   </VaultStorageProvider>
                 </MemoryStorageProvider>
