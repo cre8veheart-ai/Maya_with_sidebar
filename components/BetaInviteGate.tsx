@@ -110,7 +110,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
         {step === "code" && (
           <form onSubmit={handleCodeSubmit} className="bg-[#1e1e2e] border border-[#313244] rounded-2xl p-6 space-y-5">
             <div>
-              <h2 className="text-[15px] font-semibold text-[#cdd6f4]">You've been invited</h2>
+              <h2 className="text-[15px] font-semibold text-[#cdd6f4]">You&apos;ve been invited</h2>
               <p className="text-[13px] text-[#585b70] mt-1">
                 MAYA is invite-only during beta. Enter the code shared with you to request access.
               </p>
@@ -139,7 +139,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
               {codeLoading ? "Verifying…" : "Verify Code"}
             </button>
             <p className="text-center text-[11px] text-[#585b70]">
-              Don't have a code? Contact a current beta tester or the MAYA team.
+              Don&apos;t have a code? Contact a current beta tester or the MAYA team.
             </p>
           </form>
         )}
@@ -271,7 +271,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
                   ))}
                 </div>
                 <p className="text-[11px] text-[#585b70] mt-2">
-                  Each code is single-use. Share only with executives you'd vouch for personally.
+                  Each code is single-use. Share only with executives you&apos;d vouch for personally.
                 </p>
               </div>
             )}
@@ -282,7 +282,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
             >
               Enter MAYA →
             </button>
-            <p className="text-center text-[10px] text-[#585b70]">Doesn't act without you.</p>
+            <p className="text-center text-[10px] text-[#585b70]">Doesn&apos;t act without you.</p>
           </div>
         )}
       </div>

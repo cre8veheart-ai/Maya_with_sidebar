@@ -5,7 +5,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import SidebarToggle from "./SidebarToggle";
 
-type NavItem = { label: string; href: string; icon: string };
+type NavItem = { label: string; href: string; icon: string; disabled?: boolean; phase?: string };
 type NavGroup = { id: string; label: string; icon: string; items: NavItem[] };
 
 const navGroups: NavGroup[] = [
@@ -33,7 +33,11 @@ const navGroups: NavGroup[] = [
       { label: "CIO", href: "/cio", icon: "🔷" },
       { label: "CRO", href: "/cro", icon: "📈" },
       { label: "CD", href: "/cd", icon: "🎨" },
+      { label: "HR", href: "/hr", icon: "👥" },
+      { label: "Legal", href: "/legal", icon: "⚖️" },
+      { label: "Office Admin", href: "/office-admin", icon: "🗂️" },
       { label: "Strategy Room", href: "/strategy-room", icon: "🧩" },
+      { label: "Titans Council", href: "/titans-council", icon: "👑", disabled: true, phase: "Phase 2" },
     ],
   },
   {
@@ -138,22 +142,37 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
                   {!isGroupCollapsed && (
                     <div className="mt-0.5 flex flex-col gap-0.5">
-                      {group.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={[
-                            "flex items-center gap-3 rounded-lg px-3 py-2",
-                            "transition-colors duration-150 whitespace-nowrap text-sm font-medium",
-                            isActive(item.href)
-                              ? "bg-[#313244] text-[#89b4fa]"
-                              : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]",
-                          ].join(" ")}
-                        >
-                          <span className="text-base">{item.icon}</span>
-                          <span>{item.label}</span>
-                        </Link>
-                      ))}
+                      {group.items.map((item) =>
+                        item.disabled ? (
+                          <div
+                            key={item.href}
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 opacity-35 cursor-not-allowed whitespace-nowrap text-sm font-medium text-[#cdd6f4]"
+                          >
+                            <span className="text-base">{item.icon}</span>
+                            <span className="flex-1">{item.label}</span>
+                            {item.phase && (
+                              <span className="text-[9px] font-semibold uppercase tracking-wider text-[#585b70] border border-[#45475a] px-1.5 py-0.5 rounded">
+                                {item.phase}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={[
+                              "flex items-center gap-3 rounded-lg px-3 py-2",
+                              "transition-colors duration-150 whitespace-nowrap text-sm font-medium",
+                              isActive(item.href)
+                                ? "bg-[#313244] text-[#89b4fa]"
+                                : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]",
+                            ].join(" ")}
+                          >
+                            <span className="text-base">{item.icon}</span>
+                            <span>{item.label}</span>
+                          </Link>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
@@ -161,7 +180,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             })
           ) : (
             navGroups.flatMap((group) =>
-              group.items.map((item) => (
+              group.items
+                .filter((item) => !item.disabled)
+                .map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

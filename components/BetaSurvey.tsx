@@ -158,7 +158,7 @@ export default function BetaSurvey({ onComplete }: Props) {
           {/* Q4 Working */}
           <div>
             <label className="block text-[13px] font-semibold text-[#cdd6f4] mb-2">
-              4. What's working well?
+              4. What&apos;s working well?
             </label>
             <textarea
               value={form.working}
@@ -173,7 +173,7 @@ export default function BetaSurvey({ onComplete }: Props) {
           {/* Q5 Missing */}
           <div>
             <label className="block text-[13px] font-semibold text-[#cdd6f4] mb-2">
-              5. What's missing or frustrating?
+              5. What&apos;s missing or frustrating?
             </label>
             <textarea
               value={form.missing}
@@ -210,7 +210,7 @@ export default function BetaSurvey({ onComplete }: Props) {
           {/* Q7 Priorities */}
           <div>
             <label className="block text-[13px] font-semibold text-[#cdd6f4] mb-2">
-              7. Any features you'd prioritise next? <span className="text-[#585b70] font-normal">(optional)</span>
+              7. Any features you&apos;d prioritise next? <span className="text-[#585b70] font-normal">(optional)</span>
             </label>
             <textarea
               value={form.priorities}
