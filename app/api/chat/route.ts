@@ -2,6 +2,13 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { buildExecSystemPrompt, type ExecProfile } from "@/lib/maya/execLens";
 import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
+import {
+  checkRateLimit,
+  getClientIp,
+  isLikelyAutomatedRequest,
+} from "@/lib/server/requestGuard";
+
+export const maxDuration = 25;
 
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
@@ -71,6 +78,33 @@ function parseProfile(raw: unknown): ExecProfile | null {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req.headers);
+  const rateLimit = checkRateLimit(`chat:${ip}`, {
+    windowMs: 5 * 60_000,
+    max: 20,
+  });
+  if (!rateLimit.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: "Rate limit reached. Please wait before sending more prompts.",
+      }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+        },
+      }
+    );
+  }
+
+  if (isLikelyAutomatedRequest(req.headers)) {
+    return new Response(JSON.stringify({ error: "Request blocked" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   if (!process.env.OPENAI_API_KEY) {
     return new Response(
       JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
@@ -87,6 +121,17 @@ export async function POST(req: NextRequest) {
     lens = parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
+
+    const latestUserMessage = [...messages].reverse().find((m) => m.role === "user");
+    if (!latestUserMessage || latestUserMessage.content.length < 2) {
+      return new Response(
+        JSON.stringify({ error: "Missing valid user message" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,

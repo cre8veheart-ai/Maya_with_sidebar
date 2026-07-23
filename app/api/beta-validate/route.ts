@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  checkRateLimit,
+  getClientIp,
+  isLikelyAutomatedRequest,
+} from "@/lib/server/requestGuard";
 
 function sanitize(s: unknown): string {
   if (typeof s !== "string") return "";
@@ -7,6 +12,25 @@ function sanitize(s: unknown): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const limit = checkRateLimit(`beta-validate:${ip}`, {
+      windowMs: 60_000,
+      max: 12,
+    });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { valid: false, error: "Too many attempts. Please try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(limit.retryAfterSeconds) },
+        }
+      );
+    }
+
+    if (isLikelyAutomatedRequest(req.headers)) {
+      return NextResponse.json({ valid: false }, { status: 403 });
+    }
+
     const body = await req.json();
     const submitted = sanitize(body.code);
 
