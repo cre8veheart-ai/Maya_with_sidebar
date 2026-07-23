@@ -1,0 +1,112 @@
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+import { buildExecSystemPrompt } from "@/lib/maya/execLens";
+import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
+
+const VALID_ROLES = new Set<ExecRole>([
+  "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd",
+]);
+
+/** Strip control characters and cap field length to prevent prompt injection. */
+function sanitizeText(raw: unknown, maxLen: number): string {
+  if (typeof raw !== "string") return "";
+  return raw.slice(0, maxLen).replace(/[\x00-\x1f\x7f]/g, " ").trim();
+}
+
+/** Validates and sanitizes the client-supplied lens before it touches the system prompt. */
+function parseLens(raw: unknown): RoleLens {
+  if (!raw || typeof raw !== "object") throw new Error("Invalid lens");
+  const { role, overrides } = raw as Record<string, unknown>;
+
+  if (typeof role !== "string" || !VALID_ROLES.has(role as ExecRole)) {
+    throw new Error("Invalid role");
+  }
+
+  const safeOverrides = Array.isArray(overrides)
+    ? overrides
+        .filter(
+          (o): o is { key: string; value: string } =>
+            !!o &&
+            typeof o === "object" &&
+            typeof (o as Record<string, unknown>).key === "string" &&
+            typeof (o as Record<string, unknown>).value === "string"
+        )
+        .slice(0, 50)
+        .map((o) => ({
+          key: sanitizeText(o.key, 100),
+          value: sanitizeText(o.value, 500),
+        }))
+        .filter((o) => o.key.length > 0)
+    : [];
+
+  return { role: role as ExecRole, overrides: safeOverrides };
+}
+
+/** Validates and sanitizes client-supplied message history. */
+function parseMessages(raw: unknown): MayaMessage[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (m): m is { role: string; content: string } =>
+        !!m &&
+        typeof m === "object" &&
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string"
+    )
+    .slice(0, 100)
+    .map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: sanitizeText(m.content, 8000),
+    }));
+}
+
+export async function POST(req: NextRequest) {
+  if (!process.env.OPENAI_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  let lens: RoleLens;
+  let messages: MayaMessage[];
+
+  try {
+    const body = await req.json();
+    lens = parseLens(body.lens);
+    messages = parseMessages(body.messages);
+  } catch {
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const systemPrompt = buildExecSystemPrompt(lens);
+
+  const stream = await openai.chat.completions.create({
+    model: "gpt-4o",
+    stream: true,
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...messages.map((m) => ({ role: m.role, content: m.content })),
+    ],
+  });
+
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content ?? "";
+        if (text) controller.enqueue(encoder.encode(text));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(readable, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+
