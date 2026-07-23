@@ -1,16 +1,15 @@
 import PageShell from "@/components/PageShell";
+import RoleChat from "@/components/RoleChat";
 
 function SectionCard({
   title,
   children,
-  className,
 }: {
   title: string;
   children?: React.ReactNode;
-  className?: string;
 }) {
   return (
-    <div className={`bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 ${className ?? ""}`}>
+    <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
       <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
         {title}
       </h2>
@@ -32,67 +31,86 @@ function MetricRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+function PulseRow({
+  label,
+  detail,
+  status,
+}: {
+  label: string;
+  detail: string;
+  status: "green" | "yellow" | "red" | "neutral";
+}) {
+  const dot: Record<typeof status, string> = {
+    green: "bg-[#a6e3a1]",
+    yellow: "bg-[#f9e2af]",
+    red: "bg-[#f38ba8]",
+    neutral: "bg-[#585b70]",
+  };
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-[#313244] last:border-0">
+      <div>
+        <p className="text-[13px] text-[#cdd6f4]">{label}</p>
+        <p className="text-[11px] text-[#585b70]">{detail}</p>
+      </div>
+      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot[status]}`} />
+    </div>
+  );
+}
+
 export default function CroPage() {
   return (
-    <PageShell title="CRO" subtitle="Chief Revenue Officer workspace">
-      {/* Row 1 — Revenue Pulse + Pipeline */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-        <SectionCard title="Revenue Pulse">
-          <MetricRow label="ARR / MRR" value="—" />
-          <MetricRow label="Pipeline value" value="—" />
-          <MetricRow label="Win rate" value="—" />
-          <MetricRow label="Churn rate" value="—" />
-        </SectionCard>
+    <PageShell title="CRO" subtitle="Pipeline, conversion, and the full revenue system — where revenue is created, where it leaks, and what's the rate-limiting step.">
+      <div className="flex flex-col xl:flex-row gap-5 h-full">
+        {/* Left — Dashboard */}
+        <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
+          {/* Revenue Pulse */}
+          <SectionCard title="Revenue Pulse">
+            <MetricRow label="ARR / MRR" value="—" />
+            <MetricRow label="Pipeline value" value="—" />
+            <MetricRow label="Win rate" value="—" />
+            <MetricRow label="Churn rate" value="—" />
+          </SectionCard>
 
-        <SectionCard title="Pipeline by Stage">
-          <div className="space-y-2.5">
-            {["Prospecting", "Qualified", "Proposal", "Negotiation", "Closed Won"].map((stage) => (
-              <div key={stage} className="flex items-center gap-3">
-                <span className="text-[12px] text-[#a6adc8] w-24 flex-shrink-0">{stage}</span>
-                <div className="flex-1 h-1.5 bg-[#313244] rounded-full">
-                  <div className="h-full bg-[#89b4fa] rounded-full" style={{ width: "0%" }} />
+          {/* Pipeline by Stage */}
+          <SectionCard title="Pipeline by Stage">
+            <div className="space-y-2.5">
+              {["Prospecting", "Qualified", "Proposal", "Negotiation", "Closed Won"].map((stage) => (
+                <div key={stage} className="flex items-center gap-3">
+                  <span className="text-[12px] text-[#a6adc8] w-24 shrink-0">{stage}</span>
+                  <div className="flex-1 h-1.5 bg-[#313244] rounded-full">
+                    <div className="h-full bg-[#89b4fa] rounded-full" style={{ width: "0%" }} />
+                  </div>
+                  <span className="text-[12px] text-[#585b70] w-4 text-right">0</span>
                 </div>
-                <span className="text-[12px] text-[#585b70] w-6 text-right">0</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      </div>
+              ))}
+            </div>
+          </SectionCard>
 
-      {/* Row 2 — Active Deals + Priorities */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <SectionCard title="Active Deals" className="md:col-span-2">
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-[#585b70] text-left border-b border-[#313244]">
-                  <th className="pb-2 font-medium">Account</th>
-                  <th className="pb-2 font-medium">Stage</th>
-                  <th className="pb-2 font-medium">Value</th>
-                  <th className="pb-2 font-medium">Close date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan={4} className="pt-4 text-center text-[#585b70]">
-                    Deals surface as you train Maya on your pipeline
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </SectionCard>
+          {/* Forecast & Reliability */}
+          <SectionCard title="Forecast & Reliability">
+            <PulseRow label="Forecast accuracy" detail="Predicted vs. actual close rate" status="neutral" />
+            <PulseRow label="Commit vs. best case" detail="Sales team confidence signal" status="neutral" />
+            <PulseRow label="Average deal cycle" detail="Days from qualified to close" status="neutral" />
+            <p className="mt-3 text-[11px] text-[#585b70] text-center">
+              Forecast reliability is a leading indicator of sales team health
+            </p>
+          </SectionCard>
 
-        <SectionCard title="Revenue Priorities">
-          <ol className="space-y-2">
-            {["Priority 1", "Priority 2", "Priority 3"].map((p, i) => (
-              <li key={p} className="flex items-start gap-2">
-                <span className="text-[11px] text-[#89b4fa] font-bold mt-0.5">{i + 1}</span>
-                <span className="text-[13px] text-[#585b70]">Not set</span>
-              </li>
-            ))}
-          </ol>
-        </SectionCard>
+          {/* Renewal & Expansion */}
+          <SectionCard title="Renewal & Expansion">
+            <PulseRow label="Renewals this quarter" detail="At-risk accounts flagged" status="neutral" />
+            <PulseRow label="Net revenue retention" detail="Expansion minus churn" status="neutral" />
+            <PulseRow label="Expansion pipeline" detail="Upsell / cross-sell in motion" status="neutral" />
+            <p className="mt-3 text-[11px] text-[#585b70] text-center">
+              Retention is cheaper than acquisition — expansion is cheaper than both
+            </p>
+          </SectionCard>
+        </div>
+
+        {/* Right — MAYA CRO Agent */}
+        <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
+          <RoleChat role="cro" />
+        </div>
       </div>
     </PageShell>
   );

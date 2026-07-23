@@ -1,16 +1,15 @@
 import PageShell from "@/components/PageShell";
+import RoleChat from "@/components/RoleChat";
 
 function SectionCard({
   title,
   children,
-  className,
 }: {
   title: string;
   children?: React.ReactNode;
-  className?: string;
 }) {
   return (
-    <div className={`bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 ${className ?? ""}`}>
+    <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
       <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
         {title}
       </h2>
@@ -35,60 +34,74 @@ function PhaseRow({ phase, owner, status }: { phase: string; owner: string; stat
   );
 }
 
+function DeadlineRow({ asset, due }: { asset: string; due: string }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-[#313244] last:border-0">
+      <span className="text-[13px] text-[#cdd6f4]">{asset}</span>
+      <span className="text-[12px] text-[#585b70]">{due}</span>
+    </div>
+  );
+}
+
 export default function CdPage() {
   return (
-    <PageShell title="CD" subtitle="Creative Director workspace">
-      {/* Row 1 — Active Campaigns + Production Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-        <SectionCard title="Active Campaigns">
-          <div className="flex items-center justify-center h-20">
-            <p className="text-[12px] text-[#585b70]">Campaigns link from the Campaigns layer</p>
-          </div>
-        </SectionCard>
+    <PageShell title="CD" subtitle="Brief to final deliverable — creative integrity, production reality, and the execution chain that makes it real.">
+      <div className="flex flex-col xl:flex-row gap-5 h-full">
+        {/* Left — Dashboard */}
+        <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
+          {/* Active Campaigns */}
+          <SectionCard title="Active Campaigns">
+            <div className="flex items-center justify-center h-12">
+              <p className="text-[12px] text-[#585b70]">Campaigns link from the Campaigns layer</p>
+            </div>
+          </SectionCard>
 
-        <SectionCard title="Production Phases">
-          <PhaseRow phase="Brief & Strategy" owner="CMO / Account" status="not started" />
-          <PhaseRow phase="Concepting" owner="Creative team" status="not started" />
-          <PhaseRow phase="Pre-production" owner="CD / Traffic" status="not started" />
-          <PhaseRow phase="Production" owner="Vendors" status="not started" />
-          <PhaseRow phase="Review & Delivery" owner="Account / Client" status="not started" />
-        </SectionCard>
-      </div>
+          {/* Production Phases */}
+          <SectionCard title="Production Phases">
+            <PhaseRow phase="Brief & Strategy" owner="CMO / Account" status="not started" />
+            <PhaseRow phase="Concepting" owner="Creative team" status="not started" />
+            <PhaseRow phase="Pre-production" owner="CD / Traffic" status="not started" />
+            <PhaseRow phase="Production" owner="Vendors" status="not started" />
+            <PhaseRow phase="Review & Delivery" owner="Account / Client" status="not started" />
+            <p className="mt-3 text-[11px] text-[#585b70] text-center">
+              CD owns the production flow — traffic is a creative function, not a PM function
+            </p>
+          </SectionCard>
 
-      {/* Row 2 — Vendor Roster + Traffic + Priorities */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <SectionCard title="Vendor Roster" className="md:col-span-2">
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-[#585b70] text-left border-b border-[#313244]">
-                  <th className="pb-2 font-medium">Vendor</th>
-                  <th className="pb-2 font-medium">Specialty</th>
-                  <th className="pb-2 font-medium">Availability</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan={3} className="pt-4 text-center text-[#585b70]">
-                    Vendors load from your Decisions vault
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </SectionCard>
+          {/* Brief Queue */}
+          <SectionCard title="Brief Queue">
+            <div className="space-y-2">
+              {[
+                "Awaiting brief approval",
+                "Brief in revision",
+                "Brief approved — concepting",
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-2">
+                  <span className="text-[#89b4fa] mt-0.5 shrink-0">·</span>
+                  <span className="text-[12px] text-[#585b70]">{item} — none</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[11px] text-[#585b70] text-center">
+              A great brief produces better creative than a great team with a bad brief
+            </p>
+          </SectionCard>
 
-        <SectionCard title="Traffic & Deadlines">
-          <ol className="space-y-2">
-            {["Asset 1", "Asset 2", "Asset 3"].map((a, i) => (
-              <li key={a} className="flex items-start gap-2">
-                <span className="text-[11px] text-[#89b4fa] font-bold mt-0.5">{i + 1}</span>
-                <span className="text-[13px] text-[#585b70]">No deadline set</span>
-              </li>
-            ))}
-          </ol>
-          <p className="text-[11px] text-[#585b70] mt-3 text-center">Traffic surfaces from campaign phases</p>
-        </SectionCard>
+          {/* Traffic & Deadlines */}
+          <SectionCard title="Traffic & Deadlines">
+            <DeadlineRow asset="Add an asset" due="No deadline set" />
+            <DeadlineRow asset="Add an asset" due="No deadline set" />
+            <DeadlineRow asset="Add an asset" due="No deadline set" />
+            <p className="mt-3 text-[11px] text-[#585b70] text-center">
+              Vendor availability is a scheduling input — not an afterthought
+            </p>
+          </SectionCard>
+        </div>
+
+        {/* Right — MAYA CD Agent */}
+        <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
+          <RoleChat role="cd" />
+        </div>
       </div>
     </PageShell>
   );
