@@ -1,4 +1,5 @@
 import PageShell from "@/components/PageShell";
+import RoleChat from "@/components/RoleChat";
 
 function SectionCard({
   title,
@@ -69,75 +70,50 @@ function InitiativeRow({ name, phase, risk }: { name: string; phase: string; ris
 export default function CioPage() {
   return (
     <PageShell title="CIO" subtitle="Chief Information Officer workspace">
-      {/* Row 1 — Systems Health + Security Posture */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-        <SectionCard title="Systems Health">
-          <StatusRow label="Core infrastructure" detail="Servers, cloud, network" status="green" />
-          <StatusRow label="Integrations" detail="Third-party connections" status="neutral" />
-          <StatusRow label="Data pipelines" detail="ETL / sync jobs" status="neutral" />
-          <StatusRow label="Uptime SLA" detail="Last 30 days" status="neutral" />
-        </SectionCard>
+      <div className="flex flex-col xl:flex-row gap-5 h-full">
+        {/* Left — Dashboard */}
+        <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
+          {/* Systems Health */}
+          <SectionCard title="Systems Health">
+            <StatusRow label="Core infrastructure" detail="Servers, cloud, network" status="green" />
+            <StatusRow label="Integrations" detail="Third-party connections" status="neutral" />
+            <StatusRow label="Data pipelines" detail="ETL / sync jobs" status="neutral" />
+            <StatusRow label="Uptime SLA" detail="Last 30 days" status="neutral" />
+          </SectionCard>
 
-        <SectionCard title="Security Posture">
-          <StatusRow label="Access control review" detail="IAM / permissions" status="neutral" />
-          <StatusRow label="Open vulnerabilities" detail="CVE / patch backlog" status="neutral" />
-          <StatusRow label="Incident alerts" detail="Last 7 days" status="green" />
-          <StatusRow label="Compliance status" detail="Frameworks active" status="neutral" />
-        </SectionCard>
-      </div>
+          {/* Security Posture */}
+          <SectionCard title="Security Posture">
+            <StatusRow label="Access control review" detail="IAM / permissions" status="neutral" />
+            <StatusRow label="Open vulnerabilities" detail="CVE / patch backlog" status="neutral" />
+            <StatusRow label="Incident alerts" detail="Last 7 days" status="green" />
+            <StatusRow label="Compliance status" detail="Frameworks active" status="neutral" />
+          </SectionCard>
 
-      {/* Row 2 — Digital Initiatives + Data Infrastructure */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-        <SectionCard title="Digital Initiatives">
-          <InitiativeRow name="Add initiative" phase="Planning" risk="low" />
-          <div className="mt-3 flex items-center justify-center">
-            <p className="text-[12px] text-[#585b70]">Initiatives link to Decisions layer</p>
-          </div>
-        </SectionCard>
+          {/* Digital Initiatives */}
+          <SectionCard title="Digital Initiatives">
+            <InitiativeRow name="Add initiative" phase="Planning" risk="low" />
+            <div className="mt-3 flex items-center justify-center">
+              <p className="text-[12px] text-[#585b70]">Initiatives link to Decisions layer</p>
+            </div>
+          </SectionCard>
 
-        <SectionCard title="Data Infrastructure">
-          <div className="space-y-3">
-            {[
-              { label: "Storage utilization", value: "—" },
-              { label: "Query performance", value: "—" },
-              { label: "Backup cadence", value: "—" },
-              { label: "Data classification", value: "—" },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between border-b border-[#313244] pb-2 last:border-0">
-                <span className="text-[13px] text-[#cdd6f4]">{label}</span>
-                <span className="text-[13px] text-[#585b70]">{value}</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      </div>
+          {/* Compliance Flags */}
+          <SectionCard title="Compliance Flags">
+            <ol className="space-y-2">
+              {["SOC 2", "GDPR / Privacy", "Internal audits"].map((framework) => (
+                <li key={framework} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#585b70] flex-shrink-0" />
+                  <span className="text-[13px] text-[#585b70]">{framework} — not configured</span>
+                </li>
+              ))}
+            </ol>
+          </SectionCard>
+        </div>
 
-      {/* Row 3 — Budget + Compliance */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <SectionCard title="Tech Budget" className="md:col-span-2">
-          <div className="grid grid-cols-2 gap-4">
-            {["Licenses & SaaS", "Infrastructure", "Security", "Headcount"].map((line) => (
-              <div key={line} className="flex flex-col gap-1">
-                <span className="text-[11px] text-[#585b70]">{line}</span>
-                <div className="h-1.5 bg-[#313244] rounded-full">
-                  <div className="h-full bg-[#89b4fa] rounded-full" style={{ width: "0%" }} />
-                </div>
-                <span className="text-[12px] text-[#a6adc8]">Not set</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Compliance Flags">
-          <ol className="space-y-2">
-            {["SOC 2", "GDPR / Privacy", "Internal audits"].map((framework) => (
-              <li key={framework} className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#585b70] flex-shrink-0" />
-                <span className="text-[13px] text-[#585b70]">{framework} — not configured</span>
-              </li>
-            ))}
-          </ol>
-        </SectionCard>
+        {/* Right — MAYA CIO Agent */}
+        <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
+          <RoleChat role="cio" />
+        </div>
       </div>
     </PageShell>
   );
