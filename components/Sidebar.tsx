@@ -9,6 +9,10 @@ const navItems = [
   { label: "Tasks", href: "/tasks", icon: "📋" },
   { label: "Search", href: "/search", icon: "🔍" },
   { label: "CEO", href: "/ceo", icon: "🏛️" },
+  { label: "COO", href: "/coo", icon: "⚙️" },
+  { label: "CMO", href: "/cmo", icon: "📣" },
+  { label: "CFO", href: "/cfo", icon: "💰" },
+  { label: "CTO", href: "/cto", icon: "🖥️" },
   { label: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
