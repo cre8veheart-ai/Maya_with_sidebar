@@ -64,6 +64,15 @@ function FlagRow({ label, category }: { label: string; category: string }) {
 export default function HrPage() {
   return (
     <PageShell title="HR" subtitle="People decisions, org health, and compliance — surface layer only. Exec and HR professionals make every final call.">
+      {/* Disclaimer Banner */}
+      <div className="flex items-start gap-3 bg-[#f9e2af]/5 border border-[#f9e2af]/20 rounded-xl px-5 py-4 mb-5">
+        <span className="text-[#f9e2af] text-[16px] shrink-0 mt-0.5">⚠</span>
+        <p className="text-[13px] text-[#f9e2af]/80 leading-relaxed">
+          <span className="font-semibold text-[#f9e2af]">Not HR or legal advice.</span>{" "}
+          MAYA surfaces information and flags for your awareness only. Your qualified HR professionals and legal counsel advise and make every final determination. MAYA does not replace them.
+        </p>
+      </div>
+
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">

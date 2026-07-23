@@ -69,6 +69,15 @@ function RiskFlag({ label, severity }: { label: string; severity: "high" | "medi
 export default function LegalPage() {
   return (
     <PageShell title="Legal" subtitle="Contract triage, risk flags, and decision audit trail — surface layer only. Qualified legal counsel advises and acts.">
+      {/* Disclaimer Banner */}
+      <div className="flex items-start gap-3 bg-[#f9e2af]/5 border border-[#f9e2af]/20 rounded-xl px-5 py-4 mb-5">
+        <span className="text-[#f9e2af] text-[16px] shrink-0 mt-0.5">⚠</span>
+        <p className="text-[13px] text-[#f9e2af]/80 leading-relaxed">
+          <span className="font-semibold text-[#f9e2af]">Not legal advice.</span>{" "}
+          MAYA surfaces contract terms, risk flags, and compliance context for your awareness only. Qualified legal counsel reviews, advises, and acts on every matter. MAYA does not replace them.
+        </p>
+      </div>
+
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
