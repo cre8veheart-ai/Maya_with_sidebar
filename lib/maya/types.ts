@@ -1,4 +1,4 @@
-export type ExecRole = "ceo" | "coo" | "cmo" | "cfo" | "cto";
+export type ExecRole = "ceo" | "coo" | "cmo" | "cfo" | "cto" | "cio" | "cro" | "cd";
 
 export interface RoleOverride {
   key: string;
@@ -10,7 +10,7 @@ export interface RoleLens {
   overrides: RoleOverride[];
 }
 
-export interface AriMessage {
+export interface MayaMessage {
   role: "user" | "assistant";
   content: string;
 }
