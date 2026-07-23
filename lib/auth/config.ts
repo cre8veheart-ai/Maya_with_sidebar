@@ -4,6 +4,14 @@
 //   [{"id":"u1","name":"Alex","email":"alex@acme.com","password":"hashed"}]
 // Generate a password hash with: node -e "require('bcryptjs').hash('pw',12).then(console.log)"
 
+// ── Vercel URL fallback ──────────────────────────────────────────────────────
+// On Vercel, NEXTAUTH_URL must equal the deployment URL for CSRF to work.
+// If it isn't explicitly set, derive it from VERCEL_URL (auto-set by Vercel)
+// so sign-in doesn't return 409 Conflict on preview and production deployments.
+if (process.env.VERCEL_URL && !process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+}
+
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -68,16 +76,16 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.org = (user as Record<string, unknown>).org as string | undefined;
-        token.role = (user as Record<string, unknown>).role as string | undefined;
+        token.org = (user as unknown as Record<string, unknown>).org as string | undefined;
+        token.role = (user as unknown as Record<string, unknown>).role as string | undefined;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as Record<string, unknown>).id = token.id;
-        (session.user as Record<string, unknown>).org = token.org;
-        (session.user as Record<string, unknown>).role = token.role;
+        (session.user as unknown as Record<string, unknown>).id = token.id;
+        (session.user as unknown as Record<string, unknown>).org = token.org;
+        (session.user as unknown as Record<string, unknown>).role = token.role;
       }
       return session;
     },
