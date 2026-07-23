@@ -4,6 +4,11 @@ import {
   getClientIp,
   isLikelyAutomatedRequest,
 } from "@/lib/server/requestGuard";
+import {
+  createBetaAccessToken,
+  getBetaAccessCookieMaxAge,
+  getBetaAccessCookieName,
+} from "@/lib/server/betaAccess";
 
 function sanitize(s: unknown): string {
   if (typeof s !== "string") return "";
@@ -52,7 +57,21 @@ export async function POST(req: NextRequest) {
     const shuffled = [...others].sort(() => Math.random() - 0.5);
     const inviteCodes = shuffled.slice(0, 3).map((c) => c.toUpperCase());
 
-    return NextResponse.json({ valid: true, inviteCodes });
+    const response = NextResponse.json({ valid: true, inviteCodes });
+    const token = createBetaAccessToken(submitted);
+    if (token) {
+      response.cookies.set({
+        name: getBetaAccessCookieName(),
+        value: token,
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: getBetaAccessCookieMaxAge(),
+      });
+    }
+
+    return response;
   } catch {
     return NextResponse.json({ valid: false }, { status: 500 });
   }

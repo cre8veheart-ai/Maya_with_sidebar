@@ -7,6 +7,10 @@ import {
   getClientIp,
   isLikelyAutomatedRequest,
 } from "@/lib/server/requestGuard";
+import {
+  getBetaAccessCookieName,
+  isValidBetaAccessToken,
+} from "@/lib/server/betaAccess";
 
 export const maxDuration = 25;
 
@@ -103,6 +107,16 @@ export async function POST(req: NextRequest) {
       status: 403,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  if (process.env.ENFORCE_BETA_CHAT_GATE === "true") {
+    const token = req.cookies.get(getBetaAccessCookieName())?.value;
+    if (!isValidBetaAccessToken(token)) {
+      return new Response(JSON.stringify({ error: "Beta access required" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
   }
 
   if (!process.env.OPENAI_API_KEY) {
