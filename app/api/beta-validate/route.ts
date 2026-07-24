@@ -1,4 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  checkRateLimit,
+  getClientIp,
+  isLikelyAutomatedRequest,
+} from "@/lib/server/requestGuard";
+import {
+  createBetaAccessToken,
+  getBetaAccessCookieMaxAge,
+  getBetaAccessCookieName,
+} from "@/lib/server/betaAccess";
 
 function sanitize(s: unknown): string {
   if (typeof s !== "string") return "";
@@ -7,6 +17,25 @@ function sanitize(s: unknown): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const limit = checkRateLimit(`beta-validate:${ip}`, {
+      windowMs: 60_000,
+      max: 12,
+    });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { valid: false, error: "Too many attempts. Please try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(limit.retryAfterSeconds) },
+        }
+      );
+    }
+
+    if (isLikelyAutomatedRequest(req.headers)) {
+      return NextResponse.json({ valid: false }, { status: 403 });
+    }
+
     const body = await req.json();
     const submitted = sanitize(body.code);
 
@@ -28,7 +57,21 @@ export async function POST(req: NextRequest) {
     const shuffled = [...others].sort(() => Math.random() - 0.5);
     const inviteCodes = shuffled.slice(0, 3).map((c) => c.toUpperCase());
 
-    return NextResponse.json({ valid: true, inviteCodes });
+    const response = NextResponse.json({ valid: true, inviteCodes });
+    const token = createBetaAccessToken(submitted);
+    if (token) {
+      response.cookies.set({
+        name: getBetaAccessCookieName(),
+        value: token,
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: getBetaAccessCookieMaxAge(),
+      });
+    }
+
+    return response;
   } catch {
     return NextResponse.json({ valid: false }, { status: 500 });
   }
