@@ -2,12 +2,13 @@
 // Identity is a UUID stored in a secure cookie, assigned on beta approval.
 import type { IVaultStorage } from "./IVaultStorage";
 import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens } from "@/lib/maya/types";
+import type { RoleLens, ClientRecord } from "@/lib/maya/types";
 
-async function api<T>(path: string, body?: unknown): Promise<T | null> {
+async function api<T>(path: string, body?: unknown, method?: string): Promise<T | null> {
   try {
+    const m = method ?? (body !== undefined ? "POST" : "GET");
     const res = await fetch(path, {
-      method: body !== undefined ? "POST" : "GET",
+      method: m,
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -59,5 +60,23 @@ export class CloudStorageAdapter implements IVaultStorage {
 
   async clear(): Promise<void> {
     await api("/api/user/profile", { clear: true });
+  }
+
+  // ── Client Vault ──────────────────────────────────────────────────────────
+  async getClients(): Promise<ClientRecord[]> {
+    const data = await api<{ clients: ClientRecord[] }>("/api/clients");
+    return data?.clients ?? [];
+  }
+
+  async saveClient(client: ClientRecord): Promise<void> {
+    await api("/api/clients", { client });
+  }
+
+  async deleteClient(id: string): Promise<void> {
+    await api<null>(`/api/clients?id=${encodeURIComponent(id)}`, undefined, "DELETE");
+  }
+
+  async clearAllClients(): Promise<void> {
+    await api<null>("/api/clients/clear", undefined, "DELETE");
   }
 }
