@@ -222,9 +222,16 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             )}
           </Link>
           {isOpen && (
-            <p className="px-3 pt-2 pb-1 text-[11px] text-[#585b70] whitespace-nowrap">
-              Maya v1.0
-            </p>
+            <div className="flex items-center justify-between px-3 pt-2 pb-1">
+              <p className="text-[11px] text-[#585b70] whitespace-nowrap">Maya v1.0</p>
+              <Link
+                href="/admin"
+                className="text-[10px] text-[#45475a] hover:text-[#585b70] transition-colors"
+                title="Admin"
+              >
+                Admin
+              </Link>
+            </div>
           )}
         </div>
       </aside>
