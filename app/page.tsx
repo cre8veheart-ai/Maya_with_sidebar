@@ -18,6 +18,7 @@ const OPERATIONS = [
   { label: "Strategy Room", href: "/strategy-room", icon: "🧩", desc: "Multi-lens synthesis — assemble the room, run the decision" },
   { label: "Decisions", href: "/decisions", icon: "⚖️", desc: "The decision layer — every call logged, attributed, queryable" },
   { label: "Campaigns", href: "/campaigns", icon: "🚀", desc: "Cross-functional execution — each role contributes their piece" },
+  { label: "Vendors", href: "/vendors", icon: "🏢", desc: "Your vendor lists — build, activate, and inject as live MAYA context" },
 ];
 
 const LIBRARY = [
@@ -25,6 +26,12 @@ const LIBRARY = [
   { label: "Documents", href: "/library/documents", icon: "📄", desc: "Org docs and briefs — queryable by MAYA" },
   { label: "Knowledge Vault", href: "/library/knowledge", icon: "🔒", desc: "Protected org knowledge — decisions and context" },
   { label: "Intel Vault", href: "/library/intel", icon: "🧠", desc: "Adaptive intelligence + external domain sources" },
+];
+
+const PUBLISH = [
+  { label: "Inbox", href: "/inbox", icon: "📬", desc: "Receive messages, drop content, import from anywhere" },
+  { label: "Content Tools", href: "/content", icon: "✍️", desc: "Blog, social, email, ad copy — MAYA drafts, you decide" },
+  { label: "Blog", href: "/blog", icon: "📝", desc: "Your org blog — manage and publish via admin" },
 ];
 
 export default function Home() {
@@ -112,6 +119,31 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {LIBRARY.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group bg-[#1e1e2e] border border-[#313244] rounded-xl p-4 hover:border-[#89b4fa]/60 transition-all"
+            >
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <span className="text-lg">{item.icon}</span>
+                <span className="text-[13px] font-semibold text-[#cdd6f4] group-hover:text-[#89b4fa] transition-colors">
+                  {item.label}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#585b70] leading-relaxed">{item.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Publish */}
+      <section className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#585b70]">Publish</span>
+          <div className="flex-1 h-px bg-[#313244]" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {PUBLISH.map((item) => (
             <Link
               key={item.href}
               href={item.href}
