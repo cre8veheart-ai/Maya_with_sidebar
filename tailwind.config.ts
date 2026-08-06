@@ -21,9 +21,12 @@ const config: Config = {
           text: "#e2e8f0",
         },
       },
+<<<<<<< HEAD
       transitionProperty: {
         width: "width",
       },
+=======
+>>>>>>> origin/copilot/audit-maya-repo-readiness
     },
   },
   plugins: [],

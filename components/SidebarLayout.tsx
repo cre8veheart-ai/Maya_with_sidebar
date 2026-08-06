@@ -11,6 +11,7 @@ export default function SidebarLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+<<<<<<< HEAD
   return (
     <>
       <Sidebar
@@ -21,6 +22,14 @@ export default function SidebarLayout({
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen((o) => !o)}
       >
+=======
+  const toggle = () => setSidebarOpen((prev) => !prev);
+
+  return (
+    <>
+      <Sidebar isOpen={sidebarOpen} onToggle={toggle} />
+      <MainContent isOpen={sidebarOpen} onToggle={toggle}>
+>>>>>>> origin/copilot/audit-maya-repo-readiness
         {children}
       </MainContent>
     </>
