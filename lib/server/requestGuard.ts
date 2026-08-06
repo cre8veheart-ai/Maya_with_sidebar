@@ -28,7 +28,6 @@ function getStore(): Map<string, RateLimitState> {
 }
 
 function pruneExpired(store: Map<string, RateLimitState>, now: number) {
-  if (store.size < 5000) return;
   store.forEach((value, key) => {
     if (value.resetAt <= now) {
       store.delete(key);

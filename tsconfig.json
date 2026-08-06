@@ -12,7 +12,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-<<<<<<< HEAD
     "plugins": [
       {
         "name": "next"
@@ -21,10 +20,6 @@
     "paths": {
       "@/*": ["./*"]
     }
-=======
-    "plugins": [{ "name": "next" }],
-    "paths": { "@/*": ["./*"] }
->>>>>>> origin/copilot/audit-maya-repo-readiness
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

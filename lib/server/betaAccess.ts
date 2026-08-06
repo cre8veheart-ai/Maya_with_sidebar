@@ -9,12 +9,7 @@ const COOKIE_NAME = "maya_beta_access";
 const MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
 function getSigningSecret(): string | null {
-  return (
-    process.env.BETA_GATE_SECRET ??
-    process.env.OPENAI_API_KEY ??
-    process.env.BETA_INVITE_CODES ??
-    null
-  );
+  return process.env.BETA_GATE_SECRET ?? process.env.NEXTAUTH_SECRET ?? null;
 }
 
 function sign(value: string, secret: string): string {
@@ -63,7 +58,7 @@ export function isValidBetaAccessToken(token: string | undefined): boolean {
     const payload = JSON.parse(
       Buffer.from(encoded, "base64url").toString("utf8")
     ) as AccessPayload;
-    if (!payload || typeof payload.exp !== "number") return false;
+    if (!payload || typeof payload.code !== "string" || typeof payload.exp !== "number") return false;
     return payload.exp > Date.now();
   } catch {
     return false;

@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         name: getBetaAccessCookieName(),
         value: token,
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
         maxAge: getBetaAccessCookieMaxAge(),

@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@vercel/kv": "^3.0.0",
     "next": "14.2.5",
     "openai": "^6.48.0",
@@ -19,22 +18,13 @@
   "engines": {
     "node": ">=18.17.0"
   },
-=======
-    "next": "14.2.5",
-    "react": "^18",
-    "react-dom": "^18"
-  },
->>>>>>> origin/copilot/audit-maya-repo-readiness
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",
-<<<<<<< HEAD
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.5",
-=======
->>>>>>> origin/copilot/audit-maya-repo-readiness
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "typescript": "^5"
