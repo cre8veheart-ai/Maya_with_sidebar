@@ -4,7 +4,7 @@ import { LocalStorageAdapter } from "@/lib/storage/localStorageAdapter";
 const adapter = new LocalStorageAdapter();
 
 export function generateSessionId(): string {
-  return `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `sess_${crypto.randomUUID()}`;
 }
 
 export function deriveTitle(messages: MayaMessage[]): string {
