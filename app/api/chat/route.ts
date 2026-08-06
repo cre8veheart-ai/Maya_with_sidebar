@@ -73,8 +73,8 @@ function parseProfile(raw: unknown): ExecProfile | null {
 export async function POST(req: NextRequest) {
   if (!process.env.OPENAI_API_KEY) {
     return new Response(
-      JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify({ error: "Maya is not available right now. Please try again later." }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
     );
   }
 
