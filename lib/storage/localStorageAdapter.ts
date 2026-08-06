@@ -1,6 +1,6 @@
 import type { IVaultStorage } from "./IVaultStorage";
 import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens, ClientRecord } from "@/lib/maya/types";
+import type { RoleLens, ClientRecord, ChatSession } from "@/lib/maya/types";
 
 const KEYS = {
   status: "maya_beta_status",
@@ -8,6 +8,7 @@ const KEYS = {
   survey: "maya_beta_last_survey",
   lens: (role: string) => `maya_lens_${role}`,
   clients: "maya_clients",
+  sessions: "maya_sessions",
 };
 
 export class LocalStorageAdapter implements IVaultStorage {
@@ -78,5 +79,32 @@ export class LocalStorageAdapter implements IVaultStorage {
 
   async clearAllClients(): Promise<void> {
     localStorage.removeItem(KEYS.clients);
+  }
+
+  // ── Chat Sessions ────────────────────────────────────────────────────────
+  async getSessions(): Promise<ChatSession[]> {
+    try {
+      const raw = localStorage.getItem(KEYS.sessions);
+      const all: ChatSession[] = raw ? (JSON.parse(raw) as ChatSession[]) : [];
+      return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    } catch { return []; }
+  }
+
+  async getSession(id: string): Promise<ChatSession | null> {
+    const sessions = await this.getSessions();
+    return sessions.find((s) => s.id === id) ?? null;
+  }
+
+  async saveSession(session: ChatSession): Promise<void> {
+    const sessions = await this.getSessions();
+    const idx = sessions.findIndex((s) => s.id === session.id);
+    if (idx >= 0) sessions[idx] = session;
+    else sessions.unshift(session);
+    localStorage.setItem(KEYS.sessions, JSON.stringify(sessions));
+  }
+
+  async deleteSession(id: string): Promise<void> {
+    const sessions = await this.getSessions();
+    localStorage.setItem(KEYS.sessions, JSON.stringify(sessions.filter((s) => s.id !== id)));
   }
 }

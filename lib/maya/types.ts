@@ -15,6 +15,17 @@ export interface MayaMessage {
   content: string;
 }
 
+// ── Chat Sessions ─────────────────────────────────────────────────────────────
+
+export interface ChatSession {
+  id: string;
+  role: ExecRole;
+  title: string;       // auto-generated from first user message
+  messages: MayaMessage[];
+  createdAt: string;   // ISO
+  updatedAt: string;   // ISO
+}
+
 // ── Client Vault ─────────────────────────────────────────────────────────────
 
 export type ClientStatus = "active" | "prospect" | "on-hold" | "closed";

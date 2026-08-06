@@ -2,7 +2,7 @@
 // Identity is a UUID stored in a secure cookie, assigned on beta approval.
 import type { IVaultStorage } from "./IVaultStorage";
 import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens, ClientRecord } from "@/lib/maya/types";
+import type { RoleLens, ClientRecord, ChatSession } from "@/lib/maya/types";
 
 async function api<T>(path: string, body?: unknown, method?: string): Promise<T | null> {
   try {
@@ -79,4 +79,10 @@ export class CloudStorageAdapter implements IVaultStorage {
   async clearAllClients(): Promise<void> {
     await api<null>("/api/clients/clear", undefined, "DELETE");
   }
+
+  // ── Chat Sessions — stored locally for beta; cloud sync is a future phase ──
+  async getSessions(): Promise<ChatSession[]> { return []; }
+  async getSession(_id: string): Promise<ChatSession | null> { return null; }
+  async saveSession(_session: ChatSession): Promise<void> {}
+  async deleteSession(_id: string): Promise<void> {}
 }

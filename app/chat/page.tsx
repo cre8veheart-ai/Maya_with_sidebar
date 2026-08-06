@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect, FormEvent } from "react";
-import type { ExecRole, MayaMessage, RoleLens } from "@/lib/maya/types";
+import { useState, useRef, useEffect, FormEvent, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import type { ExecRole, MayaMessage, RoleLens, ChatSession } from "@/lib/maya/types";
 import { loadLens } from "@/lib/maya/lensStorage";
+import {
+  generateSessionId,
+  deriveTitle,
+  loadLastSessionForRole,
+  loadSession,
+  persistSession,
+} from "@/lib/maya/sessionStorage";
 
 const ROLES: { value: ExecRole; label: string }[] = [
   { value: "ceo", label: "CEO" },
@@ -15,22 +23,72 @@ const ROLES: { value: ExecRole; label: string }[] = [
   { value: "cd", label: "CD" },
 ];
 
-export default function ChatPage() {
+function ChatInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [role, setRole] = useState<ExecRole>("ceo");
   const [lens, setLens] = useState<RoleLens>({ role: "ceo", overrides: [] });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
+  const [sessionId, setSessionId] = useState<string>(() => generateSessionId());
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // On mount: resume a specific session from URL param, or load last session for default role
   useEffect(() => {
-    setLens(loadLens(role));
-    setMessages([]);
-  }, [role]);
+    const resumeId = searchParams.get("session");
+    if (resumeId) {
+      loadSession(resumeId).then((session) => {
+        if (session) {
+          setRole(session.role);
+          setLens(loadLens(session.role));
+          setMessages(session.messages);
+          setSessionId(session.id);
+        }
+        router.replace("/chat", { scroll: false });
+      });
+    } else {
+      loadLastSessionForRole("ceo").then((session) => {
+        if (session) {
+          setMessages(session.messages);
+          setSessionId(session.id);
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleRoleChange = (newRole: ExecRole) => {
+    setRole(newRole);
+    setLens(loadLens(newRole));
+    loadLastSessionForRole(newRole).then((session) => {
+      if (session) {
+        setMessages(session.messages);
+        setSessionId(session.id);
+      } else {
+        setMessages([]);
+        setSessionId(generateSessionId());
+      }
+    });
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  async function save(msgs: MayaMessage[], sid: string, r: ExecRole) {
+    if (msgs.length === 0) return;
+    const session: ChatSession = {
+      id: sid,
+      role: r,
+      title: deriveTitle(msgs),
+      messages: msgs,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    await persistSession(session);
+  }
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
@@ -63,6 +121,9 @@ export default function ChatPage() {
         full += decoder.decode(value, { stream: true });
         setMessages([...thread, { role: "assistant", content: full }]);
       }
+
+      const finalThread = [...thread, { role: "assistant" as const, content: full }];
+      await save(finalThread, sessionId, role);
     } catch {
       setMessages([
         ...thread,
@@ -88,7 +149,7 @@ export default function ChatPage() {
           {ROLES.map((r) => (
             <button
               key={r.value}
-              onClick={() => setRole(r.value)}
+              onClick={() => handleRoleChange(r.value)}
               className={`px-3 py-1 rounded-md text-[12px] font-semibold tracking-wide transition-colors ${
                 role === r.value
                   ? "bg-[#89b4fa] text-[#1e1e2e]"
@@ -175,5 +236,13 @@ export default function ChatPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={null}>
+      <ChatInner />
+    </Suspense>
   );
 }

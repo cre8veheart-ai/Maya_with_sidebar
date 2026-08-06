@@ -1,5 +1,5 @@
 import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens, ClientRecord } from "@/lib/maya/types";
+import type { RoleLens, ClientRecord, ChatSession } from "@/lib/maya/types";
 
 export interface IVaultStorage {
   getProfile(): Promise<BetaProfile | null>;
@@ -17,4 +17,10 @@ export interface IVaultStorage {
   saveClient(client: ClientRecord): Promise<void>;
   deleteClient(id: string): Promise<void>;
   clearAllClients(): Promise<void>;
+
+  // ── Chat Sessions ─────────────────────────────────────────────────────────
+  getSessions(): Promise<ChatSession[]>;
+  getSession(id: string): Promise<ChatSession | null>;
+  saveSession(session: ChatSession): Promise<void>;
+  deleteSession(id: string): Promise<void>;
 }
