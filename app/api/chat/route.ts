@@ -38,10 +38,6 @@ function parseLens(raw: unknown): RoleLens {
     throw new Error("Invalid role");
   }
 
-  function parseWorkspace(raw: unknown): ChatWorkspace {
-    return raw === "community" ? "community" : "exec";
-  }
-
   const safeOverrides = Array.isArray(overrides)
     ? overrides
         .filter(
@@ -60,6 +56,10 @@ function parseLens(raw: unknown): RoleLens {
     : [];
 
   return { role: role as ExecRole, overrides: safeOverrides };
+}
+
+function parseWorkspace(raw: unknown): ChatWorkspace {
+  return raw === "community" ? "community" : "exec";
 }
 
 function parseMessages(raw: unknown): MayaMessage[] {
