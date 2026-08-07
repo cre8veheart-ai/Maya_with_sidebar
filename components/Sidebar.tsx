@@ -15,7 +15,7 @@ const navGroups: NavGroup[] = [
     icon: "✦",
     items: [
       { label: "Home", href: "/", icon: "🏠" },
-      { label: "Chat", href: "/chat", icon: "💬" },
+      { label: "Community", href: "/community", icon: "💬" },
       { label: "Tasks", href: "/tasks", icon: "📋" },
       { label: "Search", href: "/search", icon: "🔍" },
     ],

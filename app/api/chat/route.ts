@@ -1,5 +1,10 @@
 import { NextRequest } from "next/server";
 import {
+  buildCommunityContextMessage,
+  buildCommunitySystemPrompt,
+  type CommunityAssistantContext,
+} from "@/lib/maya/communityPrompt";
+import {
   buildExecContextMessage,
   buildExecSystemPrompt,
   type ExecProfile,
@@ -11,6 +16,8 @@ import type {
   MayaMessage,
   MayaProvider,
 } from "@/lib/maya/types";
+
+type ChatWorkspace = "exec" | "community";
 
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
@@ -29,6 +36,10 @@ function parseLens(raw: unknown): RoleLens {
 
   if (typeof role !== "string" || !VALID_ROLES.has(role as ExecRole)) {
     throw new Error("Invalid role");
+  }
+
+  function parseWorkspace(raw: unknown): ChatWorkspace {
+    return raw === "community" ? "community" : "exec";
   }
 
   const safeOverrides = Array.isArray(overrides)
@@ -101,22 +112,39 @@ function parseLudicrousMode(raw: unknown): boolean {
   return raw === true;
 }
 
+function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
+  if (!raw || typeof raw !== "object") return null;
+  const context = raw as Record<string, unknown>;
+  return {
+    selectedTopic: sanitizeText(context.selectedTopic, 120),
+    activeFilter: sanitizeText(context.activeFilter, 50),
+    summary: sanitizeText(context.summary, 2000),
+  };
+}
+
 export async function POST(req: NextRequest) {
+  let workspace: ChatWorkspace;
   let lens: RoleLens;
   let messages: MayaMessage[];
   let profile: ExecProfile | null;
   let provider: MayaProvider;
   let model: string;
   let ludicrousMode: boolean;
+  let communityContext: CommunityAssistantContext | null;
 
   try {
     const body = await req.json();
-    lens = parseLens(body.lens);
+    workspace = parseWorkspace(body.workspace);
+    lens =
+      workspace === "community"
+        ? { role: "cmo", overrides: [] }
+        : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
     provider = parseProvider(body.provider);
     model = parseModel(body.model);
     ludicrousMode = parseLudicrousMode(body.ludicrousMode);
+    communityContext = parseCommunityContext(body.communityContext);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
@@ -124,8 +152,14 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const systemPrompt = buildExecSystemPrompt(lens.role);
-  const execContextMessage = buildExecContextMessage(lens, profile);
+  const systemPrompt =
+    workspace === "community"
+      ? buildCommunitySystemPrompt()
+      : buildExecSystemPrompt(lens.role);
+  const execContextMessage =
+    workspace === "community"
+      ? buildCommunityContextMessage(communityContext)
+      : buildExecContextMessage(lens, profile);
   let stream: AsyncGenerator<string>;
 
   try {
