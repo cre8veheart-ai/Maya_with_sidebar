@@ -18,6 +18,7 @@ const OPERATIONS = [
   { label: "Strategy Room", href: "/strategy-room", icon: "🧩", desc: "Multi-lens synthesis — assemble the room, run the decision" },
   { label: "Decisions", href: "/decisions", icon: "⚖️", desc: "The decision layer — every call logged, attributed, queryable" },
   { label: "Campaigns", href: "/campaigns", icon: "🚀", desc: "Cross-functional execution — each role contributes their piece" },
+  { label: "Tool Sandbox", href: "/tool-sandbox", icon: "🧪", desc: "Prototype tools in a contained workspace before they touch the rest of MAYA" },
 ];
 
 const LIBRARY = [

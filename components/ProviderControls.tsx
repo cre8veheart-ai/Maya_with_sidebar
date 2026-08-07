@@ -85,13 +85,13 @@ export default function ProviderControls({
           }`}
         >
           <span className="block text-[11px] font-semibold uppercase tracking-[0.07em]">
-            Ludicrous Mode
+            Oracle Mode
           </span>
           <span className="block mt-1 text-[12px] leading-relaxed">
             {settings.provider !== "openclaw"
-              ? "Switch to OpenClaw to enable Maya’s power mode."
+              ? "Switch to OpenClaw to enable Maya’s deep mode."
               : settings.ludicrousMode
-                ? "On — pushes a more aggressive, high-output OpenClaw response profile."
+                ? "On — Maya runs in deep mode with a higher-output OpenClaw response profile."
                 : "Off — keep OpenClaw in its standard executive mode."}
           </span>
         </button>

@@ -183,7 +183,7 @@ export default function RoleChat({ role }: RoleChatProps) {
           {providerSettings.provider === "openclaw" &&
             providerSettings.ludicrousMode && (
               <span className="text-[11px] text-[#f9e2af] uppercase tracking-[0.07em]">
-                Ludicrous
+                Oracle
               </span>
             )}
         </div>

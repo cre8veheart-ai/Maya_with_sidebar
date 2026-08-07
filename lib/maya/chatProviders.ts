@@ -84,7 +84,8 @@ async function openClawTextResponse({
     ? [
         systemPrompt,
         "",
-        "LUDICROUS MODE:",
+        "ORACLE MODE:",
+        "- Enter deep mode",
         "- Operate with maximum executive intensity and urgency",
         "- Synthesize quickly, make strong recommendations, and surface leverage",
         "- Prefer decisive action plans, compressed timelines, and bold but practical options",

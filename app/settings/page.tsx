@@ -45,7 +45,7 @@ export default function SettingsPage() {
           custom routes, tools, memory, or a self-hosted operator layer.
         </p>
         <p className="mt-3">
-          Ludicrous Mode is Maya&apos;s power setting for OpenClaw: higher-output,
+          Oracle Mode is Maya&apos;s deep mode for OpenClaw: higher-output,
           more aggressive executive synthesis when you want maximum leverage.
         </p>
       </div>
