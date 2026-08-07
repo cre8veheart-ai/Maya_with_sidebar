@@ -80,7 +80,7 @@ export default function RoleChat({ role }: RoleChatProps) {
         {
           role: "assistant",
           content:
-            "Connection error. Ensure OPENAI_API_KEY is set in your environment.",
+            "Connection error. Ensure ANTHROPIC_API_KEY is set in your environment.",
         },
       ]);
     } finally {

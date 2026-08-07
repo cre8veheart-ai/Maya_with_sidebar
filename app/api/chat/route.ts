@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { buildExecSystemPrompt, type ExecProfile } from "@/lib/maya/execLens";
 import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
 
@@ -71,9 +71,9 @@ function parseProfile(raw: unknown): ExecProfile | null {
 }
 
 export async function POST(req: NextRequest) {
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY) {
     return new Response(
-      JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
+      JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -94,26 +94,33 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const systemPrompt = buildExecSystemPrompt(lens, profile);
 
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
+  const stream = await anthropic.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 1024,
     stream: true,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
-    ],
+    system: systemPrompt,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
   });
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
-      for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content ?? "";
-        if (text) controller.enqueue(encoder.encode(text));
+      try {
+        for await (const chunk of stream) {
+          if (
+            chunk.type === "content_block_delta" &&
+            chunk.delta.type === "text_delta"
+          ) {
+            controller.enqueue(encoder.encode(chunk.delta.text));
+          }
+        }
+        controller.close();
+      } catch (error) {
+        controller.error(error);
       }
-      controller.close();
     },
   });
 
