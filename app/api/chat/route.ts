@@ -97,12 +97,17 @@ function parseModel(raw: unknown): string {
   return sanitizeText(raw, 100);
 }
 
+function parseLudicrousMode(raw: unknown): boolean {
+  return raw === true;
+}
+
 export async function POST(req: NextRequest) {
   let lens: RoleLens;
   let messages: MayaMessage[];
   let profile: ExecProfile | null;
   let provider: MayaProvider;
   let model: string;
+  let ludicrousMode: boolean;
 
   try {
     const body = await req.json();
@@ -111,6 +116,7 @@ export async function POST(req: NextRequest) {
     profile = parseProfile(body.profile);
     provider = parseProvider(body.provider);
     model = parseModel(body.model);
+    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
@@ -129,6 +135,7 @@ export async function POST(req: NextRequest) {
       systemPrompt,
       execContextMessage,
       model,
+      ludicrousMode,
     });
   } catch (error) {
     const message =
@@ -144,12 +151,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       try {
         for await (const chunk of stream) {
-          if (
-            chunk.type === "content_block_delta" &&
-            chunk.delta.type === "text_delta"
-          ) {
-            controller.enqueue(encoder.encode(chunk.delta.text));
-          }
+          controller.enqueue(encoder.encode(chunk));
         }
         controller.close();
       } catch (error) {

@@ -20,4 +20,5 @@ export interface ProviderSettings {
   provider: MayaProvider;
   anthropicModel: string;
   openClawModel: string;
+  ludicrousMode: boolean;
 }

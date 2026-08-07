@@ -6,6 +6,7 @@ const DEFAULT_SETTINGS: ProviderSettings = {
   provider: "anthropic",
   anthropicModel: "",
   openClawModel: "",
+  ludicrousMode: false,
 };
 
 function isProvider(value: unknown): value is MayaProvider {
@@ -28,6 +29,7 @@ export function loadProviderSettings(): ProviderSettings {
         typeof parsed.anthropicModel === "string" ? parsed.anthropicModel : "",
       openClawModel:
         typeof parsed.openClawModel === "string" ? parsed.openClawModel : "",
+      ludicrousMode: parsed.ludicrousMode === true,
     };
   } catch {
     return DEFAULT_SETTINGS;

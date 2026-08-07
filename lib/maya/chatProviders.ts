@@ -10,6 +10,7 @@ interface ProviderRequest {
   systemPrompt: string;
   execContextMessage: string | null;
   model?: string;
+  ludicrousMode?: boolean;
 }
 
 function buildMessageThread(
@@ -63,6 +64,7 @@ async function openClawTextResponse({
   systemPrompt,
   execContextMessage,
   model,
+  ludicrousMode,
 }: ProviderRequest): Promise<string> {
   const baseUrl = process.env.OPENCLAW_BASE_URL;
   if (!baseUrl) {
@@ -71,19 +73,35 @@ async function openClawTextResponse({
 
   const endpoint = new URL("/v1/chat/completions", baseUrl);
   const apiKey = process.env.OPENCLAW_API_KEY?.trim();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (apiKey) {
+    headers.Authorization = ["Bearer", apiKey].join(" ");
+  }
+
+  const openClawSystemPrompt = ludicrousMode
+    ? [
+        systemPrompt,
+        "",
+        "LUDICROUS MODE:",
+        "- Operate with maximum executive intensity and urgency",
+        "- Synthesize quickly, make strong recommendations, and surface leverage",
+        "- Prefer decisive action plans, compressed timelines, and bold but practical options",
+        "- Keep the answer polished and executive-safe, not reckless",
+      ].join("\n")
+    : systemPrompt;
+
   const response = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(apiKey ? { Authorization: `****** } : {}),
-    },
+    headers,
     body: JSON.stringify({
       model: model || process.env.OPENCLAW_MODEL || DEFAULT_OPENCLAW_MODEL,
       stream: false,
-      temperature: 0.5,
-      max_tokens: 1400,
+      temperature: ludicrousMode ? 0.7 : 0.5,
+      max_tokens: ludicrousMode ? 2200 : 1400,
       messages: [
-        { role: "system", content: systemPrompt },
+        { role: "system", content: openClawSystemPrompt },
         ...buildMessageThread(messages, execContextMessage),
       ],
     }),

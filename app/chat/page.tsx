@@ -1,8 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import type { ExecRole, MayaMessage, RoleLens } from "@/lib/maya/types";
+import ProviderControls from "@/components/ProviderControls";
 import { loadLens } from "@/lib/maya/lensStorage";
+import {
+  getProviderModel,
+  loadProviderSettings,
+  saveProviderSettings,
+} from "@/lib/maya/providerStorage";
+import type {
+  ExecRole,
+  MayaMessage,
+  ProviderSettings,
+  RoleLens,
+} from "@/lib/maya/types";
 
 const ROLES: { value: ExecRole; label: string }[] = [
   { value: "ceo", label: "CEO" },
@@ -18,6 +29,12 @@ const ROLES: { value: ExecRole; label: string }[] = [
 export default function ChatPage() {
   const [role, setRole] = useState<ExecRole>("ceo");
   const [lens, setLens] = useState<RoleLens>({ role: "ceo", overrides: [] });
+  const [providerSettings, setProviderSettings] = useState<ProviderSettings>({
+    provider: "anthropic",
+    anthropicModel: "",
+    openClawModel: "",
+    ludicrousMode: false,
+  });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -29,8 +46,17 @@ export default function ChatPage() {
   }, [role]);
 
   useEffect(() => {
+    setProviderSettings(loadProviderSettings());
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  function updateProviderSettings(next: ProviderSettings) {
+    setProviderSettings(next);
+    saveProviderSettings(next);
+  }
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
@@ -48,8 +74,23 @@ export default function ChatPage() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: thread, lens }),
+        body: JSON.stringify({
+          messages: thread,
+          lens,
+          provider: providerSettings.provider,
+          model: getProviderModel(providerSettings),
+          ludicrousMode: providerSettings.ludicrousMode,
+        }),
       });
+
+      if (!res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const payload = (await res.json()) as { error?: string };
+          throw new Error(payload.error || "Provider request failed");
+        }
+        throw new Error((await res.text()) || "Provider request failed");
+      }
 
       if (!res.body) throw new Error("No response stream");
 
@@ -63,13 +104,16 @@ export default function ChatPage() {
         full += decoder.decode(value, { stream: true });
         setMessages([...thread, { role: "assistant", content: full }]);
       }
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Connection error. Check your provider configuration.";
       setMessages([
         ...thread,
         {
           role: "assistant",
-          content:
-            "Connection error. Ensure ANTHROPIC_API_KEY is set in your environment.",
+          content: message,
         },
       ]);
     } finally {
@@ -105,6 +149,13 @@ export default function ChatPage() {
             {lens.overrides.length !== 1 ? "s" : ""} loaded
           </span>
         )}
+      </div>
+      <div className="px-6 py-3 border-b border-[#313244] bg-[#181825] shrink-0">
+        <ProviderControls
+          settings={providerSettings}
+          onChange={updateProviderSettings}
+          compact
+        />
       </div>
 
       {/* Message thread */}
