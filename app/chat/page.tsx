@@ -51,6 +51,11 @@ export default function ChatPage() {
         body: JSON.stringify({ messages: thread, lens }),
       });
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error ?? `Request failed (${res.status})`);
+      }
+
       if (!res.body) throw new Error("No response stream");
 
       const reader = res.body.getReader();
@@ -63,13 +68,12 @@ export default function ChatPage() {
         full += decoder.decode(value, { stream: true });
         setMessages([...thread, { role: "assistant", content: full }]);
       }
-    } catch {
+    } catch (err) {
       setMessages([
         ...thread,
         {
           role: "assistant",
-          content:
-            "Connection error. Ensure OPENAI_API_KEY is set in your environment.",
+          content: err instanceof Error ? err.message : "Connection error. Please try again.",
         },
       ]);
     } finally {
