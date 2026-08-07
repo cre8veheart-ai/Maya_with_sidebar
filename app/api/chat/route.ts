@@ -1,16 +1,21 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import {
   buildExecContextMessage,
   buildExecSystemPrompt,
   type ExecProfile,
 } from "@/lib/maya/execLens";
-import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
+import { createChatProviderStream } from "@/lib/maya/chatProviders";
+import type {
+  ExecRole,
+  RoleLens,
+  MayaMessage,
+  MayaProvider,
+} from "@/lib/maya/types";
 
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
-const DEFAULT_MODEL = "claude-sonnet-4-5";
+const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw"]);
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -75,23 +80,37 @@ function parseProfile(raw: unknown): ExecProfile | null {
   };
 }
 
-export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return new Response(
-      JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+function parseProvider(raw: unknown): MayaProvider {
+  if (typeof raw === "string" && VALID_PROVIDERS.has(raw as MayaProvider)) {
+    return raw as MayaProvider;
   }
 
+  const envProvider = sanitizeText(process.env.MAYA_PROVIDER, 20);
+  if (VALID_PROVIDERS.has(envProvider as MayaProvider)) {
+    return envProvider as MayaProvider;
+  }
+
+  return "anthropic";
+}
+
+function parseModel(raw: unknown): string {
+  return sanitizeText(raw, 100);
+}
+
+export async function POST(req: NextRequest) {
   let lens: RoleLens;
   let messages: MayaMessage[];
   let profile: ExecProfile | null;
+  let provider: MayaProvider;
+  let model: string;
 
   try {
     const body = await req.json();
     lens = parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
+    provider = parseProvider(body.provider);
+    model = parseModel(body.model);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
@@ -99,24 +118,26 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const systemPrompt = buildExecSystemPrompt(lens.role);
   const execContextMessage = buildExecContextMessage(lens, profile);
-  const model = sanitizeText(process.env.ANTHROPIC_MODEL, 100) || DEFAULT_MODEL;
+  let stream: AsyncGenerator<string>;
 
-  const stream = await anthropic.messages.create({
-    model,
-    max_tokens: 1400,
-    temperature: 0.5,
-    stream: true,
-    system: systemPrompt,
-    messages: [
-      ...(execContextMessage
-        ? [{ role: "user" as const, content: execContextMessage }]
-        : []),
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
-    ],
-  });
+  try {
+    stream = await createChatProviderStream({
+      provider,
+      messages,
+      systemPrompt,
+      execContextMessage,
+      model,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Provider configuration error";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
