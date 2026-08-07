@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildExecSystemPrompt, type ExecProfile } from "@/lib/maya/execLens";
+import {
+  buildExecContextMessage,
+  buildExecSystemPrompt,
+  type ExecProfile,
+} from "@/lib/maya/execLens";
 import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
 
 const VALID_ROLES = new Set<ExecRole>([
@@ -95,14 +99,20 @@ export async function POST(req: NextRequest) {
   }
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const systemPrompt = buildExecSystemPrompt(lens, profile);
+  const systemPrompt = buildExecSystemPrompt(lens.role);
+  const execContextMessage = buildExecContextMessage(lens, profile);
 
   const stream = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 1024,
     stream: true,
     system: systemPrompt,
-    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    messages: [
+      ...(execContextMessage
+        ? [{ role: "user" as const, content: execContextMessage }]
+        : []),
+      ...messages.map((m) => ({ role: m.role, content: m.content })),
+    ],
   });
 
   const encoder = new TextEncoder();
