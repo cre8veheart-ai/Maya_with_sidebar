@@ -10,6 +10,7 @@ import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
+const DEFAULT_MODEL = "claude-sonnet-4-5";
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -101,10 +102,12 @@ export async function POST(req: NextRequest) {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const systemPrompt = buildExecSystemPrompt(lens.role);
   const execContextMessage = buildExecContextMessage(lens, profile);
+  const model = sanitizeText(process.env.ANTHROPIC_MODEL, 100) || DEFAULT_MODEL;
 
   const stream = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 1024,
+    model,
+    max_tokens: 1400,
+    temperature: 0.5,
     stream: true,
     system: systemPrompt,
     messages: [
