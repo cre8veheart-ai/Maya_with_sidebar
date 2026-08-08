@@ -1,11 +1,28 @@
 import { NextRequest } from "next/server";
-import OpenAI from "openai";
-import { buildExecSystemPrompt, type ExecProfile } from "@/lib/maya/execLens";
-import type { ExecRole, RoleLens, MayaMessage } from "@/lib/maya/types";
+import {
+  buildCommunityContextMessage,
+  buildCommunitySystemPrompt,
+  type CommunityAssistantContext,
+} from "@/lib/maya/communityPrompt";
+import {
+  buildExecContextMessage,
+  buildExecSystemPrompt,
+  type ExecProfile,
+} from "@/lib/maya/execLens";
+import { createChatProviderStream } from "@/lib/maya/chatProviders";
+import type {
+  ExecRole,
+  RoleLens,
+  MayaMessage,
+  MayaProvider,
+} from "@/lib/maya/types";
+
+type ChatWorkspace = "exec" | "community";
 
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
+const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw"]);
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -41,6 +58,10 @@ function parseLens(raw: unknown): RoleLens {
   return { role: role as ExecRole, overrides: safeOverrides };
 }
 
+function parseWorkspace(raw: unknown): ChatWorkspace {
+  return raw === "community" ? "community" : "exec";
+}
+
 function parseMessages(raw: unknown): MayaMessage[] {
   if (!Array.isArray(raw)) return [];
   return raw
@@ -70,23 +91,60 @@ function parseProfile(raw: unknown): ExecProfile | null {
   };
 }
 
-export async function POST(req: NextRequest) {
-  if (!process.env.OPENAI_API_KEY) {
-    return new Response(
-      JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+function parseProvider(raw: unknown): MayaProvider {
+  if (typeof raw === "string" && VALID_PROVIDERS.has(raw as MayaProvider)) {
+    return raw as MayaProvider;
   }
 
+  const envProvider = sanitizeText(process.env.MAYA_PROVIDER, 20);
+  if (VALID_PROVIDERS.has(envProvider as MayaProvider)) {
+    return envProvider as MayaProvider;
+  }
+
+  return "anthropic";
+}
+
+function parseModel(raw: unknown): string {
+  return sanitizeText(raw, 100);
+}
+
+function parseLudicrousMode(raw: unknown): boolean {
+  return raw === true;
+}
+
+function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
+  if (!raw || typeof raw !== "object") return null;
+  const context = raw as Record<string, unknown>;
+  return {
+    selectedTopic: sanitizeText(context.selectedTopic, 120),
+    activeFilter: sanitizeText(context.activeFilter, 50),
+    summary: sanitizeText(context.summary, 2000),
+  };
+}
+
+export async function POST(req: NextRequest) {
+  let workspace: ChatWorkspace;
   let lens: RoleLens;
   let messages: MayaMessage[];
   let profile: ExecProfile | null;
+  let provider: MayaProvider;
+  let model: string;
+  let ludicrousMode: boolean;
+  let communityContext: CommunityAssistantContext | null;
 
   try {
     const body = await req.json();
-    lens = parseLens(body.lens);
+    workspace = parseWorkspace(body.workspace);
+    lens =
+      workspace === "community"
+        ? { role: "cmo", overrides: [] }
+        : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
+    provider = parseProvider(body.provider);
+    model = parseModel(body.model);
+    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
+    communityContext = parseCommunityContext(body.communityContext);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
@@ -94,26 +152,45 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const systemPrompt = buildExecSystemPrompt(lens, profile);
+  const systemPrompt =
+    workspace === "community"
+      ? buildCommunitySystemPrompt()
+      : buildExecSystemPrompt(lens.role);
+  const execContextMessage =
+    workspace === "community"
+      ? buildCommunityContextMessage(communityContext)
+      : buildExecContextMessage(lens, profile);
+  let stream: AsyncGenerator<string>;
 
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    stream: true,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
-    ],
-  });
+  try {
+    stream = await createChatProviderStream({
+      provider,
+      messages,
+      systemPrompt,
+      execContextMessage,
+      model,
+      ludicrousMode,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Provider configuration error";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
-      for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content ?? "";
-        if (text) controller.enqueue(encoder.encode(text));
+      try {
+        for await (const chunk of stream) {
+          controller.enqueue(encoder.encode(chunk));
+        }
+        controller.close();
+      } catch (error) {
+        controller.error(error);
       }
-      controller.close();
     },
   });
 

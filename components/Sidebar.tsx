@@ -15,7 +15,7 @@ const navGroups: NavGroup[] = [
     icon: "✦",
     items: [
       { label: "Home", href: "/", icon: "🏠" },
-      { label: "Chat", href: "/chat", icon: "💬" },
+      { label: "Community", href: "/community", icon: "💬" },
       { label: "Tasks", href: "/tasks", icon: "📋" },
       { label: "Search", href: "/search", icon: "🔍" },
     ],
@@ -58,6 +58,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Decisions", href: "/decisions", icon: "⚖️" },
       { label: "Campaigns", href: "/campaigns", icon: "🚀" },
+      { label: "Tool Sandbox", href: "/tool-sandbox", icon: "🧪" },
     ],
   },
 ];

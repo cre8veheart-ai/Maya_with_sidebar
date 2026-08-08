@@ -18,6 +18,7 @@ const OPERATIONS = [
   { label: "Strategy Room", href: "/strategy-room", icon: "🧩", desc: "Multi-lens synthesis — assemble the room, run the decision" },
   { label: "Decisions", href: "/decisions", icon: "⚖️", desc: "The decision layer — every call logged, attributed, queryable" },
   { label: "Campaigns", href: "/campaigns", icon: "🚀", desc: "Cross-functional execution — each role contributes their piece" },
+  { label: "Tool Sandbox", href: "/tool-sandbox", icon: "🧪", desc: "Prototype tools in a contained workspace before they touch the rest of MAYA" },
 ];
 
 const LIBRARY = [
@@ -36,11 +37,17 @@ export default function Home() {
           Your executive workspace.
         </h1>
         <p className="mt-2 text-[15px] text-[#a6adc8] max-w-xl">
-          A thought partner with no agenda. You build the operating conditions — MAYA surfaces what matters and waits for your call.
+          Maya now pairs executive support with a community suggestion space where users can share blog ideas, report issues, celebrate wins, and help each other.
         </p>
         <p className="mt-3 text-[12px] text-[#585b70] font-medium tracking-wide uppercase">
           Doesn&apos;t act without you.
         </p>
+        <Link
+          href="/community"
+          className="mt-5 inline-flex items-center rounded-xl bg-[#89b4fa] px-4 py-2 text-[13px] font-semibold text-[#1e1e2e] hover:bg-[#b4d0fb]"
+        >
+          Open Community Space
+        </Link>
       </div>
 
       {/* Executive Suite */}
@@ -132,13 +139,13 @@ export default function Home() {
       {/* Footer */}
       <div className="border-t border-[#313244] pt-6 flex items-center justify-between">
         <p className="text-[12px] text-[#585b70]">
-          MAYA synthesizes across all your lenses — and waits for you to decide.
+          MAYA synthesizes across your lenses and your community signals.
         </p>
         <Link
-          href="/strategy-room"
+          href="/community"
           className="text-[12px] text-[#89b4fa] hover:underline"
         >
-          Open Strategy Room →
+          Open Community Space →
         </Link>
       </div>
     </div>
