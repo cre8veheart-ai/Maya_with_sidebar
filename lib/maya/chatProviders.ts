@@ -144,9 +144,24 @@ async function* streamOpenClawResponse(
   yield await openClawTextResponse(request);
 }
 
+/**
+ * Creates a streaming response for the given provider.
+ *
+ * Note: The two providers have asymmetric streaming behaviour:
+ * - `anthropic` uses a native token-by-token stream via the Anthropic SDK.
+ * - `openclaw` awaits a single full response and wraps it in an async generator
+ *   (i.e. one `yield` per call).
+ *
+ * Both branches satisfy the `AsyncGenerator<string>` return type.
+ */
 export async function createChatProviderStream(
   request: ProviderRequest
 ): Promise<AsyncGenerator<string>> {
+  const validProviders: MayaProvider[] = ["anthropic", "openclaw"];
+  if (!validProviders.includes(request.provider)) {
+    throw new Error(`Unsupported provider: "${request.provider}"`);
+  }
+
   if (request.provider === "openclaw") {
     return streamOpenClawResponse(request);
   }

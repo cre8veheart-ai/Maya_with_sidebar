@@ -222,10 +222,13 @@ export default function ChatPage() {
     filteredPosts.find((post) => post.id === selectedPostId) ?? filteredPosts[0] ?? null;
 
   useEffect(() => {
-    if (!selectedPost && filteredPosts[0]) {
+    if (
+      filteredPosts.length > 0 &&
+      !filteredPosts.some((p) => p.id === selectedPostId)
+    ) {
       setSelectedPostId(filteredPosts[0].id);
     }
-  }, [filteredPosts, selectedPost]);
+  }, [filteredPosts, selectedPostId]);
 
   function updateProviderSettings(next: ProviderSettings) {
     setProviderSettings(next);
