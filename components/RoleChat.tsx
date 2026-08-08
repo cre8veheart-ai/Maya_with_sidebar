@@ -47,6 +47,7 @@ export default function RoleChat({ role }: RoleChatProps) {
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [lastMsgIsError, setLastMsgIsError] = useState(false);
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +80,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     setMessages(thread);
     setInput("");
     setStreaming(true);
+    setLastMsgIsError(false);
     setMessages([...thread, { role: "assistant", content: "" }]);
 
     try {
@@ -120,6 +122,7 @@ export default function RoleChat({ role }: RoleChatProps) {
         error instanceof Error
           ? error.message
           : "Connection error. Check your provider configuration.";
+      setLastMsgIsError(true);
       setMessages([
         ...thread,
         {
@@ -208,30 +211,37 @@ export default function RoleChat({ role }: RoleChatProps) {
           </div>
         )}
 
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+        {messages.map((m, i) => {
+          const isLastMsg = i === messages.length - 1;
+          const isErrorMsg =
+            m.role === "assistant" && isLastMsg && lastMsgIsError;
+          return (
             <div
-              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap ${
-                m.role === "user"
-                  ? "bg-[#89b4fa] text-[#1e1e2e] font-medium"
-                  : "bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
-              }`}
+              key={i}
+              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {m.content || (
-                <span className="inline-block w-1.5 h-3.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
-              )}
-              {m.role === "assistant" &&
-                streaming &&
-                i === messages.length - 1 &&
-                m.content && (
-                  <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
+              <div
+                className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap ${
+                  m.role === "user"
+                    ? "bg-[#89b4fa] text-[#1e1e2e] font-medium"
+                    : isErrorMsg
+                      ? "bg-[#1e1e2e] border border-[#f38ba8] text-[#f38ba8]"
+                      : "bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
+                }`}
+              >
+                {m.content || (
+                  <span className="inline-block w-1.5 h-3.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
                 )}
+                {m.role === "assistant" &&
+                  streaming &&
+                  isLastMsg &&
+                  m.content && (
+                    <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
+                  )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Action proposal buttons — appear after last assistant message */}
         {lastIsAssistant && (
@@ -325,9 +335,10 @@ export default function RoleChat({ role }: RoleChatProps) {
           <button
             type="submit"
             disabled={!input.trim() || streaming}
+            aria-label={streaming ? "Sending message" : "Send message"}
             className="px-4 py-2.5 bg-[#89b4fa] text-[#1e1e2e] rounded-xl text-[12px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#b4d0fb] transition-colors shrink-0"
           >
-            Send
+            {streaming ? "Sending…" : "Send"}
           </button>
         </div>
         <p className="mt-1.5 text-[10px] text-[#585b70]">
