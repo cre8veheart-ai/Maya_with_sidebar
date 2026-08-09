@@ -1,4 +1,5 @@
 export type ExecRole = "ceo" | "coo" | "cmo" | "cfo" | "cto" | "cio" | "cro" | "cd" | "admin" | "hr" | "legal";
+export type MayaProvider = "anthropic" | "openclaw";
 
 export interface RoleOverride {
   key: string;
@@ -13,4 +14,11 @@ export interface RoleLens {
 export interface MayaMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+export interface ProviderSettings {
+  provider: MayaProvider;
+  anthropicModel: string;
+  openClawModel: string;
+  ludicrousMode: boolean;
 }
