@@ -42,6 +42,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     provider: "anthropic",
     anthropicModel: "",
     openClawModel: "",
+    openAiModel: "",
     ludicrousMode: false,
   });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
@@ -178,7 +179,11 @@ export default function RoleChat({ role }: RoleChatProps) {
             </span>
           )}
           <span className="text-[11px] text-[#89b4fa] uppercase tracking-[0.07em]">
-            {providerSettings.provider === "anthropic" ? "Claude" : "OpenClaw"}
+          {providerSettings.provider === "anthropic"
+            ? "Claude"
+            : providerSettings.provider === "openai"
+              ? "ChatGPT"
+              : "OpenClaw"}
           </span>
           {providerSettings.provider === "openclaw" &&
             providerSettings.ludicrousMode && (

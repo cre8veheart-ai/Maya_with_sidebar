@@ -1,5 +1,5 @@
 export type ExecRole = "ceo" | "coo" | "cmo" | "cfo" | "cto" | "cio" | "cro" | "cd" | "admin" | "hr" | "legal";
-export type MayaProvider = "anthropic" | "openclaw";
+export type MayaProvider = "anthropic" | "openclaw" | "openai";
 
 export interface RoleOverride {
   key: string;
@@ -20,5 +20,6 @@ export interface ProviderSettings {
   provider: MayaProvider;
   anthropicModel: string;
   openClawModel: string;
+  openAiModel: string;
   ludicrousMode: boolean;
 }

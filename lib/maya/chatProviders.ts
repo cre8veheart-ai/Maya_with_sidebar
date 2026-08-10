@@ -3,6 +3,7 @@ import type { MayaMessage, MayaProvider } from "./types";
 
 const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5";
 const DEFAULT_OPENCLAW_MODEL = "openclaw";
+const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
 
 interface ProviderRequest {
   provider: MayaProvider;
@@ -55,6 +56,94 @@ async function* streamAnthropicResponse({
       chunk.delta.type === "text_delta"
     ) {
       yield chunk.delta.text;
+    }
+  }
+}
+
+async function* streamOpenAIResponse({
+  messages,
+  systemPrompt,
+  execContextMessage,
+  model,
+}: ProviderRequest): AsyncGenerator<string> {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY not configured");
+  }
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: ["Bearer", apiKey].join(" "),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: model || process.env.OPENAI_MODEL || DEFAULT_OPENAI_MODEL,
+      stream: true,
+      temperature: 0.5,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...buildMessageThread(messages, execContextMessage),
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(
+      errorBody || `OpenAI request failed with status ${response.status}`
+    );
+  }
+
+  if (!response.body) {
+    throw new Error("OpenAI returned no response stream");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() ?? "";
+
+    for (const event of events) {
+      const lines = event
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith("data:"));
+
+      for (const line of lines) {
+        const payload = line.slice(5).trim();
+        if (!payload || payload === "[DONE]") {
+          continue;
+        }
+
+        const parsed = JSON.parse(payload) as {
+          choices?: Array<{
+            delta?: {
+              content?:
+                | string
+                | Array<{ type?: string; text?: string }>;
+            };
+          }>;
+        };
+
+        const content = parsed.choices?.[0]?.delta?.content;
+        if (typeof content === "string") {
+          yield content;
+        } else if (Array.isArray(content)) {
+          for (const part of content) {
+            if (part?.type === "text" && typeof part.text === "string") {
+              yield part.text;
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -147,6 +236,9 @@ async function* streamOpenClawResponse(
 export async function createChatProviderStream(
   request: ProviderRequest
 ): Promise<AsyncGenerator<string>> {
+  if (request.provider === "openai") {
+    return streamOpenAIResponse(request);
+  }
   if (request.provider === "openclaw") {
     return streamOpenClawResponse(request);
   }
