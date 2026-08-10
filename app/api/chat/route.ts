@@ -22,7 +22,7 @@ type ChatWorkspace = "exec" | "community";
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
-const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
+const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw"]);
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {

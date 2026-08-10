@@ -1,5 +1,5 @@
 export type ExecRole = "ceo" | "coo" | "cmo" | "cfo" | "cto" | "cio" | "cro" | "cd" | "admin" | "hr" | "legal";
-export type MayaProvider = "anthropic" | "openclaw" | "openai";
+export type MayaProvider = "anthropic" | "openclaw";
 
 export interface RoleOverride {
   key: string;
