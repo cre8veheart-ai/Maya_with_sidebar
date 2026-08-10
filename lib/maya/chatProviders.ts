@@ -1,8 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import type { MayaMessage, MayaProvider } from "./types";
 
 const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5";
 const DEFAULT_OPENCLAW_MODEL = "openclaw";
+const DEFAULT_OPENAI_MODEL = "gpt-4o";
 
 interface ProviderRequest {
   provider: MayaProvider;
@@ -138,6 +140,51 @@ async function openClawTextResponse({
   throw new Error("OpenClaw returned no assistant content");
 }
 
+async function* streamOpenAIResponse({
+  messages,
+  systemPrompt,
+  execContextMessage,
+  model,
+  ludicrousMode,
+}: ProviderRequest): AsyncGenerator<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY not configured");
+  }
+
+  const openai = new OpenAI({ apiKey });
+
+  const openAISystemPrompt = ludicrousMode
+    ? [
+        systemPrompt,
+        "",
+        "ORACLE MODE:",
+        "- Enter deep mode",
+        "- Operate with maximum executive intensity and urgency",
+        "- Synthesize quickly, make strong recommendations, and surface leverage",
+        "- Prefer decisive action plans, compressed timelines, and bold but practical options",
+        "- Keep the answer polished and executive-safe, not reckless",
+      ].join("\n")
+    : systemPrompt;
+
+  const stream = await openai.chat.completions.create({
+    model: model || process.env.OPENAI_MODEL || DEFAULT_OPENAI_MODEL,
+    max_tokens: ludicrousMode ? 2200 : 1400,
+    temperature: ludicrousMode ? 0.7 : 0.5,
+    stream: true,
+    messages: [
+      { role: "system", content: openAISystemPrompt },
+      ...buildMessageThread(messages, execContextMessage),
+    ],
+  });
+
+  for await (const chunk of stream) {
+    const text = chunk.choices[0]?.delta?.content;
+    if (text) yield text;
+  }
+}
+
+
 async function* streamOpenClawResponse(
   request: ProviderRequest
 ): AsyncGenerator<string> {
@@ -149,6 +196,10 @@ export async function createChatProviderStream(
 ): Promise<AsyncGenerator<string>> {
   if (request.provider === "openclaw") {
     return streamOpenClawResponse(request);
+  }
+
+  if (request.provider === "openai") {
+    return streamOpenAIResponse(request);
   }
 
   return streamAnthropicResponse(request);
