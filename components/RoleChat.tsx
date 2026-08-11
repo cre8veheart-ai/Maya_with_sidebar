@@ -4,6 +4,11 @@ import { useState, useRef, useEffect, FormEvent } from "react";
 import ProviderControls from "@/components/ProviderControls";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
+  clearRoleThread,
+  loadRoleThread,
+  saveRoleThread,
+} from "@/lib/maya/threadStorage";
+import {
   getProviderModel,
   loadProviderSettings,
   saveProviderSettings,
@@ -49,12 +54,29 @@ export default function RoleChat({ role }: RoleChatProps) {
   const [streaming, setStreaming] = useState(false);
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hydratingRoleRef = useRef<ExecRole | null>(null);
 
   useEffect(() => {
+    hydratingRoleRef.current = role;
     setLens(loadLens(role));
-    setMessages([]);
+    setMessages(loadRoleThread(role));
     setPendingActions([]);
   }, [role]);
+
+  useEffect(() => {
+    if (hydratingRoleRef.current === role) {
+      hydratingRoleRef.current = null;
+      return;
+    }
+    if (streaming) return;
+    saveRoleThread(role, messages);
+  }, [messages, role, streaming]);
+
+  function startFreshThread() {
+    clearRoleThread(role);
+    setMessages([]);
+    setPendingActions([]);
+  }
 
   useEffect(() => {
     setProviderSettings(loadProviderSettings());
@@ -180,6 +202,16 @@ export default function RoleChat({ role }: RoleChatProps) {
           <span className="text-[11px] text-[#89b4fa] uppercase tracking-[0.07em]">
             {providerSettings.provider === "anthropic" ? "Claude" : "OpenClaw"}
           </span>
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={startFreshThread}
+              className="text-[10px] text-[#6c7086] hover:text-[#cdd6f4] transition-colors"
+              aria-label={`Start a new ${role.toUpperCase()} thread`}
+            >
+              New thread
+            </button>
+          )}
           {providerSettings.provider === "openclaw" &&
             providerSettings.ludicrousMode && (
               <span className="text-[11px] text-[#f9e2af] uppercase tracking-[0.07em]">
@@ -201,9 +233,9 @@ export default function RoleChat({ role }: RoleChatProps) {
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-[13px] text-[#585b70] text-center leading-relaxed">
-              {role.toUpperCase()} lens active.
+              {role.toUpperCase()} executive intelligence active.
               <br />
-              Ask anything.
+              Bring a decision, constraint, opportunity, or operating question.
             </p>
           </div>
         )}
@@ -338,3 +370,4 @@ export default function RoleChat({ role }: RoleChatProps) {
     </div>
   );
 }
+
