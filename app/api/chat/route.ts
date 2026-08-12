@@ -72,7 +72,7 @@ function parseMessages(raw: unknown): MayaMessage[] {
         (m.role === "user" || m.role === "assistant") &&
         typeof m.content === "string"
     )
-    .slice(0, 100)
+    .slice(-100)
     .map((m) => ({
       role: m.role as "user" | "assistant",
       content: sanitizeText(m.content, 8000),

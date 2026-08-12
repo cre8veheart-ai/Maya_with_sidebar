@@ -73,6 +73,10 @@ export default function RoleChat({ role }: RoleChatProps) {
   }, [messages, role, streaming]);
 
   function startFreshThread() {
+    const confirmed = window.confirm(
+      `Start a new ${role.toUpperCase()} thread? This clears only this role's device-local conversation.`
+    );
+    if (!confirmed) return;
     clearRoleThread(role);
     setMessages([]);
     setPendingActions([]);
@@ -322,7 +326,7 @@ export default function RoleChat({ role }: RoleChatProps) {
               )}
               {action.status === "approved" && (
                 <span className="text-[11px] text-[#a6e3a1] font-semibold shrink-0">
-                  ✓ Approved
+                  ✓ Approved · Not executed
                 </span>
               )}
               {action.status === "dismissed" && (
