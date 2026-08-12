@@ -100,7 +100,15 @@ export default function RoleChat({ role }: RoleChatProps) {
           const payload = (await res.json()) as { error?: string };
           throw new Error(payload.error || "Provider request failed");
         }
-        throw new Error((await res.text()) || "Provider request failed");
+        const raw = await res.text();
+        const looksLikeHtml =
+          contentType.includes("text/html") ||
+          /<(?:!doctype|html|head|body|script|style)\b/i.test(raw);
+        throw new Error(
+          looksLikeHtml
+            ? "Maya could not reach the executive service. Please try again in a moment."
+            : raw.slice(0, 300) || "Provider request failed"
+        );
       }
 
       if (!res.body) throw new Error("No response stream");
@@ -308,7 +316,7 @@ export default function RoleChat({ role }: RoleChatProps) {
       {/* Input */}
       <form
         onSubmit={send}
-        className="px-4 py-3 border-t border-[#313244] shrink-0"
+        className="sticky bottom-0 z-10 px-4 pt-3 border-t border-[#313244] bg-[#1e1e2e] shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
         <div className="flex gap-2 items-end">
           <textarea
@@ -318,9 +326,9 @@ export default function RoleChat({ role }: RoleChatProps) {
               if (e.key === "Enter" && !e.shiftKey) send(e);
             }}
             placeholder={`Ask your ${role.toUpperCase()} lens…`}
-            rows={1}
-            className="flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-2.5 text-[13px] text-[#cdd6f4] placeholder-[#585b70] resize-none focus:outline-none focus:border-[#89b4fa] transition-colors"
-            style={{ minHeight: "40px", maxHeight: "120px" }}
+            rows={3}
+            className="flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-3 text-[16px] md:text-[13px] text-[#cdd6f4] placeholder-[#8087a2] resize-y focus:outline-none focus:border-[#89b4fa] transition-colors"
+            style={{ minHeight: "88px", maxHeight: "180px" }}
           />
           <button
             type="submit"
