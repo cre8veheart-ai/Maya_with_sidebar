@@ -12,8 +12,8 @@ export default function PageShell({
   children,
 }: PageShellProps) {
   return (
-    <div className="min-h-full px-8 py-10 max-w-5xl">
-      <div className="flex items-start justify-between mb-8">
+    <div className="min-h-full px-1 py-3 sm:px-4 sm:py-6 lg:px-8 lg:py-10 max-w-5xl pb-[max(6rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-start justify-between mb-4 sm:mb-8">
         <div>
           <h1 className="text-[22px] font-semibold text-[#cdd6f4] tracking-tight leading-tight">
             {title}
