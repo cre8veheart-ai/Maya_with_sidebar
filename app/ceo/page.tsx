@@ -62,7 +62,7 @@ export default function CeoPage() {
     <PageShell title="CEO" subtitle="Org-wide altitude — strategy, capital, alignment, and the decisions that determine what's possible next.">
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
-        <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
+        <div className="order-2 xl:order-1 flex flex-col gap-5 xl:w-[420px] shrink-0">
           {/* Org Pulse */}
           <SectionCard title="Org Pulse">
             <PulseRow label="Execution health" detail="Cross-functional delivery signal" status="neutral" />
@@ -123,7 +123,7 @@ export default function CeoPage() {
         </div>
 
         {/* Right — MAYA CEO Agent */}
-        <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
+        <div className="order-1 xl:order-2 flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[70svh] xl:min-h-0">
           <RoleChat role="ceo" />
         </div>
       </div>
