@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import ProviderControls from "@/components/ProviderControls";
 import { loadLens } from "@/lib/maya/lensStorage";
-import {
-  getProviderModel,
-  loadProviderSettings,
-  saveProviderSettings,
-} from "@/lib/maya/providerStorage";
 import type {
   ExecRole,
   MayaMessage,
-  ProviderSettings,
   RoleLens,
 } from "@/lib/maya/types";
 
@@ -38,12 +31,6 @@ interface RoleChatProps {
 
 export default function RoleChat({ role }: RoleChatProps) {
   const [lens, setLens] = useState<RoleLens>({ role, overrides: [] });
-  const [providerSettings, setProviderSettings] = useState<ProviderSettings>({
-    provider: "anthropic",
-    anthropicModel: "",
-    openClawModel: "",
-    ludicrousMode: false,
-  });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -57,17 +44,8 @@ export default function RoleChat({ role }: RoleChatProps) {
   }, [role]);
 
   useEffect(() => {
-    setProviderSettings(loadProviderSettings());
-  }, []);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pendingActions]);
-
-  function updateProviderSettings(next: ProviderSettings) {
-    setProviderSettings(next);
-    saveProviderSettings(next);
-  }
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
@@ -88,9 +66,6 @@ export default function RoleChat({ role }: RoleChatProps) {
         body: JSON.stringify({
           messages: thread,
           lens,
-          provider: providerSettings.provider,
-          model: getProviderModel(providerSettings),
-          ludicrousMode: providerSettings.ludicrousMode,
         }),
       });
 
@@ -170,30 +145,12 @@ export default function RoleChat({ role }: RoleChatProps) {
             MAYA · {role.toUpperCase()} Lens
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          {lens.overrides.length > 0 && (
-            <span className="text-[11px] text-[#a6e3a1]">
-              {lens.overrides.length} org context
-              {lens.overrides.length !== 1 ? "s" : ""} loaded
-            </span>
-          )}
-          <span className="text-[11px] text-[#89b4fa] uppercase tracking-[0.07em]">
-            {providerSettings.provider === "anthropic" ? "Claude" : "OpenClaw"}
+        {lens.overrides.length > 0 && (
+          <span className="text-[11px] text-[#a6e3a1]">
+            {lens.overrides.length} org context
+            {lens.overrides.length !== 1 ? "s" : ""} loaded
           </span>
-          {providerSettings.provider === "openclaw" &&
-            providerSettings.ludicrousMode && (
-              <span className="text-[11px] text-[#f9e2af] uppercase tracking-[0.07em]">
-                Oracle
-              </span>
-            )}
-        </div>
-      </div>
-      <div className="px-4 py-3 border-b border-[#313244] shrink-0">
-        <ProviderControls
-          settings={providerSettings}
-          onChange={updateProviderSettings}
-          compact
-        />
+        )}
       </div>
 
       {/* Messages */}
