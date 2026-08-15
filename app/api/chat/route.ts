@@ -141,9 +141,12 @@ export async function POST(req: NextRequest) {
         : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
-    provider = parseProvider(body.provider);
-    model = parseModel(body.model);
-    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
+    // Executive orchestration is server-controlled and never selected by the
+    // browser. Community chat retains its existing user-facing provider tools.
+    provider = parseProvider(workspace === "community" ? body.provider : undefined);
+    model = workspace === "community" ? parseModel(body.model) : "";
+    ludicrousMode =
+      workspace === "community" ? parseLudicrousMode(body.ludicrousMode) : false;
     communityContext = parseCommunityContext(body.communityContext);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {
@@ -170,6 +173,7 @@ export async function POST(req: NextRequest) {
       execContextMessage,
       model,
       ludicrousMode,
+      useGeminiAdvisory: workspace === "exec",
     });
   } catch (error) {
     const message =
