@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getBetaStatus, needsSurvey } from "@/lib/beta/betaGate";
+import { needsSurvey } from "@/lib/beta/betaGate";
 import type { BetaProfile } from "@/lib/beta/betaGate";
 import BetaInviteGate from "./BetaInviteGate";
 import BetaSurvey from "./BetaSurvey";
@@ -12,13 +12,14 @@ export default function BetaGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GateState>("loading");
 
   useEffect(() => {
-    if (getBetaStatus() !== "approved") {
-      setState("gate");
-    } else if (needsSurvey()) {
-      setState("survey");
-    } else {
-      setState("ok");
-    }
+    fetch("/api/beta-validate")
+      .then((response) => response.json())
+      .then((data: { authorized?: boolean }) => {
+        if (!data.authorized) setState("gate");
+        else if (needsSurvey()) setState("survey");
+        else setState("ok");
+      })
+      .catch(() => setState("gate"));
   }, []);
 
   function handleApproved(_profile: BetaProfile) {
