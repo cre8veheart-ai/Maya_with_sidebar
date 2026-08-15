@@ -1,22 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import ProviderControls from "@/components/ProviderControls";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
   clearRoleThread,
   loadRoleThread,
   saveRoleThread,
 } from "@/lib/maya/threadStorage";
-import {
-  getProviderModel,
-  loadProviderSettings,
-  saveProviderSettings,
-} from "@/lib/maya/providerStorage";
 import type {
   ExecRole,
   MayaMessage,
-  ProviderSettings,
   RoleLens,
 } from "@/lib/maya/types";
 
@@ -43,12 +36,6 @@ interface RoleChatProps {
 
 export default function RoleChat({ role }: RoleChatProps) {
   const [lens, setLens] = useState<RoleLens>({ role, overrides: [] });
-  const [providerSettings, setProviderSettings] = useState<ProviderSettings>({
-    provider: "anthropic",
-    anthropicModel: "",
-    openClawModel: "",
-    ludicrousMode: false,
-  });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -83,17 +70,8 @@ export default function RoleChat({ role }: RoleChatProps) {
   }
 
   useEffect(() => {
-    setProviderSettings(loadProviderSettings());
-  }, []);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pendingActions]);
-
-  function updateProviderSettings(next: ProviderSettings) {
-    setProviderSettings(next);
-    saveProviderSettings(next);
-  }
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
@@ -114,9 +92,6 @@ export default function RoleChat({ role }: RoleChatProps) {
         body: JSON.stringify({
           messages: thread,
           lens,
-          provider: providerSettings.provider,
-          model: getProviderModel(providerSettings),
-          ludicrousMode: providerSettings.ludicrousMode,
         }),
       });
 
@@ -126,7 +101,15 @@ export default function RoleChat({ role }: RoleChatProps) {
           const payload = (await res.json()) as { error?: string };
           throw new Error(payload.error || "Provider request failed");
         }
-        throw new Error((await res.text()) || "Provider request failed");
+        const raw = await res.text();
+        const looksLikeHtml =
+          contentType.includes("text/html") ||
+          /<(?:!doctype|html|head|body|script|style)\b/i.test(raw);
+        throw new Error(
+          looksLikeHtml
+            ? "Maya could not reach the executive service. Please try again in a moment."
+            : raw.slice(0, 300) || "Provider request failed"
+        );
       }
 
       if (!res.body) throw new Error("No response stream");
@@ -199,13 +182,10 @@ export default function RoleChat({ role }: RoleChatProps) {
         <div className="flex items-center gap-3">
           {lens.overrides.length > 0 && (
             <span className="text-[11px] text-[#a6e3a1]">
-              {lens.overrides.length} org context
+              {lens.overrides.length} organization context
               {lens.overrides.length !== 1 ? "s" : ""} loaded
             </span>
           )}
-          <span className="text-[11px] text-[#89b4fa] uppercase tracking-[0.07em]">
-            {providerSettings.provider === "anthropic" ? "Claude" : "OpenClaw"}
-          </span>
           {messages.length > 0 && (
             <button
               type="button"
@@ -216,30 +196,47 @@ export default function RoleChat({ role }: RoleChatProps) {
               New thread
             </button>
           )}
-          {providerSettings.provider === "openclaw" &&
-            providerSettings.ludicrousMode && (
-              <span className="text-[11px] text-[#f9e2af] uppercase tracking-[0.07em]">
-                Oracle
-              </span>
-            )}
         </div>
       </div>
-      <div className="px-4 py-3 border-b border-[#313244] shrink-0">
-        <ProviderControls
-          settings={providerSettings}
-          onChange={updateProviderSettings}
-          compact
-        />
-      </div>
+      {/* Executive conversation input */}
+      <form
+        onSubmit={send}
+        className="px-4 py-4 border-b border-[#313244] shrink-0"
+      >
+        <div className="flex gap-2 items-end">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) send(e);
+            }}
+            placeholder={`Talk to your ${role.toUpperCase()}…`}
+            rows={3}
+            className="flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-3 text-[16px] md:text-[13px] text-[#cdd6f4] placeholder-[#8087a2] resize-y focus:outline-none focus:border-[#89b4fa] transition-colors"
+            style={{ minHeight: "88px", maxHeight: "180px" }}
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || streaming}
+            className="px-4 py-2.5 bg-[#89b4fa] text-[#1e1e2e] rounded-xl text-[12px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#b4d0fb] transition-colors shrink-0"
+          >
+            Send
+          </button>
+        </div>
+        <p className="mt-1.5 text-[10px] text-[#585b70]">
+          Enter to send · Shift+Enter for new line · Doesn&apos;t act without
+          you
+        </p>
+      </form>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-[13px] text-[#585b70] text-center leading-relaxed">
-              {role.toUpperCase()} executive intelligence active.
+              Your {role.toUpperCase()} is ready.
               <br />
-              Bring a decision, constraint, opportunity, or operating question.
+              Start the conversation above.
             </p>
           </div>
         )}
@@ -341,37 +338,6 @@ export default function RoleChat({ role }: RoleChatProps) {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <form
-        onSubmit={send}
-        className="px-4 py-3 border-t border-[#313244] shrink-0"
-      >
-        <div className="flex gap-2 items-end">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) send(e);
-            }}
-            placeholder={`Ask your ${role.toUpperCase()} lens…`}
-            rows={1}
-            className="flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-2.5 text-[13px] text-[#cdd6f4] placeholder-[#585b70] resize-none focus:outline-none focus:border-[#89b4fa] transition-colors"
-            style={{ minHeight: "40px", maxHeight: "120px" }}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || streaming}
-            className="px-4 py-2.5 bg-[#89b4fa] text-[#1e1e2e] rounded-xl text-[12px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#b4d0fb] transition-colors shrink-0"
-          >
-            Send
-          </button>
-        </div>
-        <p className="mt-1.5 text-[10px] text-[#585b70]">
-          Enter to send · Shift+Enter for new line · Doesn&apos;t act without
-          you
-        </p>
-      </form>
     </div>
   );
 }
-
