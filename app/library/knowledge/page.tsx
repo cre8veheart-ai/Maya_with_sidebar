@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { getRoleHref, getRoleLabel, isExecRole } from "@/lib/maya/execRouting";
+import {
+  getRoleLabel,
+  getSafeRoleHref,
+  isExecRole,
+} from "@/lib/maya/execRouting";
 import {
   listHardenedKnowledgeRecords,
   loadVaultClips,
@@ -96,15 +100,19 @@ export default function KnowledgePage() {
                         clipped by {getRoleLabel(clip.clippedBy)}
                       </span>
                     )}
-                    {clip.assignedRoles?.filter(isExecRole).map((role) => (
-                      <Link
-                        key={`${clip.id}-${role}`}
-                        href={getRoleHref(role)}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
-                      >
-                        route to {getRoleLabel(role)}
-                      </Link>
-                    ))}
+                    {clip.assignedRoles?.filter(isExecRole).map((role) => {
+                      const roleHref = getSafeRoleHref(role);
+                      if (!roleHref) return null;
+                      return (
+                        <Link
+                          key={`${clip.id}-${role}`}
+                          href={roleHref}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
+                        >
+                          route to {getRoleLabel(role)}
+                        </Link>
+                      );
+                    })}
                   </div>
                   {clip.clipComment && (
                     <div className="mt-3">

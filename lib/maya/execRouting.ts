@@ -39,5 +39,36 @@ export function getRoleLabel(role: RoutedRole): string {
 }
 
 export function getRoleHref(role: RoutedRole): string {
-  return EXEC_ROLE_META[role].href;
+  return getSafeRoleHref(role) || "/";
+}
+
+export function getSafeRoleHref(role: unknown): string | null {
+  switch (role) {
+    case "ceo":
+      return "/ceo";
+    case "coo":
+      return "/coo";
+    case "cmo":
+      return "/cmo";
+    case "cfo":
+      return "/cfo";
+    case "cto":
+      return "/cto";
+    case "cio":
+      return "/cio";
+    case "cro":
+      return "/cro";
+    case "cd":
+      return "/cd";
+    case "admin":
+      return "/office-admin";
+    case "hr":
+      return "/hr";
+    case "legal":
+      return "/legal";
+    case "strategy-room":
+      return "/strategy-room";
+    default:
+      return null;
+  }
 }

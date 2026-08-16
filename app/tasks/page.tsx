@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { getRoleHref, getRoleLabel, isExecRole } from "@/lib/maya/execRouting";
+import {
+  getRoleLabel,
+  getSafeRoleHref,
+  isExecRole,
+} from "@/lib/maya/execRouting";
 import { loadWorkItems, type MayaWorkItem } from "@/lib/maya/libraryData";
 
 const STATUS_FILTERS = ["All", "Approved", "Pending", "Dismissed"] as const;
@@ -96,15 +100,19 @@ export default function TasksPage() {
                           Routed to
                         </p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {item.targetRoles.filter(isExecRole).map((role) => (
-                            <Link
-                              key={`${item.id}-${role}`}
-                              href={getRoleHref(role)}
-                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
-                            >
-                              {getRoleLabel(role)}
-                            </Link>
-                          ))}
+                          {item.targetRoles.filter(isExecRole).map((role) => {
+                            const roleHref = getSafeRoleHref(role);
+                            if (!roleHref) return null;
+                            return (
+                              <Link
+                                key={`${item.id}-${role}`}
+                                href={roleHref}
+                                className="text-[11px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
+                              >
+                                {getRoleLabel(role)}
+                              </Link>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
