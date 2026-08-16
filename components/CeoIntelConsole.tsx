@@ -163,7 +163,10 @@ export default function CeoIntelConsole() {
     saveVaultClip({
       id: `${Date.now()}-${vault}`,
       vault,
-      title: query.trim() || "CEO clipped note",
+      title:
+        vault === "decisions"
+          ? `CEO consultation · ${query.trim() || "untitled"}`
+          : query.trim() || "CEO clipped note",
       content,
       createdAt: new Date().toISOString().slice(0, 16).replace("T", " "),
       sessionId: latestSessionId || undefined,
@@ -259,7 +262,7 @@ export default function CeoIntelConsole() {
           {!loading && answer && (
             <div className="mt-4 rounded-lg border border-[#313244] bg-[#1e1e2e] p-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-2">
-                Clip & Save Part of This Discussion
+                Save Consultation Note
               </p>
               <textarea
                 value={clipDraft}
@@ -271,7 +274,7 @@ export default function CeoIntelConsole() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
                   <label className="block">
                     <span className="block text-[10px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-1.5">
-                      Decision category
+                      Consultation category
                     </span>
                     <select
                       value={decisionCategory}
@@ -287,7 +290,7 @@ export default function CeoIntelConsole() {
                   </label>
                   <label className="block">
                     <span className="block text-[10px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-1.5">
-                      Actionable steps
+                      Recommended next steps
                     </span>
                     <textarea
                       value={actionableSteps}
@@ -304,14 +307,14 @@ export default function CeoIntelConsole() {
                     onClick={() => saveClip("knowledge")}
                     className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#89b4fa] text-[11px] font-semibold hover:bg-[#45475a] transition-colors"
                   >
-                    Clip to Knowledge Vault
+                    Save to Knowledge Vault
                   </button>
                   <button
                     type="button"
                     onClick={() => saveClip("decisions")}
                     className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#a6e3a1] text-[11px] font-semibold hover:bg-[#45475a] transition-colors"
                   >
-                    Clip to Decision Vault
+                    Save Consultation to Decision Vault
                   </button>
                 </div>
                 {clipStatus && (

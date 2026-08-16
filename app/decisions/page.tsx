@@ -73,7 +73,7 @@ export default function DecisionsPage() {
           {clippedNotes.length > 0 && (
             <div className="mt-4 pt-4 border-t border-[#313244] space-y-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
-                Clipped from CEO discussions
+                CEO consultation notes
               </p>
               {clippedNotes.map((clip) => (
                 <div key={clip.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
@@ -85,15 +85,15 @@ export default function DecisionsPage() {
                       </p>
                       <p className="text-[12px] text-[#a6adc8] mt-1">{clip.query || "—"}</p>
                       <p className="text-[11px] text-[#585b70] mt-3">
-                        Category
+                        Consultation category
                       </p>
                       <p className="text-[12px] text-[#cdd6f4] mt-1">{clip.category || "Other"}</p>
                       <p className="text-[11px] text-[#585b70] mt-3">
-                        Summary
+                        Consultation summary
                       </p>
                       <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">{clip.content}</p>
                       <p className="text-[11px] text-[#585b70] mt-3">
-                        Actionable steps
+                        Recommended next steps
                       </p>
                       <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">
                         {clip.actionableSteps || "No steps captured yet."}

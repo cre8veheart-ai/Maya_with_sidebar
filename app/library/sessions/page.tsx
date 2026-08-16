@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import { loadSavedSessions } from "@/lib/maya/libraryData";
 
@@ -19,7 +18,6 @@ function EmptyState() {
 }
 
 export default function SessionsPage() {
-  const searchParams = useSearchParams();
   const [sessions, setSessions] = useState(loadSavedSessions());
   const [activeRole, setActiveRole] = useState("All");
   const [search, setSearch] = useState("");
@@ -30,9 +28,9 @@ export default function SessionsPage() {
   }, []);
 
   useEffect(() => {
-    const sessionId = searchParams.get("session");
+    const sessionId = new URLSearchParams(window.location.search).get("session");
     if (sessionId) setSelectedId(sessionId);
-  }, [searchParams]);
+  }, []);
 
   const filteredSessions = useMemo(() => {
     return sessions.filter((session) => {
