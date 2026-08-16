@@ -1,5 +1,5 @@
 import PageShell from "@/components/PageShell";
-import RoleChat from "@/components/RoleChat";
+import CeoIntelConsole from "@/components/CeoIntelConsole";
 
 function SectionCard({
   title,
@@ -122,9 +122,9 @@ export default function CeoPage() {
           </SectionCard>
         </div>
 
-        {/* Right — MAYA CEO Agent */}
+        {/* Right — MAYA CEO Intel */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
-          <RoleChat role="ceo" />
+          <CeoIntelConsole />
         </div>
       </div>
     </PageShell>
