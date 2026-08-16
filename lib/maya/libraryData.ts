@@ -1,4 +1,4 @@
-import type { ExecRole } from "./types";
+import type { ExecRole, MayaMessage } from "./types";
 import {
   type HardenedIntelRecord,
   listHardenedIntelRecords,
@@ -21,6 +21,10 @@ export interface MayaSessionRecord {
   answer: string;
   savedAt: string;
   sourceCount: number;
+  transcript?: MayaMessage[];
+  estimatedPromptTokens?: number;
+  estimatedCompletionTokens?: number;
+  estimatedFeeUsd?: number;
 }
 
 export interface MayaVaultClip {
@@ -34,10 +38,34 @@ export interface MayaVaultClip {
   category?: string;
   actionableSteps?: string;
   status?: "pending" | "kept" | "trashed";
+  sourceRole?: ExecRole | "strategy-room";
+  assignedRoles?: ExecRole[];
+  vendorName?: string;
+  vendorUrl?: string;
+  clippedBy?: ExecRole | "strategy-room";
+  clipComment?: string;
+}
+
+export interface MayaWorkItem {
+  id: string;
+  title: string;
+  summary: string;
+  type: "email" | "task" | "decision" | "meeting" | "clip";
+  sourceRole: ExecRole | "strategy-room";
+  targetRoles: ExecRole[];
+  createdAt: string;
+  sessionId?: string;
+  clipId?: string;
+  vendorName?: string;
+  vendorUrl?: string;
+  status: "pending" | "approved" | "dismissed";
+  clippedBy?: ExecRole | "strategy-room";
+  clipComment?: string;
 }
 
 const SESSION_STORAGE_KEY = "maya_saved_sessions_v1";
 const CLIP_STORAGE_KEY = "maya_saved_clips_v1";
+const WORK_ITEM_STORAGE_KEY = "maya_saved_work_items_v1";
 
 const SEED_SAVED_FILES: MayaSavedFile[] = [
   {
@@ -159,6 +187,26 @@ export function updateVaultClipStatus(
   );
   if (typeof window !== "undefined") {
     window.localStorage.setItem(CLIP_STORAGE_KEY, JSON.stringify(next));
+  }
+  return next;
+}
+
+export function loadWorkItems(): MayaWorkItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(WORK_ITEM_STORAGE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as MayaWorkItem[]) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveWorkItem(item: MayaWorkItem): MayaWorkItem[] {
+  const existing = loadWorkItems();
+  const next = [item, ...existing.filter((workItem) => workItem.id !== item.id)].slice(0, 100);
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(WORK_ITEM_STORAGE_KEY, JSON.stringify(next));
   }
   return next;
 }
