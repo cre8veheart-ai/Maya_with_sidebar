@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import ProviderControls from "@/components/ProviderControls";
-import { getRoleHref, getRoleLabel } from "@/lib/maya/execRouting";
+import { getRoleHref, getRoleLabel, isExecRole } from "@/lib/maya/execRouting";
 import {
   loadSavedSessions,
   loadVaultClips,
@@ -85,6 +85,20 @@ const DEEP_THINK_ROLES: ExecRole[] = [
   "hr",
   "legal",
 ];
+
+const SAFE_EXEC_LINKS: Record<ExecRole, { href: string; label: string }> = {
+  ceo: { href: "/ceo", label: "CEO" },
+  coo: { href: "/coo", label: "COO" },
+  cmo: { href: "/cmo", label: "CMO" },
+  cfo: { href: "/cfo", label: "CFO" },
+  cto: { href: "/cto", label: "CTO" },
+  cio: { href: "/cio", label: "CIO" },
+  cro: { href: "/cro", label: "CRO" },
+  cd: { href: "/cd", label: "CD" },
+  admin: { href: "/office-admin", label: "Office Admin" },
+  hr: { href: "/hr", label: "HR" },
+  legal: { href: "/legal", label: "Legal" },
+};
 
 const SOURCE_META: Record<IntelSource["source"], { label: string; accent: string }> = {
   decisions: { label: "Decisions", accent: "text-[#a6e3a1]" },
@@ -931,15 +945,20 @@ export default function CeoIntelConsole() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {item.targetRoles.map((role) => (
-                        <Link
-                          key={`${item.id}-${role}`}
-                          href={getRoleHref(role)}
-                          className="text-[11px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
-                        >
-                          {getRoleLabel(role)}
-                        </Link>
-                      ))}
+                      {item.targetRoles
+                        .filter(isExecRole)
+                        .map((role) => {
+                          const safeLink = SAFE_EXEC_LINKS[role];
+
+                          return (
+                            <span
+                              key={`${item.id}-${role}`}
+                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa]"
+                            >
+                              {safeLink.label}
+                            </span>
+                          );
+                        })}
                     </div>
                   </div>
                 ))}
