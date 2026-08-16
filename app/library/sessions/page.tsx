@@ -3,9 +3,39 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { loadSavedSessions } from "@/lib/maya/libraryData";
+import { getRoleHref, getRoleLabel } from "@/lib/maya/execRouting";
+import {
+  loadSavedSessions,
+  loadVaultClips,
+  loadWorkItems,
+  type MayaSessionRecord,
+  type MayaVaultClip,
+  type MayaWorkItem,
+} from "@/lib/maya/libraryData";
+import type { ExecRole } from "@/lib/maya/types";
 
 const ROLES = ["All", "CEO", "COO", "CMO", "CFO", "CTO", "CIO", "CRO", "CD", "Strategy Room"];
+const EXEC_ROLE_ORDER: ExecRole[] = [
+  "ceo",
+  "coo",
+  "cmo",
+  "cfo",
+  "cto",
+  "cio",
+  "cro",
+  "cd",
+  "admin",
+  "hr",
+  "legal",
+];
+
+interface ExecReportSection {
+  role: ExecRole;
+  recommendation: string;
+  clippedItems: MayaVaultClip[];
+  actionItems: MayaWorkItem[];
+  fallbackActionItems: string[];
+}
 
 function EmptyState() {
   return (
@@ -18,14 +48,121 @@ function EmptyState() {
   );
 }
 
+function isExecRole(role: MayaSessionRecord["role"] | string): role is ExecRole {
+  return role !== "strategy-room";
+}
+
+function truncate(text: string, maxLength = 220): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  return `${trimmed.slice(0, maxLength).trimEnd()}…`;
+}
+
+function firstUsefulText(values: Array<string | undefined>): string {
+  return values.map((value) => value?.trim() || "").find((value) => value.length > 0) || "";
+}
+
+function extractActionBullets(session: MayaSessionRecord, role: ExecRole): string[] {
+  const bulletLines = session.answer
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^([-*•]|\d+[.)])\s+/.test(line))
+    .map((line) => line.replace(/^([-*•]|\d+[.)])\s+/, ""));
+
+  if (bulletLines.length > 0) {
+    return bulletLines.slice(0, 5);
+  }
+
+  if (session.role === role) {
+    return [truncate(session.answer, 160)];
+  }
+
+  return [];
+}
+
+function buildRecommendation(
+  session: MayaSessionRecord,
+  role: ExecRole,
+  clippedItems: MayaVaultClip[],
+  actionItems: MayaWorkItem[]
+): string {
+  if (session.role === role) {
+    return session.answer;
+  }
+
+  const derived = firstUsefulText([
+    clippedItems.find((clip) => clip.assignedRoles?.includes(role))?.clipComment,
+    actionItems[0]?.clipComment,
+    actionItems[0]?.summary,
+    clippedItems[0]?.clipComment,
+    clippedItems[0]?.content,
+  ]);
+
+  return derived || "No direct role-specific recommendation was saved for this exec yet. Review the clipped items and routed action items below.";
+}
+
+function matchesClipForRole(clip: MayaVaultClip, role: ExecRole, sessionId: string): boolean {
+  if (clip.sessionId !== sessionId) return false;
+  return clip.sourceRole === role || clip.clippedBy === role || clip.assignedRoles?.includes(role) === true;
+}
+
+function matchesWorkItemForRole(item: MayaWorkItem, role: ExecRole, sessionId: string): boolean {
+  if (item.sessionId !== sessionId) return false;
+  return item.sourceRole === role || item.targetRoles.includes(role);
+}
+
+function buildExecReportSections(
+  session: MayaSessionRecord,
+  clips: MayaVaultClip[],
+  items: MayaWorkItem[]
+): ExecReportSection[] {
+  const consultedRoles = new Set<ExecRole>();
+
+  if (isExecRole(session.role)) {
+    consultedRoles.add(session.role);
+  }
+
+  clips
+    .filter((clip) => clip.sessionId === session.id)
+    .forEach((clip) => {
+      if (clip.sourceRole) consultedRoles.add(clip.sourceRole);
+      clip.assignedRoles?.forEach((role) => consultedRoles.add(role));
+      if (clip.clippedBy && isExecRole(clip.clippedBy)) consultedRoles.add(clip.clippedBy);
+    });
+
+  items
+    .filter((item) => item.sessionId === session.id)
+    .forEach((item) => {
+      consultedRoles.add(item.sourceRole);
+      item.targetRoles.forEach((role) => consultedRoles.add(role));
+      if (item.clippedBy && isExecRole(item.clippedBy)) consultedRoles.add(item.clippedBy);
+    });
+
+  return EXEC_ROLE_ORDER.filter((role) => consultedRoles.has(role)).map((role) => {
+    const clippedItems = clips.filter((clip) => matchesClipForRole(clip, role, session.id));
+    const actionItems = items.filter((item) => matchesWorkItemForRole(item, role, session.id));
+    return {
+      role,
+      recommendation: buildRecommendation(session, role, clippedItems, actionItems),
+      clippedItems,
+      actionItems,
+      fallbackActionItems: extractActionBullets(session, role),
+    };
+  });
+}
+
 export default function SessionsPage() {
-  const [sessions, setSessions] = useState(loadSavedSessions());
+  const [sessions, setSessions] = useState<MayaSessionRecord[]>(loadSavedSessions());
+  const [clips, setClips] = useState<MayaVaultClip[]>([]);
+  const [items, setItems] = useState<MayaWorkItem[]>([]);
   const [activeRole, setActiveRole] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState("");
 
   useEffect(() => {
     setSessions(loadSavedSessions());
+    setClips(loadVaultClips());
+    setItems(loadWorkItems());
   }, []);
 
   useEffect(() => {
@@ -55,15 +192,18 @@ export default function SessionsPage() {
     filteredSessions[0] ??
     null;
 
+  const reportSections = useMemo(
+    () => (selectedSession ? buildExecReportSections(selectedSession, clips, items) : []),
+    [clips, items, selectedSession]
+  );
+
   return (
     <PageShell
       title="Sessions"
-      subtitle="Your full conversation history with Maya — never re-onboard"
+      subtitle="Your full conversation history with Maya — plus separate exec reports, clips, and action items"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Main panel */}
-        <div className="md:col-span-2 space-y-4">
-          {/* Search */}
+        <div className="md:col-span-2 space-y-4 print:hidden">
           <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl px-4 py-3 flex items-center gap-3">
             <span className="text-[#585b70]">🔍</span>
             <input
@@ -75,7 +215,6 @@ export default function SessionsPage() {
             />
           </div>
 
-          {/* Role filter pills */}
           <div className="flex flex-wrap gap-2">
             {ROLES.map((r) => (
               <button
@@ -93,7 +232,6 @@ export default function SessionsPage() {
             ))}
           </div>
 
-          {/* Session list */}
           <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
               Recent Sessions
@@ -131,12 +269,24 @@ export default function SessionsPage() {
           </div>
         </div>
 
-        {/* Right panel */}
-        <div className="space-y-4">
-          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
-              Summary
-            </h2>
+        <div className="space-y-4 md:col-span-1 print:col-span-3">
+          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 print:hidden">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
+                  Summary
+                </h2>
+              </div>
+              {selectedSession && (
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="rounded-lg border border-[#45475a] px-3 py-1.5 text-[11px] font-semibold text-[#89b4fa] hover:bg-[#313244] transition-colors"
+                >
+                  Print report
+                </button>
+              )}
+            </div>
             <div className="space-y-3">
               {[
                 { label: "Total sessions", value: `${sessions.length}` },
@@ -156,37 +306,174 @@ export default function SessionsPage() {
             </div>
           </div>
 
-          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-3">
-              How Sessions Work
+          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 print:bg-white print:text-black print:border-slate-300">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-3 print:text-slate-500">
+              Exec Session Report
             </h2>
             {selectedSession ? (
-              <div className="space-y-3">
-                <div>
-                  <p className="text-[12px] text-[#585b70]">Selected session</p>
-                  <p className="text-[13px] text-[#cdd6f4] font-medium mt-1">{selectedSession.title}</p>
+              <div className="space-y-5">
+                <div className="border-b border-[#313244] pb-4 print:border-slate-300">
+                  <p className="text-[12px] text-[#585b70] print:text-slate-500">Selected session</p>
+                  <p className="text-[15px] text-[#cdd6f4] font-semibold mt-1 print:text-black">
+                    {selectedSession.title}
+                  </p>
+                  <p className="text-[12px] text-[#a6adc8] mt-2 print:text-slate-700">
+                    Saved {selectedSession.savedAt} · {selectedSession.role.toUpperCase()} · {reportSections.length} exec section{reportSections.length === 1 ? "" : "s"}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-3 print:hidden">
+                    <Link
+                      href="/library/knowledge"
+                      className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                    >
+                      Open clippings folder
+                    </Link>
+                    <Link href="/tasks" className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]">
+                      Open action items folder
+                    </Link>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[12px] text-[#585b70]">Query</p>
-                  <p className="text-[12px] text-[#a6adc8] mt-1">{selectedSession.query}</p>
-                </div>
-                <div>
-                  <p className="text-[12px] text-[#585b70]">Saved answer</p>
-                  <p className="text-[12px] text-[#a6adc8] mt-1">{selectedSession.answer}</p>
-                </div>
+
+                {reportSections.length === 0 ? (
+                  <p className="text-[12px] text-[#585b70] print:text-slate-600">
+                    No exec-specific report sections are available for this saved session yet.
+                  </p>
+                ) : (
+                  reportSections.map((section) => (
+                    <section
+                      key={`${selectedSession.id}-${section.role}`}
+                      className="rounded-xl border border-[#313244] bg-[#181825] p-4 space-y-4 print:bg-white print:border-slate-300"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa] print:text-slate-600">
+                            {getRoleLabel(section.role)} Recommendation
+                          </p>
+                          <p className="text-[13px] text-[#cdd6f4] mt-2 whitespace-pre-wrap print:text-black">
+                            {section.recommendation}
+                          </p>
+                        </div>
+                        <Link
+                          href={getRoleHref(section.role)}
+                          className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb] shrink-0 print:hidden"
+                        >
+                          Open {getRoleLabel(section.role)} workspace
+                        </Link>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] uppercase text-[#585b70] print:text-slate-500">User</p>
+                        <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap print:text-slate-800">
+                          {selectedSession.query}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] uppercase text-[#585b70] print:text-slate-500">
+                          Clipped segments of session
+                        </p>
+                        {section.clippedItems.length === 0 ? (
+                          <p className="text-[12px] text-[#585b70] mt-2 print:text-slate-600">
+                            No clipped segments saved for this exec.
+                          </p>
+                        ) : (
+                          <div className="mt-2 space-y-3">
+                            {section.clippedItems.map((clip) => (
+                              <div
+                                key={clip.id}
+                                className="rounded-lg border border-[#313244] bg-[#1e1e2e] p-3 print:bg-white print:border-slate-300"
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <p className="text-[12px] text-[#cdd6f4] font-medium print:text-black">
+                                    {clip.title}
+                                  </p>
+                                  <span className="text-[10px] text-[#585b70] shrink-0 print:text-slate-500">
+                                    {clip.createdAt}
+                                  </span>
+                                </div>
+                                <p className="text-[12px] text-[#a6adc8] mt-2 whitespace-pre-wrap print:text-slate-800">
+                                  {clip.content}
+                                </p>
+                                {clip.clipComment && (
+                                  <div className="mt-2">
+                                    <p className="text-[10px] uppercase text-[#585b70] print:text-slate-500">
+                                      User clipped note
+                                    </p>
+                                    <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap print:text-slate-800">
+                                      {clip.clipComment}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] uppercase text-[#585b70] print:text-slate-500">
+                          Action items
+                        </p>
+                        {section.actionItems.length > 0 ? (
+                          <ul className="mt-2 space-y-2">
+                            {section.actionItems.map((item) => (
+                              <li key={item.id} className="text-[12px] text-[#a6adc8] print:text-slate-800">
+                                <span className="text-[#89b4fa] print:text-slate-600">• </span>
+                                <span className="font-medium text-[#cdd6f4] print:text-black">{item.title}:</span>{" "}
+                                {item.summary}
+                                {item.clipComment ? ` (${item.clipComment})` : ""}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : section.fallbackActionItems.length > 0 ? (
+                          <ul className="mt-2 space-y-2">
+                            {section.fallbackActionItems.map((point, index) => (
+                              <li
+                                key={`${selectedSession.id}-${section.role}-fallback-${index}`}
+                                className="text-[12px] text-[#a6adc8] print:text-slate-800"
+                              >
+                                <span className="text-[#89b4fa] print:text-slate-600">• </span>
+                                {point}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-[12px] text-[#585b70] mt-2 print:text-slate-600">
+                            No action items saved for this exec yet.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap gap-3 pt-1 print:hidden">
+                        <Link
+                          href={`/library/sessions?session=${encodeURIComponent(selectedSession.id)}`}
+                          className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                        >
+                          Open full saved session
+                        </Link>
+                        <Link href="/library/knowledge" className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]">
+                          Review clippings
+                        </Link>
+                        <Link href="/tasks" className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]">
+                          Review action items
+                        </Link>
+                      </div>
+                    </section>
+                  ))
+                )}
+
                 {selectedSession.transcript && selectedSession.transcript.length > 0 && (
-                  <div>
-                    <p className="text-[12px] text-[#585b70]">Full session</p>
+                  <div className="border-t border-[#313244] pt-4 print:border-slate-300">
+                    <p className="text-[10px] uppercase text-[#585b70] print:text-slate-500">Full saved session</p>
                     <div className="mt-2 space-y-2">
                       {selectedSession.transcript.map((message, index) => (
                         <div
                           key={`${selectedSession.id}-${index}`}
-                          className="rounded-lg border border-[#313244] bg-[#181825] px-3 py-2"
+                          className="rounded-lg border border-[#313244] bg-[#181825] px-3 py-2 print:bg-white print:border-slate-300"
                         >
-                          <p className="text-[10px] uppercase text-[#89b4fa]">
+                          <p className="text-[10px] uppercase text-[#89b4fa] print:text-slate-600">
                             {message.role}
                           </p>
-                          <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">
+                          <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap print:text-slate-800">
                             {message.content}
                           </p>
                         </div>
@@ -194,21 +481,14 @@ export default function SessionsPage() {
                     </div>
                   </div>
                 )}
+
                 <div>
-                  <p className="text-[12px] text-[#585b70]">Estimated query fee</p>
-                  <p className="text-[12px] text-[#a6adc8] mt-1">
+                  <p className="text-[12px] text-[#585b70] print:text-slate-500">Estimated query fee</p>
+                  <p className="text-[12px] text-[#a6adc8] mt-1 print:text-slate-800">
                     ${selectedSession.estimatedFeeUsd?.toFixed(4) ?? "0.0000"} ·{" "}
                     {selectedSession.estimatedPromptTokens ?? 0} prompt tokens ·{" "}
                     {selectedSession.estimatedCompletionTokens ?? 0} completion tokens
                   </p>
-                </div>
-                <div>
-                  <Link
-                    href="/tasks"
-                    className="text-[12px] text-[#89b4fa] hover:text-[#b4d0fb]"
-                  >
-                    Open routed working items
-                  </Link>
                 </div>
               </div>
             ) : (
@@ -217,7 +497,7 @@ export default function SessionsPage() {
                   "Auto-saved — no manual action needed",
                   "Filterable by exec role",
                   "Resume from exactly where you left off",
-                  "Insights feed back into your Intel Vault",
+                  "Exec reports expose saved recommendations, clips, and action items",
                 ].map((point) => (
                   <div key={point} className="flex items-start gap-2">
                     <span className="text-[#89b4fa] mt-0.5">·</span>
