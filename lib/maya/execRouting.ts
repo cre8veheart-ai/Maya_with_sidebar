@@ -21,6 +21,19 @@ export const EXEC_ROLE_OPTIONS = Object.keys(EXEC_ROLE_META).filter(
   (role) => role !== "strategy-room"
 ) as ExecRole[];
 
+const ROUTED_ROLE_SET = new Set<RoutedRole>(
+  Object.keys(EXEC_ROLE_META) as RoutedRole[]
+);
+const EXEC_ROLE_SET = new Set<ExecRole>(EXEC_ROLE_OPTIONS);
+
+export function isRoutedRole(value: unknown): value is RoutedRole {
+  return typeof value === "string" && ROUTED_ROLE_SET.has(value as RoutedRole);
+}
+
+export function isExecRole(value: unknown): value is ExecRole {
+  return typeof value === "string" && EXEC_ROLE_SET.has(value as ExecRole);
+}
+
 export function getRoleLabel(role: RoutedRole): string {
   return EXEC_ROLE_META[role].label;
 }

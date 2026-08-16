@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { getRoleHref, getRoleLabel } from "@/lib/maya/execRouting";
+import { getRoleHref, getRoleLabel, isExecRole } from "@/lib/maya/execRouting";
 import {
   listHardenedKnowledgeRecords,
   loadVaultClips,
@@ -96,7 +96,7 @@ export default function KnowledgePage() {
                         clipped by {getRoleLabel(clip.clippedBy)}
                       </span>
                     )}
-                    {clip.assignedRoles?.map((role) => (
+                    {clip.assignedRoles?.filter(isExecRole).map((role) => (
                       <Link
                         key={`${clip.id}-${role}`}
                         href={getRoleHref(role)}
