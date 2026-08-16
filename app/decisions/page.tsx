@@ -7,6 +7,7 @@ import {
   listHardenedDecisionRecords,
   loadSavedSessions,
   loadVaultClips,
+  updateVaultClipStatus,
   type MayaVaultClip,
 } from "@/lib/maya/libraryData";
 
@@ -79,10 +80,30 @@ export default function DecisionsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[13px] text-[#cdd6f4] font-medium">{clip.title}</p>
+                      <p className="text-[11px] text-[#585b70] mt-1">
+                        Problem / Query
+                      </p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1">{clip.query || "—"}</p>
+                      <p className="text-[11px] text-[#585b70] mt-3">
+                        Category
+                      </p>
+                      <p className="text-[12px] text-[#cdd6f4] mt-1">{clip.category || "Other"}</p>
+                      <p className="text-[11px] text-[#585b70] mt-3">
+                        Summary
+                      </p>
                       <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">{clip.content}</p>
+                      <p className="text-[11px] text-[#585b70] mt-3">
+                        Actionable steps
+                      </p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">
+                        {clip.actionableSteps || "No steps captured yet."}
+                      </p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-[10px] text-[#585b70]">{clip.createdAt}</p>
+                      <p className="text-[10px] mt-1 uppercase text-[#f9e2af]">
+                        {clip.status || "pending"}
+                      </p>
                       {clip.sessionId && (
                         <Link
                           href={`/library/sessions?session=${encodeURIComponent(clip.sessionId)}`}
@@ -91,6 +112,22 @@ export default function DecisionsPage() {
                           Open session
                         </Link>
                       )}
+                      <div className="flex flex-col gap-2 mt-3">
+                        <button
+                          type="button"
+                          onClick={() => setClippedNotes(updateVaultClipStatus(clip.id, "kept"))}
+                          className="px-3 py-1.5 rounded-lg bg-[#a6e3a1] text-[#1e1e2e] text-[11px] font-semibold"
+                        >
+                          Keep
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setClippedNotes(updateVaultClipStatus(clip.id, "trashed"))}
+                          className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#f38ba8] text-[11px] font-semibold"
+                        >
+                          Trash
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

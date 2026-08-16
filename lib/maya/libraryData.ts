@@ -30,6 +30,10 @@ export interface MayaVaultClip {
   content: string;
   createdAt: string;
   sessionId?: string;
+  query?: string;
+  category?: string;
+  actionableSteps?: string;
+  status?: "pending" | "kept" | "trashed";
 }
 
 const SESSION_STORAGE_KEY = "maya_saved_sessions_v1";
@@ -139,6 +143,20 @@ export function loadVaultClips(
 export function saveVaultClip(clip: MayaVaultClip): MayaVaultClip[] {
   const existing = loadVaultClips();
   const next = [clip, ...existing.filter((item) => item.id !== clip.id)].slice(0, 50);
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(CLIP_STORAGE_KEY, JSON.stringify(next));
+  }
+  return next;
+}
+
+export function updateVaultClipStatus(
+  id: string,
+  status: NonNullable<MayaVaultClip["status"]>
+): MayaVaultClip[] {
+  const existing = loadVaultClips();
+  const next = existing.map((clip) =>
+    clip.id === id ? { ...clip, status } : clip
+  );
   if (typeof window !== "undefined") {
     window.localStorage.setItem(CLIP_STORAGE_KEY, JSON.stringify(next));
   }

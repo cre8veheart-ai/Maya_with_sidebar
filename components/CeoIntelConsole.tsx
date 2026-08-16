@@ -29,6 +29,16 @@ const QUICK_QUERIES = [
   "What internal evidence should shape the next board narrative?",
 ];
 
+const DECISION_CATEGORIES = [
+  "Strategy",
+  "Finance",
+  "Execution",
+  "Org",
+  "Risk",
+  "Board",
+  "Other",
+];
+
 const VAULT_LINKS = [
   { href: "/library/intel", label: "Intel Vault" },
   { href: "/decisions", label: "Decision Vault" },
@@ -58,6 +68,8 @@ export default function CeoIntelConsole() {
   const [mode, setMode] = useState<"provider-synthesis" | "fallback-synthesis" | null>(null);
   const [latestSessionId, setLatestSessionId] = useState("");
   const [clipDraft, setClipDraft] = useState("");
+  const [decisionCategory, setDecisionCategory] = useState("Strategy");
+  const [actionableSteps, setActionableSteps] = useState("");
   const [clipStatus, setClipStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const lens = useMemo(() => loadLens("ceo"), []);
@@ -110,6 +122,13 @@ export default function CeoIntelConsole() {
       setMode(payload.mode || null);
       setLatestSessionId(sessionId);
       setClipDraft(nextAnswer);
+      setActionableSteps(
+        nextAnswer
+          .split("\n")
+          .filter((line) => line.trim().length > 0)
+          .slice(-3)
+          .join("\n")
+      );
       setClipStatus("");
       saveSessionRecord({
         id: sessionId,
@@ -148,6 +167,11 @@ export default function CeoIntelConsole() {
       content,
       createdAt: new Date().toISOString().slice(0, 16).replace("T", " "),
       sessionId: latestSessionId || undefined,
+      query: query.trim() || undefined,
+      category: vault === "decisions" ? decisionCategory : undefined,
+      actionableSteps:
+        vault === "decisions" ? actionableSteps.trim() || undefined : undefined,
+      status: vault === "decisions" ? "pending" : undefined,
     });
     setClipStatus(
       vault === "knowledge"
@@ -244,6 +268,36 @@ export default function CeoIntelConsole() {
                 className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] placeholder-[#585b70] focus:outline-none focus:border-[#89b4fa] transition-colors"
               />
               <div className="flex items-center justify-between gap-3 mt-3 flex-wrap">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                  <label className="block">
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-1.5">
+                      Decision category
+                    </span>
+                    <select
+                      value={decisionCategory}
+                      onChange={(e) => setDecisionCategory(e.target.value)}
+                      className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                    >
+                      {DECISION_CATEGORIES.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-1.5">
+                      Actionable steps
+                    </span>
+                    <textarea
+                      value={actionableSteps}
+                      onChange={(e) => setActionableSteps(e.target.value)}
+                      rows={4}
+                      className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                    />
+                  </label>
+                </div>
+                <div className="flex items-center justify-between gap-3 w-full flex-wrap">
                 <div className="flex gap-2 flex-wrap">
                   <button
                     type="button"
@@ -263,6 +317,7 @@ export default function CeoIntelConsole() {
                 {clipStatus && (
                   <span className="text-[11px] text-[#a6e3a1]">{clipStatus}</span>
                 )}
+                </div>
               </div>
             </div>
           )}
