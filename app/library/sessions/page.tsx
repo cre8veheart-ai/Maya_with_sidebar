@@ -125,7 +125,9 @@ function buildExecReportSections(
   clips
     .filter((clip) => clip.sessionId === session.id)
     .forEach((clip) => {
-      if (clip.sourceRole) consultedRoles.add(clip.sourceRole);
+      if (clip.sourceRole && isExecRole(clip.sourceRole)) {
+        consultedRoles.add(clip.sourceRole);
+      }
       clip.assignedRoles?.forEach((role) => consultedRoles.add(role));
       if (clip.clippedBy && isExecRole(clip.clippedBy)) consultedRoles.add(clip.clippedBy);
     });
@@ -133,7 +135,9 @@ function buildExecReportSections(
   items
     .filter((item) => item.sessionId === session.id)
     .forEach((item) => {
-      consultedRoles.add(item.sourceRole);
+      if (isExecRole(item.sourceRole)) {
+        consultedRoles.add(item.sourceRole);
+      }
       item.targetRoles.forEach((role) => consultedRoles.add(role));
       if (item.clippedBy && isExecRole(item.clippedBy)) consultedRoles.add(item.clippedBy);
     });
