@@ -1,4 +1,5 @@
 import PageShell from "@/components/PageShell";
+import { listHardenedDecisionRecords } from "@/lib/maya/libraryData";
 
 function DecisionRow({
   title,
@@ -30,6 +31,8 @@ function DecisionRow({
 }
 
 export default function DecisionsPage() {
+  const decisions = listHardenedDecisionRecords();
+
   return (
     <PageShell
       title="Decisions"
@@ -41,17 +44,15 @@ export default function DecisionsPage() {
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
             Decision Log
           </h2>
-          <DecisionRow
-            title="Decisions you log here drive Campaigns and vendor lists"
-            owner="All roles"
-            date="—"
-            status="open"
-          />
-          <div className="mt-6 flex items-center justify-center">
-            <p className="text-[12px] text-[#585b70] text-center max-w-xs">
-              Log a decision to start building your org&apos;s institutional record
-            </p>
-          </div>
+          {decisions.map((decision) => (
+            <DecisionRow
+              key={decision.id}
+              title={decision.title}
+              owner="MAYA hardened layer"
+              date={decision.updatedAt}
+              status={decision.confidence === "high" ? "open" : "pending"}
+            />
+          ))}
         </div>
 
         {/* Decision categories */}
@@ -61,13 +62,21 @@ export default function DecisionsPage() {
               By Category
             </h2>
             <div className="space-y-1.5">
-              {["Vendors", "Subcontractors", "Production roster", "Strategy", "Finance", "Other"].map((cat) => (
+              {["Strategy", "Finance", "Execution", "Governance", "Other"].map((cat) => (
                 <div
                   key={cat}
                   className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-[#313244] cursor-pointer"
                 >
                   <span className="text-[13px] text-[#cdd6f4]">{cat}</span>
-                  <span className="text-[11px] text-[#585b70]">0</span>
+                  <span className="text-[11px] text-[#585b70]">
+                    {
+                      decisions.filter((decision) =>
+                        decision.tags.some((tag) =>
+                          tag.toLowerCase().includes(cat.toLowerCase().slice(0, 5))
+                        )
+                      ).length
+                    }
+                  </span>
                 </div>
               ))}
             </div>
@@ -80,7 +89,9 @@ export default function DecisionsPage() {
             <p className="text-[12px] text-[#585b70]">
               Compressed org history — decisions, priority shifts, outcomes — queryable on demand.
             </p>
-            <p className="text-[11px] text-[#585b70] mt-2">Available as decisions accumulate.</p>
+            <p className="text-[11px] text-[#585b70] mt-2">
+              {decisions.length} hardened decision records available now.
+            </p>
           </div>
         </div>
       </div>

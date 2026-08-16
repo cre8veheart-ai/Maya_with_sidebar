@@ -1,13 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
+import { listHardenedKnowledgeRecords } from "@/lib/maya/libraryData";
 
 const VAULT_TYPES = ["All", "Overrides", "Context", "Decisions", "Scope", "Other"];
 
 export default function KnowledgePage() {
+  const entries = useMemo(() => listHardenedKnowledgeRecords(), []);
   const [activeType, setActiveType] = useState("All");
   const [search, setSearch] = useState("");
+  const filteredEntries = entries.filter((entry) => {
+    const query = search.trim().toLowerCase();
+    const matchesQuery =
+      !query ||
+      [entry.title, entry.summary, entry.content, entry.tags.join(" ")]
+        .join(" ")
+        .toLowerCase()
+        .includes(query);
+    const matchesType =
+      activeType === "All" ||
+      entry.tags.some((tag) => tag.toLowerCase().includes(activeType.toLowerCase()));
+    return matchesQuery && matchesType;
+  });
 
   return (
     <PageShell
@@ -52,14 +67,25 @@ export default function KnowledgePage() {
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
               Stored Knowledge
             </h2>
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <span className="text-3xl">🔒</span>
-              <p className="text-[13px] text-[#585b70] text-center max-w-xs">
-                Knowledge builds as you use Maya
-              </p>
-              <p className="text-[12px] text-[#585b70] text-center max-w-xs">
-                Every correction, override, and context note is stored here — owned by your org, not by Maya
-              </p>
+            <div className="space-y-3">
+              {filteredEntries.map((entry) => (
+                <div key={entry.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[13px] text-[#cdd6f4] font-medium">{entry.title}</p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1">{entry.summary}</p>
+                    </div>
+                    <span className="text-[10px] text-[#585b70] shrink-0">{entry.updatedAt}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {entry.tags.map((tag) => (
+                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#a6adc8]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -72,10 +98,10 @@ export default function KnowledgePage() {
             </h2>
             <div className="space-y-3">
               {[
-                { label: "Entries", value: "0" },
-                { label: "Roles covered", value: "0" },
-                { label: "Overrides stored", value: "0" },
-                { label: "Context notes", value: "0" },
+                { label: "Entries", value: `${entries.length}` },
+                { label: "Roles covered", value: "2" },
+                { label: "Overrides stored", value: `${entries.filter((entry) => entry.tags.includes("overrides")).length}` },
+                { label: "Context notes", value: `${entries.filter((entry) => entry.tags.includes("memory") || entry.tags.includes("board")).length}` },
               ].map(({ label, value }) => (
                 <div
                   key={label}
@@ -112,7 +138,7 @@ export default function KnowledgePage() {
               Retrieved on demand, not loaded wholesale. Browsable as your vault grows.
             </p>
             <p className="text-[11px] text-[#585b70] mt-3 italic">
-              Available as knowledge accumulates.
+              {entries.length} hardened knowledge records are queryable now.
             </p>
           </div>
         </div>

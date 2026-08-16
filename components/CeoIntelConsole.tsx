@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import ProviderControls from "@/components/ProviderControls";
+import { saveSessionRecord } from "@/lib/maya/libraryData";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
   getProviderModel,
@@ -25,6 +27,14 @@ const QUICK_QUERIES = [
   "What does MAYA think I should focus on this week as CEO?",
   "Where is cross-functional drift most likely to hurt execution right now?",
   "What internal evidence should shape the next board narrative?",
+];
+
+const VAULT_LINKS = [
+  { href: "/library/intel", label: "Intel Vault" },
+  { href: "/decisions", label: "Decision Vault" },
+  { href: "/library/knowledge", label: "Knowledge Vault" },
+  { href: "/library/sessions", label: "Sessions" },
+  { href: "/library/documents", label: "Saved Files" },
 ];
 
 const SOURCE_META: Record<IntelSource["source"], { label: string; accent: string }> = {
@@ -89,9 +99,20 @@ export default function CeoIntelConsole() {
         throw new Error(payload.error || "CEO intel request failed");
       }
 
-      setAnswer(payload.answer || "No MAYA synthesis returned.");
-      setSources(Array.isArray(payload.sources) ? payload.sources : []);
+      const nextAnswer = payload.answer || "No MAYA synthesis returned.";
+      const nextSources = Array.isArray(payload.sources) ? payload.sources : [];
+      setAnswer(nextAnswer);
+      setSources(nextSources);
       setMode(payload.mode || null);
+      saveSessionRecord({
+        id: `${Date.now()}`,
+        role: "ceo",
+        title: trimmed,
+        query: trimmed,
+        answer: nextAnswer,
+        savedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+        sourceCount: nextSources.length,
+      });
     } catch (error) {
       setAnswer(
         error instanceof Error
@@ -143,6 +164,17 @@ export default function CeoIntelConsole() {
       </div>
 
       <div className="px-4 py-3 border-b border-[#313244] shrink-0">
+        <div className="flex flex-wrap gap-2 mb-3">
+          {VAULT_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#181825] border border-[#313244] text-[#a6adc8] hover:bg-[#313244] hover:text-[#cdd6f4] transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
         <div className="flex flex-wrap gap-2">
           {QUICK_QUERIES.map((quickQuery) => (
             <button

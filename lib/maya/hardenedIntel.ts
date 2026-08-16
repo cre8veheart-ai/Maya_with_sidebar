@@ -99,6 +99,10 @@ const HARDENED_INTEL_RECORDS: HardenedIntelRecord[] = [
   },
 ];
 
+export function listHardenedIntelRecords(): HardenedIntelRecord[] {
+  return HARDENED_INTEL_RECORDS;
+}
+
 function tokenize(text: string): string[] {
   return text
     .toLowerCase()
