@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
+import { getRoleHref, getRoleLabel } from "@/lib/maya/execRouting";
 import {
   listHardenedKnowledgeRecords,
   loadVaultClips,
@@ -89,6 +91,48 @@ export default function KnowledgePage() {
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa]">
                       clipped-discussion
                     </span>
+                    {clip.clippedBy && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#a6adc8]">
+                        clipped by {getRoleLabel(clip.clippedBy)}
+                      </span>
+                    )}
+                    {clip.assignedRoles?.map((role) => (
+                      <Link
+                        key={`${clip.id}-${role}`}
+                        href={getRoleHref(role)}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa] hover:text-[#b4d0fb]"
+                      >
+                        route to {getRoleLabel(role)}
+                      </Link>
+                    ))}
+                  </div>
+                  {clip.clipComment && (
+                    <div className="mt-3">
+                      <p className="text-[11px] text-[#585b70]">Clipper comment</p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">
+                        {clip.clipComment}
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    {clip.sessionId && (
+                      <Link
+                        href={`/library/sessions?session=${encodeURIComponent(clip.sessionId)}`}
+                        className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                      >
+                        Open full session
+                      </Link>
+                    )}
+                    {clip.vendorUrl && (
+                      <a
+                        href={clip.vendorUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                      >
+                        {clip.vendorName ? `Vendor · ${clip.vendorName}` : "Open vendor link"}
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

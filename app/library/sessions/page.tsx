@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
 import { loadSavedSessions } from "@/lib/maya/libraryData";
@@ -172,6 +173,42 @@ export default function SessionsPage() {
                 <div>
                   <p className="text-[12px] text-[#585b70]">Saved answer</p>
                   <p className="text-[12px] text-[#a6adc8] mt-1">{selectedSession.answer}</p>
+                </div>
+                {selectedSession.transcript && selectedSession.transcript.length > 0 && (
+                  <div>
+                    <p className="text-[12px] text-[#585b70]">Full session</p>
+                    <div className="mt-2 space-y-2">
+                      {selectedSession.transcript.map((message, index) => (
+                        <div
+                          key={`${selectedSession.id}-${index}`}
+                          className="rounded-lg border border-[#313244] bg-[#181825] px-3 py-2"
+                        >
+                          <p className="text-[10px] uppercase text-[#89b4fa]">
+                            {message.role}
+                          </p>
+                          <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">
+                            {message.content}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <p className="text-[12px] text-[#585b70]">Estimated query fee</p>
+                  <p className="text-[12px] text-[#a6adc8] mt-1">
+                    ${selectedSession.estimatedFeeUsd?.toFixed(4) ?? "0.0000"} ·{" "}
+                    {selectedSession.estimatedPromptTokens ?? 0} prompt tokens ·{" "}
+                    {selectedSession.estimatedCompletionTokens ?? 0} completion tokens
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href="/tasks"
+                    className="text-[12px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                  >
+                    Open routed working items
+                  </Link>
                 </div>
               </div>
             ) : (

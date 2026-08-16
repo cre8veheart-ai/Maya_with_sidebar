@@ -207,7 +207,10 @@ export default function RoleChat({ role }: RoleChatProps) {
         setMessages([...thread, { role: "assistant", content: full }]);
       }
 
-      const completedThread = [...thread, { role: "assistant", content: full }];
+      const completedThread: MayaMessage[] = [
+        ...thread,
+        { role: "assistant", content: full },
+      ];
       setMessages(completedThread);
       persistSession(completedThread);
     } catch (error) {
@@ -215,7 +218,10 @@ export default function RoleChat({ role }: RoleChatProps) {
         error instanceof Error
           ? error.message
           : "Connection error. Check your provider configuration.";
-      const erroredThread = [...thread, { role: "assistant", content: message }];
+      const erroredThread: MayaMessage[] = [
+        ...thread,
+        { role: "assistant", content: message },
+      ];
       setMessages(erroredThread);
       persistSession(erroredThread);
     } finally {
