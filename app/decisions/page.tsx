@@ -1,5 +1,14 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { listHardenedDecisionRecords } from "@/lib/maya/libraryData";
+import {
+  listHardenedDecisionRecords,
+  loadSavedSessions,
+  loadVaultClips,
+  type MayaVaultClip,
+} from "@/lib/maya/libraryData";
 
 function DecisionRow({
   title,
@@ -32,6 +41,13 @@ function DecisionRow({
 
 export default function DecisionsPage() {
   const decisions = listHardenedDecisionRecords();
+  const [clippedNotes, setClippedNotes] = useState<MayaVaultClip[]>([]);
+  const [sessions, setSessions] = useState(loadSavedSessions());
+
+  useEffect(() => {
+    setClippedNotes(loadVaultClips("decisions"));
+    setSessions(loadSavedSessions());
+  }, []);
 
   return (
     <PageShell
@@ -53,6 +69,34 @@ export default function DecisionsPage() {
               status={decision.confidence === "high" ? "open" : "pending"}
             />
           ))}
+          {clippedNotes.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-[#313244] space-y-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
+                Clipped from CEO discussions
+              </p>
+              {clippedNotes.map((clip) => (
+                <div key={clip.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[13px] text-[#cdd6f4] font-medium">{clip.title}</p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">{clip.content}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-[10px] text-[#585b70]">{clip.createdAt}</p>
+                      {clip.sessionId && (
+                        <Link
+                          href={`/library/sessions?session=${encodeURIComponent(clip.sessionId)}`}
+                          className="text-[10px] text-[#89b4fa] hover:text-[#b4d0fb] mt-1 inline-block"
+                        >
+                          Open session
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Decision categories */}
@@ -92,6 +136,25 @@ export default function DecisionsPage() {
             <p className="text-[11px] text-[#585b70] mt-2">
               {decisions.length} hardened decision records available now.
             </p>
+          </div>
+          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-3">
+              Related Sessions
+            </h2>
+            <div className="space-y-3">
+              {sessions.slice(0, 3).map((session) => (
+                <div key={session.id} className="rounded-lg border border-[#313244] bg-[#181825] p-3">
+                  <p className="text-[12px] text-[#cdd6f4] font-medium">{session.title}</p>
+                  <p className="text-[11px] text-[#585b70] mt-1">{session.savedAt}</p>
+                  <Link
+                    href={`/library/sessions?session=${encodeURIComponent(session.id)}`}
+                    className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb] mt-2 inline-block"
+                  >
+                    Read saved session
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

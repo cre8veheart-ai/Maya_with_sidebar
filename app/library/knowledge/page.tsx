@@ -1,15 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { listHardenedKnowledgeRecords } from "@/lib/maya/libraryData";
+import {
+  listHardenedKnowledgeRecords,
+  loadVaultClips,
+  type MayaVaultClip,
+} from "@/lib/maya/libraryData";
 
 const VAULT_TYPES = ["All", "Overrides", "Context", "Decisions", "Scope", "Other"];
 
 export default function KnowledgePage() {
   const entries = useMemo(() => listHardenedKnowledgeRecords(), []);
+  const [clips, setClips] = useState<MayaVaultClip[]>([]);
   const [activeType, setActiveType] = useState("All");
   const [search, setSearch] = useState("");
+  useEffect(() => {
+    setClips(loadVaultClips("knowledge"));
+  }, []);
   const filteredEntries = entries.filter((entry) => {
     const query = search.trim().toLowerCase();
     const matchesQuery =
@@ -68,6 +76,22 @@ export default function KnowledgePage() {
               Stored Knowledge
             </h2>
             <div className="space-y-3">
+              {clips.map((clip) => (
+                <div key={clip.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[13px] text-[#cdd6f4] font-medium">{clip.title}</p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1 whitespace-pre-wrap">{clip.content}</p>
+                    </div>
+                    <span className="text-[10px] text-[#585b70] shrink-0">{clip.createdAt}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#89b4fa]">
+                      clipped-discussion
+                    </span>
+                  </div>
+                </div>
+              ))}
               {filteredEntries.map((entry) => (
                 <div key={entry.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -98,10 +122,10 @@ export default function KnowledgePage() {
             </h2>
             <div className="space-y-3">
               {[
-                { label: "Entries", value: `${entries.length}` },
+                { label: "Entries", value: `${entries.length + clips.length}` },
                 { label: "Roles covered", value: "2" },
                 { label: "Overrides stored", value: `${entries.filter((entry) => entry.tags.includes("overrides")).length}` },
-                { label: "Context notes", value: `${entries.filter((entry) => entry.tags.includes("memory") || entry.tags.includes("board")).length}` },
+                { label: "Context notes", value: `${entries.filter((entry) => entry.tags.includes("memory") || entry.tags.includes("board")).length + clips.length}` },
               ].map(({ label, value }) => (
                 <div
                   key={label}

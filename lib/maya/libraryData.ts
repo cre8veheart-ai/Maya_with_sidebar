@@ -23,7 +23,17 @@ export interface MayaSessionRecord {
   sourceCount: number;
 }
 
+export interface MayaVaultClip {
+  id: string;
+  vault: "knowledge" | "decisions";
+  title: string;
+  content: string;
+  createdAt: string;
+  sessionId?: string;
+}
+
 const SESSION_STORAGE_KEY = "maya_saved_sessions_v1";
+const CLIP_STORAGE_KEY = "maya_saved_clips_v1";
 
 const SEED_SAVED_FILES: MayaSavedFile[] = [
   {
@@ -108,6 +118,29 @@ export function saveSessionRecord(session: MayaSessionRecord): MayaSessionRecord
   const next = [session, ...existing.filter((item) => item.id !== session.id)].slice(0, 30);
   if (typeof window !== "undefined") {
     window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(next));
+  }
+  return next;
+}
+
+export function loadVaultClips(
+  vault?: MayaVaultClip["vault"]
+): MayaVaultClip[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(CLIP_STORAGE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as MayaVaultClip[]) : [];
+    if (!Array.isArray(parsed)) return [];
+    return vault ? parsed.filter((clip) => clip.vault === vault) : parsed;
+  } catch {
+    return [];
+  }
+}
+
+export function saveVaultClip(clip: MayaVaultClip): MayaVaultClip[] {
+  const existing = loadVaultClips();
+  const next = [clip, ...existing.filter((item) => item.id !== clip.id)].slice(0, 50);
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(CLIP_STORAGE_KEY, JSON.stringify(next));
   }
   return next;
 }

@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ProviderControls from "@/components/ProviderControls";
-import { saveSessionRecord } from "@/lib/maya/libraryData";
+import { saveSessionRecord, saveVaultClip } from "@/lib/maya/libraryData";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
   getProviderModel,
@@ -56,6 +56,9 @@ export default function CeoIntelConsole() {
   );
   const [sources, setSources] = useState<IntelSource[]>([]);
   const [mode, setMode] = useState<"provider-synthesis" | "fallback-synthesis" | null>(null);
+  const [latestSessionId, setLatestSessionId] = useState("");
+  const [clipDraft, setClipDraft] = useState("");
+  const [clipStatus, setClipStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const lens = useMemo(() => loadLens("ceo"), []);
 
@@ -101,11 +104,15 @@ export default function CeoIntelConsole() {
 
       const nextAnswer = payload.answer || "No MAYA synthesis returned.";
       const nextSources = Array.isArray(payload.sources) ? payload.sources : [];
+      const sessionId = `${Date.now()}`;
       setAnswer(nextAnswer);
       setSources(nextSources);
       setMode(payload.mode || null);
+      setLatestSessionId(sessionId);
+      setClipDraft(nextAnswer);
+      setClipStatus("");
       saveSessionRecord({
-        id: `${Date.now()}`,
+        id: sessionId,
         role: "ceo",
         title: trimmed,
         query: trimmed,
@@ -129,6 +136,24 @@ export default function CeoIntelConsole() {
   function submit(e: FormEvent) {
     e.preventDefault();
     void runQuery(query);
+  }
+
+  function saveClip(vault: "knowledge" | "decisions") {
+    const content = clipDraft.trim();
+    if (!content) return;
+    saveVaultClip({
+      id: `${Date.now()}-${vault}`,
+      vault,
+      title: query.trim() || "CEO clipped note",
+      content,
+      createdAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+      sessionId: latestSessionId || undefined,
+    });
+    setClipStatus(
+      vault === "knowledge"
+        ? "Saved clipped discussion to Knowledge Vault."
+        : "Saved clipped discussion to Decision Vault."
+    );
   }
 
   return (
@@ -191,12 +216,56 @@ export default function CeoIntelConsole() {
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         <div className="rounded-xl border border-[#313244] bg-[#181825] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-2">
-            MAYA Readout
-          </p>
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
+              MAYA Readout
+            </p>
+            {latestSessionId && (
+              <Link
+                href={`/library/sessions?session=${encodeURIComponent(latestSessionId)}`}
+                className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+              >
+                Open saved session
+              </Link>
+            )}
+          </div>
           <div className="text-[13px] leading-relaxed whitespace-pre-wrap text-[#cdd6f4]">
             {loading ? "Pulling from MAYA hardened intel layer…" : answer}
           </div>
+          {!loading && answer && (
+            <div className="mt-4 rounded-lg border border-[#313244] bg-[#1e1e2e] p-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-2">
+                Clip & Save Part of This Discussion
+              </p>
+              <textarea
+                value={clipDraft}
+                onChange={(e) => setClipDraft(e.target.value)}
+                rows={5}
+                className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] placeholder-[#585b70] focus:outline-none focus:border-[#89b4fa] transition-colors"
+              />
+              <div className="flex items-center justify-between gap-3 mt-3 flex-wrap">
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => saveClip("knowledge")}
+                    className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#89b4fa] text-[11px] font-semibold hover:bg-[#45475a] transition-colors"
+                  >
+                    Clip to Knowledge Vault
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => saveClip("decisions")}
+                    className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#a6e3a1] text-[11px] font-semibold hover:bg-[#45475a] transition-colors"
+                  >
+                    Clip to Decision Vault
+                  </button>
+                </div>
+                {clipStatus && (
+                  <span className="text-[11px] text-[#a6e3a1]">{clipStatus}</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="rounded-xl border border-[#313244] bg-[#1e1e2e] p-4">
