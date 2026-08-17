@@ -39,8 +39,6 @@ export default function BetaInviteGate({ onApproved }: Props) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
-  const [inviteCodes, setInviteCodes] = useState<string[]>([]);
-  const [copied, setCopied] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "", title: "", company: "", industry: "",
@@ -60,7 +58,6 @@ export default function BetaInviteGate({ onApproved }: Props) {
       });
       const data = await res.json();
       if (data.valid) {
-        setInviteCodes(data.inviteCodes ?? []);
         setStep("profile");
       } else {
         setCodeError("That code isn't recognised. Check with your contact and try again.");
@@ -77,7 +74,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
     const built: BetaProfile = {
       ...form,
       approvedAt: new Date().toISOString(),
-      inviteCodes,
+      inviteCodes: [],
     };
     saveBetaProfile(built);
     setProfile(built);
@@ -86,12 +83,6 @@ export default function BetaInviteGate({ onApproved }: Props) {
 
   function field(id: keyof typeof form) {
     return (v: string) => setForm((f) => ({ ...f, [id]: v }));
-  }
-
-  function copyCode(c: string) {
-    navigator.clipboard.writeText(c).catch(() => {});
-    setCopied(c);
-    setTimeout(() => setCopied(null), 2000);
   }
 
   return (
@@ -251,30 +242,7 @@ export default function BetaInviteGate({ onApproved }: Props) {
               <p className="text-[11px] text-[#585b70]">{profile.industry} · {profile.companySize}</p>
             </div>
 
-            {inviteCodes.length > 0 && (
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-2">
-                  Your 3 Invite Codes — Share with Fellow Executives
-                </p>
-                <div className="space-y-2">
-                  {inviteCodes.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => copyCode(c)}
-                      className="w-full flex items-center justify-between px-4 py-2.5 bg-[#313244] rounded-xl hover:bg-[#45475a] transition-colors group"
-                    >
-                      <span className="text-[13px] font-mono text-[#89b4fa] tracking-wider">{c}</span>
-                      <span className="text-[11px] text-[#585b70] group-hover:text-[#a6adc8] transition-colors">
-                        {copied === c ? "Copied ✓" : "Copy"}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[11px] text-[#585b70] mt-2">
-                  Each code is single-use. Share only with executives you&apos;d vouch for personally.
-                </p>
-              </div>
-            )}
+
 
             <button
               onClick={() => onApproved(profile)}

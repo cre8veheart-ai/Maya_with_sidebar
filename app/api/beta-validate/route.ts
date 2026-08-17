@@ -1,35 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { redeemInvite } from "@/lib/beta/invites";
+import { BETA_SESSION_COOKIE, betaSessionMaxAge, createBetaSession, hasBetaSessionSecret, verifyBetaSession } from "@/lib/beta/session";
 
-function sanitize(s: unknown): string {
-  if (typeof s !== "string") return "";
-  return s.trim().toLowerCase();
+function normalizeCode(value: unknown): string {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
-export async function POST(req: NextRequest) {
+
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ authorized: Boolean(verifyBetaSession(request.cookies.get(BETA_SESSION_COOKIE)?.value)) });
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
-    const submitted = sanitize(body.code);
+    const code = normalizeCode((await request.json()).code);
+    if (!hasBetaSessionSecret() || !(await redeemInvite(code))) return NextResponse.json({ valid: false }, { status: 401 });
 
-    if (!submitted) {
-      return NextResponse.json({ valid: false });
-    }
-
-    const pool = (process.env.BETA_INVITE_CODES ?? "")
-      .split(",")
-      .map((c) => c.trim().toLowerCase())
-      .filter(Boolean);
-
-    if (!pool.length || !pool.includes(submitted)) {
-      return NextResponse.json({ valid: false });
-    }
-
-    // Return 3 shareable codes from the pool (excluding the one just used)
-    const others = pool.filter((c) => c !== submitted);
-    const shuffled = [...others].sort(() => Math.random() - 0.5);
-    const inviteCodes = shuffled.slice(0, 3).map((c) => c.toUpperCase());
-
-    return NextResponse.json({ valid: true, inviteCodes });
+    const response = NextResponse.json({ valid: true });
+    response.cookies.set(BETA_SESSION_COOKIE, createBetaSession(), {
+      httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: betaSessionMaxAge,
+    });
+    return response;
   } catch {
-    return NextResponse.json({ valid: false }, { status: 500 });
+    return NextResponse.json({ valid: false }, { status: 400 });
   }
 }
