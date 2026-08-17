@@ -1,23 +1,20 @@
 import type { IVaultStorage } from "./IVaultStorage";
-import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens } from "@/lib/maya/types";
+import type { RoleLens, UserProfile } from "@/lib/maya/types";
 
 const KEYS = {
-  status: "maya_beta_status",
-  profile: "maya_beta_profile",
-  survey: "maya_beta_last_survey",
+  profile: "maya_profile",
   lens: (role: string) => `maya_lens_${role}`,
 };
 
 export class LocalStorageAdapter implements IVaultStorage {
-  async getProfile(): Promise<BetaProfile | null> {
+  async getProfile(): Promise<UserProfile | null> {
     try {
       const raw = localStorage.getItem(KEYS.profile);
-      return raw ? (JSON.parse(raw) as BetaProfile) : null;
+      return raw ? (JSON.parse(raw) as UserProfile) : null;
     } catch { return null; }
   }
 
-  async saveProfile(profile: BetaProfile): Promise<void> {
+  async saveProfile(profile: UserProfile): Promise<void> {
     localStorage.setItem(KEYS.profile, JSON.stringify(profile));
   }
 
@@ -30,22 +27,6 @@ export class LocalStorageAdapter implements IVaultStorage {
 
   async saveLens(lens: RoleLens): Promise<void> {
     localStorage.setItem(KEYS.lens(lens.role), JSON.stringify(lens));
-  }
-
-  async getLastSurvey(): Promise<string | null> {
-    return localStorage.getItem(KEYS.survey);
-  }
-
-  async saveLastSurvey(iso: string): Promise<void> {
-    localStorage.setItem(KEYS.survey, iso);
-  }
-
-  async getBetaStatus(): Promise<"approved" | "pending"> {
-    return localStorage.getItem(KEYS.status) === "approved" ? "approved" : "pending";
-  }
-
-  async setBetaApproved(): Promise<void> {
-    localStorage.setItem(KEYS.status, "approved");
   }
 
   async clear(): Promise<void> {

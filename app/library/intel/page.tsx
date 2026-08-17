@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PageShell from "@/components/PageShell";
+import { listHardenedIntelVaultRecords } from "@/lib/maya/libraryData";
 
 const EXTERNAL_SOURCES = [
   {
@@ -109,6 +110,7 @@ function SourceCard({
 }
 
 export default function IntelVaultPage() {
+  const storedIntel = useMemo(() => listHardenedIntelVaultRecords(), []);
   const [connected, setConnected] = useState<Set<string>>(new Set());
 
   const toggleSource = (id: string) => {
@@ -131,14 +133,25 @@ export default function IntelVaultPage() {
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086] mb-4">
               Stored Intel — Internal
             </h2>
-            <div className="flex flex-col items-center justify-center py-10 gap-2">
-              <span className="text-3xl">🧠</span>
-              <p className="text-[13px] text-[#585b70] text-center max-w-xs">
-                Intel accumulates through your sessions — each correction, scope redirect, and context note trains your exec lens
-              </p>
-              <p className="text-[12px] text-[#585b70] text-center max-w-xs mt-1">
-                Stored here, recalled on demand. Owned by your org.
-              </p>
+            <div className="space-y-3">
+              {storedIntel.map((entry) => (
+                <div key={entry.id} className="rounded-lg border border-[#313244] bg-[#181825] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[13px] font-semibold text-[#cdd6f4]">{entry.title}</p>
+                      <p className="text-[12px] text-[#a6adc8] mt-1">{entry.summary}</p>
+                    </div>
+                    <span className="text-[10px] text-[#585b70] shrink-0">{entry.updatedAt}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {entry.tags.map((tag) => (
+                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#313244] text-[#a6adc8]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -154,7 +167,9 @@ export default function IntelVaultPage() {
                     className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-[#313244]"
                   >
                     <span className="text-[13px] text-[#cdd6f4]">{role}</span>
-                    <span className="text-[11px] text-[#585b70]">0 entries</span>
+                    <span className="text-[11px] text-[#585b70]">
+                      {storedIntel.filter((entry) => entry.roleScope === "all" || entry.roleScope.toUpperCase() === role).length} entries
+                    </span>
                   </div>
                 ))}
               </div>

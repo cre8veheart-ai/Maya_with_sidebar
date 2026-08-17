@@ -22,3 +22,15 @@ export interface ProviderSettings {
   openClawModel: string;
   ludicrousMode: boolean;
 }
+
+export interface UserProfile {
+  name: string;
+  title: string;
+  company: string;
+  industry: string;
+  companySize: string;
+  primaryRole: string;
+  useCase: string;
+  approvedAt: string;
+  inviteCodes: string[];
+}

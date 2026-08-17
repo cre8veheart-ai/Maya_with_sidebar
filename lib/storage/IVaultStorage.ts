@@ -1,14 +1,9 @@
-import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens } from "@/lib/maya/types";
+import type { RoleLens, UserProfile } from "@/lib/maya/types";
 
 export interface IVaultStorage {
-  getProfile(): Promise<BetaProfile | null>;
-  saveProfile(profile: BetaProfile): Promise<void>;
+  getProfile(): Promise<UserProfile | null>;
+  saveProfile(profile: UserProfile): Promise<void>;
   getLens(role: string): Promise<RoleLens | null>;
   saveLens(lens: RoleLens): Promise<void>;
-  getLastSurvey(): Promise<string | null>;
-  saveLastSurvey(iso: string): Promise<void>;
-  getBetaStatus(): Promise<"approved" | "pending">;
-  setBetaApproved(): Promise<void>;
   clear(): Promise<void>;
 }
