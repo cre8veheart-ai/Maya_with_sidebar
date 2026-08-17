@@ -51,6 +51,10 @@ const PROVIDER_RATES: Record<MayaProvider, { inputPerToken: number; outputPerTok
     inputPerToken: 1 / 1_000_000,
     outputPerToken: 4 / 1_000_000,
   },
+  openai: {
+    inputPerToken: 0.15 / 1_000_000,
+    outputPerToken: 0.6 / 1_000_000,
+  },
 };
 
 interface RoleChatProps {
@@ -73,6 +77,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     provider: "anthropic",
     anthropicModel: "",
     openClawModel: "",
+    openAiModel: "",
     ludicrousMode: false,
   });
   const [messages, setMessages] = useState<MayaMessage[]>([]);

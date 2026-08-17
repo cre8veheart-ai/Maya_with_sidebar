@@ -16,13 +16,17 @@ export default function ProviderControls({
   const activeModel =
     settings.provider === "anthropic"
       ? settings.anthropicModel
-      : settings.openClawModel;
+      : settings.provider === "openai"
+        ? settings.openAiModel
+        : settings.openClawModel;
 
   function updateModel(value: string) {
     onChange(
       settings.provider === "anthropic"
         ? { ...settings, anthropicModel: value }
-        : { ...settings, openClawModel: value }
+        : settings.provider === "openai"
+          ? { ...settings, openAiModel: value }
+          : { ...settings, openClawModel: value }
     );
   }
 
@@ -39,7 +43,7 @@ export default function ProviderControls({
           <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
             Provider
           </span>
-          {(["anthropic", "openclaw"] as const).map((provider) => (
+          {(["anthropic", "openai", "openclaw"] as const).map((provider) => (
             <button
               key={provider}
               type="button"
@@ -50,7 +54,11 @@ export default function ProviderControls({
                   : "bg-[#313244] text-[#a6adc8] hover:bg-[#45475a]"
               }`}
             >
-              {provider === "anthropic" ? "Claude" : "OpenClaw"}
+              {provider === "anthropic"
+                ? "Claude"
+                : provider === "openai"
+                  ? "ChatGPT"
+                  : "OpenClaw"}
             </button>
           ))}
         </div>
@@ -65,7 +73,9 @@ export default function ProviderControls({
             placeholder={
               settings.provider === "anthropic"
                 ? "Optional Claude model override"
-                : "Optional OpenClaw route or model"
+                : settings.provider === "openai"
+                  ? "Optional ChatGPT model override"
+                  : "Optional OpenClaw route or model"
             }
             className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[13px] text-[#cdd6f4] placeholder-[#585b70] focus:outline-none focus:border-[#89b4fa] transition-colors"
           />

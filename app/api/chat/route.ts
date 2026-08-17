@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { BETA_SESSION_COOKIE, verifyBetaSession } from "@/lib/beta/session";
 import {
   buildCommunityContextMessage,
   buildCommunitySystemPrompt,
@@ -23,19 +22,7 @@ type ChatWorkspace = "exec" | "community";
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
-const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw"]);
-const requestsBySession = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const RATE_LIMIT_MAX_REQUESTS = 20;
-
-function allowRequest(sessionId: string): boolean {
-  const now = Date.now();
-  const requests = (requestsBySession.get(sessionId) ?? []).filter((time) => now - time < RATE_LIMIT_WINDOW_MS);
-  if (requests.length >= RATE_LIMIT_MAX_REQUESTS) return false;
-  requests.push(now);
-  requestsBySession.set(sessionId, requests);
-  return true;
-}
+const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -136,9 +123,6 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
 }
 
 export async function POST(req: NextRequest) {
-  const session = verifyBetaSession(req.cookies.get(BETA_SESSION_COOKIE)?.value);
-  if (!session) return new Response(JSON.stringify({ error: "Beta access required" }), { status: 401, headers: { "Content-Type": "application/json" } });
-  if (!allowRequest(session.sub)) return new Response(JSON.stringify({ error: "Hourly chat limit reached. Please try again later." }), { status: 429, headers: { "Content-Type": "application/json" } });
 
   let workspace: ChatWorkspace;
   let lens: RoleLens;
@@ -158,12 +142,9 @@ export async function POST(req: NextRequest) {
         : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
-    // Executive orchestration is server-controlled and never selected by the
-    // browser. Community chat retains its existing user-facing provider tools.
-    provider = parseProvider(workspace === "community" ? body.provider : undefined);
-    model = workspace === "community" ? parseModel(body.model) : "";
-    ludicrousMode =
-      workspace === "community" ? parseLudicrousMode(body.ludicrousMode) : false;
+    provider = parseProvider(body.provider);
+    model = parseModel(body.model);
+    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
     communityContext = parseCommunityContext(body.communityContext);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid request body" }), {

@@ -6,11 +6,12 @@ const DEFAULT_SETTINGS: ProviderSettings = {
   provider: "anthropic",
   anthropicModel: "",
   openClawModel: "",
+  openAiModel: "",
   ludicrousMode: false,
 };
 
 function isProvider(value: unknown): value is MayaProvider {
-  return value === "anthropic" || value === "openclaw";
+  return value === "anthropic" || value === "openclaw" || value === "openai";
 }
 
 export function loadProviderSettings(): ProviderSettings {
@@ -29,6 +30,8 @@ export function loadProviderSettings(): ProviderSettings {
         typeof parsed.anthropicModel === "string" ? parsed.anthropicModel : "",
       openClawModel:
         typeof parsed.openClawModel === "string" ? parsed.openClawModel : "",
+      openAiModel:
+        typeof parsed.openAiModel === "string" ? parsed.openAiModel : "",
       ludicrousMode: parsed.ludicrousMode === true,
     };
   } catch {
@@ -50,7 +53,7 @@ export function updateProvider(
 }
 
 export function getProviderModel(settings: ProviderSettings): string {
-  return settings.provider === "anthropic"
-    ? settings.anthropicModel.trim()
-    : settings.openClawModel.trim();
+  if (settings.provider === "anthropic") return settings.anthropicModel.trim();
+  if (settings.provider === "openai") return settings.openAiModel.trim();
+  return settings.openClawModel.trim();
 }

@@ -4,6 +4,7 @@ import type { MayaMessage, MayaProvider } from "./types";
 const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-5";
 const DEFAULT_OPENCLAW_MODEL = "openclaw";
 const DEFAULT_GEMINI_MODEL = "gemini-3.6-flash";
+const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
 
 interface ProviderRequest {
   provider: MayaProvider;
@@ -233,6 +234,54 @@ async function openClawTextResponse({
   throw new Error("OpenClaw returned no assistant content");
 }
 
+async function* streamOpenAIResponse({
+  messages,
+  systemPrompt,
+  execContextMessage,
+  model,
+}: ProviderRequest): AsyncGenerator<string> {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY not configured");
+  }
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + apiKey,
+    },
+    body: JSON.stringify({
+      model: model || process.env.OPENAI_MODEL || DEFAULT_OPENAI_MODEL,
+      stream: false,
+      max_tokens: 1400,
+      temperature: 0.5,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...buildMessageThread(messages, execContextMessage),
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(errorBody || `OpenAI request failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+
+  const content = payload.choices?.[0]?.message?.content;
+  if (typeof content === "string") {
+    yield content;
+    return;
+  }
+
+  throw new Error("OpenAI returned no assistant content");
+}
+
+
 async function* streamOpenClawResponse(
   request: ProviderRequest
 ): AsyncGenerator<string> {
@@ -252,7 +301,7 @@ async function* streamOpenClawResponse(
 export async function createChatProviderStream(
   request: ProviderRequest
 ): Promise<AsyncGenerator<string>> {
-  const validProviders: MayaProvider[] = ["anthropic", "openclaw"];
+  const validProviders: MayaProvider[] = ["anthropic", "openclaw", "openai"];
   if (!validProviders.includes(request.provider)) {
     throw new Error(`Unsupported provider: "${request.provider}"`);
   }
@@ -270,6 +319,10 @@ export async function createChatProviderStream(
 
   if (request.provider === "openclaw") {
     return streamOpenClawResponse(enrichedRequest);
+  }
+
+  if (request.provider === "openai") {
+    return streamOpenAIResponse(enrichedRequest);
   }
 
   return streamAnthropicResponse(enrichedRequest);

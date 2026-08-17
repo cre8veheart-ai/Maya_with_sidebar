@@ -181,6 +181,7 @@ export default function ChatPage() {
     provider: "anthropic",
     anthropicModel: "",
     openClawModel: "",
+    openAiModel: "",
     ludicrousMode: false,
   });
   const [posts, setPosts] = useState<CommunityPost[]>(SEED_POSTS);
