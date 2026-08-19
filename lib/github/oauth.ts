@@ -5,7 +5,7 @@ export function getAuthorizationUrl(state: string): string {
   const params = new URLSearchParams({
     client_id: process.env.GITHUB_CLIENT_ID ?? "",
     redirect_uri: getCallbackUrl(),
-    scope: "repo read:user user:email",
+    scope: "repo admin:repo_hook read:user user:email",
     state,
   });
   return `${GITHUB_OAUTH_URL}?${params.toString()}`;
