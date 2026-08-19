@@ -1,8 +1,6 @@
 // Cloud storage adapter — reads/writes via MAYA API routes backed by Vercel KV.
-// Identity is a UUID stored in a secure cookie, assigned on beta approval.
 import type { IVaultStorage } from "./IVaultStorage";
-import type { BetaProfile } from "@/lib/beta/betaGate";
-import type { RoleLens } from "@/lib/maya/types";
+import type { RoleLens, UserProfile } from "@/lib/maya/types";
 
 async function api<T>(path: string, body?: unknown): Promise<T | null> {
   try {
@@ -21,12 +19,12 @@ async function api<T>(path: string, body?: unknown): Promise<T | null> {
 }
 
 export class CloudStorageAdapter implements IVaultStorage {
-  async getProfile(): Promise<BetaProfile | null> {
-    const data = await api<{ profile: BetaProfile | null }>("/api/user/profile");
+  async getProfile(): Promise<UserProfile | null> {
+    const data = await api<{ profile: UserProfile | null }>("/api/user/profile");
     return data?.profile ?? null;
   }
 
-  async saveProfile(profile: BetaProfile): Promise<void> {
+  async saveProfile(profile: UserProfile): Promise<void> {
     await api("/api/user/profile", { profile });
   }
 
@@ -37,24 +35,6 @@ export class CloudStorageAdapter implements IVaultStorage {
 
   async saveLens(lens: RoleLens): Promise<void> {
     await api("/api/user/lens", { lens });
-  }
-
-  async getLastSurvey(): Promise<string | null> {
-    const data = await api<{ lastSurvey: string | null }>("/api/user/survey");
-    return data?.lastSurvey ?? null;
-  }
-
-  async saveLastSurvey(iso: string): Promise<void> {
-    await api("/api/user/survey", { lastSurvey: iso });
-  }
-
-  async getBetaStatus(): Promise<"approved" | "pending"> {
-    const data = await api<{ status: string }>("/api/user/profile");
-    return data?.status === "approved" ? "approved" : "pending";
-  }
-
-  async setBetaApproved(): Promise<void> {
-    // Status is set implicitly when profile is saved
   }
 
   async clear(): Promise<void> {

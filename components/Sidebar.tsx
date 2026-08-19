@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
     icon: "📚",
     items: [
       { label: "Sessions", href: "/library/sessions", icon: "🗂️" },
-      { label: "Documents", href: "/library/documents", icon: "📄" },
+      { label: "Saved Files", href: "/library/documents", icon: "📄" },
       { label: "Knowledge Vault", href: "/library/knowledge", icon: "🔒" },
       { label: "Intel Vault", href: "/library/intel", icon: "🧠" },
     ],

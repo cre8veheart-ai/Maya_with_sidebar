@@ -22,7 +22,7 @@ type ChatWorkspace = "exec" | "community";
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
-const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw"]);
+const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
 
 /** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -72,7 +72,7 @@ function parseMessages(raw: unknown): MayaMessage[] {
         (m.role === "user" || m.role === "assistant") &&
         typeof m.content === "string"
     )
-    .slice(0, 100)
+    .slice(-100)
     .map((m) => ({
       role: m.role as "user" | "assistant",
       content: sanitizeText(m.content, 8000),
@@ -123,6 +123,7 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
 }
 
 export async function POST(req: NextRequest) {
+
   let workspace: ChatWorkspace;
   let lens: RoleLens;
   let messages: MayaMessage[];
@@ -170,6 +171,7 @@ export async function POST(req: NextRequest) {
       execContextMessage,
       model,
       ludicrousMode,
+      useGeminiAdvisory: workspace === "exec",
     });
   } catch (error) {
     const message =
