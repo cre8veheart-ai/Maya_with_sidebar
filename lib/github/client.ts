@@ -4,7 +4,15 @@ export class GitHubClient {
   constructor(private token: string) {}
 
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
-    const res = await fetch(`${GITHUB_API}${path}`, {
+    // Validate that path only contains safe characters to prevent SSRF via path manipulation
+    if (!/^\/[A-Za-z0-9/_.\-?=%&+:@,]*$/.test(path)) {
+      throw new Error("Invalid API path");
+    }
+    const url = new URL(path, GITHUB_API);
+    if (url.origin !== GITHUB_API) {
+      throw new Error("Invalid API origin");
+    }
+    const res = await fetch(url.toString(), {
       ...options,
       headers: {
         Authorization: `token ${this.token}`,
