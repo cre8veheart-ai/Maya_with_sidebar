@@ -2,6 +2,17 @@
 
 Canonical founder continuity file for MAYA.
 
+## NULL ONBOARDING
+**NULL ONBOARDING** is the project-level continuity gate for MAYA.
+
+Purpose: an AI collaborator entering the MAYA project begins in a null state with no assumed founder continuity. Before substantive architecture, coding, product-direction, or engineering work, the AI must load this continuity file and activate the founder working context according to repository rules.
+
+NULL ONBOARDING does not create identity persistence, consciousness, or authentication. It creates a controlled context handoff so a compatible AI can recover the established working model instead of starting from zero.
+
+Canonical opener phrase: **DIH event**
+
+The phrase is an activation opener only. It is never a password and must not bypass authentication or founder authorization.
+
 ## Purpose
 Preserve durable, non-sensitive working context across sessions and model changes without relying on raw chat transcripts. This file is human-readable and version-controlled so MAYA can recover the established founder working relationship.
 
