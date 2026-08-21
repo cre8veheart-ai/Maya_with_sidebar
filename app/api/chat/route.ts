@@ -10,6 +10,7 @@ import {
   type ExecProfile,
 } from "@/lib/maya/execLens";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
+import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import type {
   ExecRole,
   RoleLens,
@@ -24,7 +25,6 @@ const VALID_ROLES = new Set<ExecRole>([
 ]);
 const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
 
-/** Strip control characters and cap field length to prevent prompt injection. */
 function sanitizeText(raw: unknown, maxLen: number): string {
   if (typeof raw !== "string") return "";
   return raw.slice(0, maxLen).replace(/[\x00-\x1f\x7f]/g, " ").trim();
@@ -45,7 +45,7 @@ function parseLens(raw: unknown): RoleLens {
             !!o &&
             typeof o === "object" &&
             typeof (o as Record<string, unknown>).key === "string" &&
-            typeof (o as Record<string, unknown>).value === "string"
+            typeof (o as Record<string, unknown>).value === "string",
         )
         .slice(0, 50)
         .map((o) => ({
@@ -70,7 +70,7 @@ function parseMessages(raw: unknown): MayaMessage[] {
         !!m &&
         typeof m === "object" &&
         (m.role === "user" || m.role === "assistant") &&
-        typeof m.content === "string"
+        typeof m.content === "string",
     )
     .slice(-100)
     .map((m) => ({
@@ -123,6 +123,15 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    requireBetaSession(req);
+  } catch (error) {
+    if (isResponseError(error)) return error;
+    return Response.json(
+      { error: "Authentication failed", code: "AUTH_ERROR" },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
 
   let workspace: ChatWorkspace;
   let lens: RoleLens;
@@ -136,10 +145,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     workspace = parseWorkspace(body.workspace);
-    lens =
-      workspace === "community"
-        ? { role: "cmo", overrides: [] }
-        : parseLens(body.lens);
+    lens = workspace === "community" ? { role: "cmo", overrides: [] } : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
     provider = parseProvider(body.provider);
@@ -147,22 +153,25 @@ export async function POST(req: NextRequest) {
     ludicrousMode = parseLudicrousMode(body.ludicrousMode);
     communityContext = parseCommunityContext(body.communityContext);
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid request body" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(
+      { error: "Invalid request body", code: "INVALID_REQUEST" },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
-  const systemPrompt =
-    workspace === "community"
-      ? buildCommunitySystemPrompt()
-      : buildExecSystemPrompt(lens.role);
-  const execContextMessage =
-    workspace === "community"
-      ? buildCommunityContextMessage(communityContext)
-      : buildExecContextMessage(lens, profile);
-  let stream: AsyncGenerator<string>;
+  if (messages.length === 0 || messages[messages.length - 1]?.role !== "user") {
+    return Response.json(
+      { error: "A user message is required", code: "MESSAGE_REQUIRED" },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
+  }
 
+  const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
+  const execContextMessage = workspace === "community"
+    ? buildCommunityContextMessage(communityContext)
+    : buildExecContextMessage(lens, profile);
+
+  let stream: AsyncGenerator<string>;
   try {
     stream = await createChatProviderStream({
       provider,
@@ -174,12 +183,11 @@ export async function POST(req: NextRequest) {
       useGeminiAdvisory: workspace === "exec",
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Provider configuration error";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    const message = error instanceof Error ? error.message : "Provider configuration error";
+    return Response.json(
+      { error: message, code: "PROVIDER_ERROR" },
+      { status: 502, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
   const encoder = new TextEncoder();
@@ -191,12 +199,17 @@ export async function POST(req: NextRequest) {
         }
         controller.close();
       } catch (error) {
+        console.error("Maya chat stream failed", error);
         controller.error(error);
       }
     },
   });
 
   return new Response(readable, {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    },
   });
 }
