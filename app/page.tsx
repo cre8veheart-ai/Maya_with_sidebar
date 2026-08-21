@@ -27,12 +27,16 @@ export default function Home() {
   const [streaming, setStreaming] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [savedId, setSavedId] = useState<string | null>(null);
-  const sessionId = useRef(`home-${Date.now()}`);
+  const sessionId = useRef<string | null>(null);
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
     const text = input.trim();
     if (!text || streaming) return;
+
+    if (!sessionId.current) {
+      sessionId.current = `home-${crypto.randomUUID()}`;
+    }
 
     const userMsg: MayaMessage = { role: "user", content: text };
     const thread: MayaMessage[] = [...messages, userMsg];
