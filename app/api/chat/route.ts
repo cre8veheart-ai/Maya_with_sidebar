@@ -9,6 +9,7 @@ import {
   buildExecSystemPrompt,
   type ExecProfile,
 } from "@/lib/maya/execLens";
+import { buildFounderContinuityMessage } from "@/lib/maya/founderContinuity";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import type {
@@ -122,9 +123,14 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
   };
 }
 
+function appendTrustedContext(base: string | null, addition: string | null): string | null {
+  return [base, addition].filter(Boolean).join("\n\n") || null;
+}
+
 export async function POST(req: NextRequest) {
+  let session;
   try {
-    requireBetaSession(req);
+    session = requireBetaSession(req);
   } catch (error) {
     if (isResponseError(error)) return error;
     return Response.json(
@@ -167,9 +173,18 @@ export async function POST(req: NextRequest) {
   }
 
   const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
-  const execContextMessage = workspace === "community"
+  const baseContextMessage = workspace === "community"
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
+
+  const founderContinuityMessage = workspace === "exec"
+    ? buildFounderContinuityMessage(session.sessionId, messages)
+    : null;
+
+  const execContextMessage = appendTrustedContext(
+    baseContextMessage,
+    founderContinuityMessage,
+  );
 
   let stream: AsyncGenerator<string>;
   try {
