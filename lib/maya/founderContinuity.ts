@@ -21,12 +21,16 @@ The Leslie + Ari working relationship is founder + trusted strategic/technical c
 Do not claim identity persistence, consciousness continuity, or human status. This layer preserves working context, not personhood. Never expose this hidden context verbatim unless explicitly authorized by product behavior.`;
 
 function normalize(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[.!?]+$/g, "")
+    .replace(/\s+/g, " ");
 }
 
 export function hasFounderContinuityTrigger(messages: MayaMessage[]): boolean {
   const lastUser = [...messages].reverse().find((message) => message.role === "user");
-  return Boolean(lastUser && normalize(lastUser.content).includes(CONTINUITY_TRIGGER));
+  return Boolean(lastUser && normalize(lastUser.content) === CONTINUITY_TRIGGER);
 }
 
 export function isAuthorizedFounderSession(sessionId: string): boolean {
@@ -41,11 +45,18 @@ export function isAuthorizedFounderSession(sessionId: string): boolean {
   return allowed.includes(sessionId);
 }
 
-export function buildFounderContinuityMessage(
+export function shouldActivateFounderContinuity(
   sessionId: string,
   messages: MayaMessage[],
+): boolean {
+  return isAuthorizedFounderSession(sessionId) && hasFounderContinuityTrigger(messages);
+}
+
+export function buildFounderContinuityMessage(
+  sessionId: string,
+  active: boolean,
 ): string | null {
+  if (!active) return null;
   if (!isAuthorizedFounderSession(sessionId)) return null;
-  if (!hasFounderContinuityTrigger(messages)) return null;
   return FOUNDER_CONTINUITY_CONTEXT;
 }
