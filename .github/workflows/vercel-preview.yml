@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  actions: write
   pull-requests: write
 
 jobs:
@@ -31,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Permission infiltration audit
+        run: npm run test:permissions
+
       - name: Lint
         run: npm run lint
 
@@ -45,7 +47,6 @@ jobs:
           vercel-token: ${{ env.VERCEL_TOKEN }}
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           github-comment: false
 
       - name: Post preview URL as PR comment
