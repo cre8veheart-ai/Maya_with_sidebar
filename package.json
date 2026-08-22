@@ -10,7 +10,8 @@
     "test:ceo": "node scripts/verify-ceo-landmark.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
-    "verify": "npm run lint && npm run test:ceo && npm run test:beta && npm run test:continuity && npm run build"
+    "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
+    "verify": "npm run lint && npm run test:permissions && npm run test:ceo && npm run test:beta && npm run test:continuity && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
