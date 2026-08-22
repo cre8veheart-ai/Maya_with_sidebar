@@ -87,7 +87,19 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Strategy Room failed";
-    return Response.json({ error: message, code: "STRATEGY_ROOM_ERROR" }, { status: 502 });
+    const incidentId = crypto.randomUUID();
+    const errorType = error instanceof Error ? error.name : typeof error;
+    console.error("Strategy Room request failed", { incidentId, errorType });
+    return Response.json(
+      {
+        error: "Strategy Room is temporarily unavailable",
+        code: "STRATEGY_ROOM_ERROR",
+        incidentId,
+      },
+      {
+        status: 502,
+        headers: { "Cache-Control": "no-store" },
+      },
+    );
   }
 }
