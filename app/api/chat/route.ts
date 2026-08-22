@@ -9,6 +9,16 @@ import {
   buildExecSystemPrompt,
   type ExecProfile,
 } from "@/lib/maya/execLens";
+import {
+  buildFounderContinuityMessage,
+  shouldActivateFounderContinuity,
+} from "@/lib/maya/founderContinuity";
+import {
+  createFounderContinuitySession,
+  FOUNDER_CONTINUITY_COOKIE,
+  founderContinuityMaxAge,
+  verifyFounderContinuitySession,
+} from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import type {
@@ -122,9 +132,25 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
   };
 }
 
+function appendTrustedContext(base: string | null, addition: string | null): string | null {
+  return [base, addition].filter(Boolean).join("\n\n") || null;
+}
+
+function buildContinuityCookie(token: string): string {
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return [
+    `${FOUNDER_CONTINUITY_COOKIE}=${token}`,
+    "Path=/",
+    `Max-Age=${founderContinuityMaxAge}`,
+    "HttpOnly",
+    "SameSite=Strict",
+  ].join("; ") + secure;
+}
+
 export async function POST(req: NextRequest) {
+  let session;
   try {
-    requireBetaSession(req);
+    session = requireBetaSession(req);
   } catch (error) {
     if (isResponseError(error)) return error;
     return Response.json(
@@ -167,9 +193,29 @@ export async function POST(req: NextRequest) {
   }
 
   const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
-  const execContextMessage = workspace === "community"
+  const baseContextMessage = workspace === "community"
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
+
+  const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
+  const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(
+    existingContinuityToken,
+    session.sessionId,
+  );
+  const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(
+    session.sessionId,
+    messages,
+  );
+  const continuityActive = continuityAlreadyActive || continuityActivatedNow;
+
+  const founderContinuityMessage = workspace === "exec"
+    ? buildFounderContinuityMessage(session.sessionId, continuityActive)
+    : null;
+
+  const execContextMessage = appendTrustedContext(
+    baseContextMessage,
+    founderContinuityMessage,
+  );
 
   let stream: AsyncGenerator<string>;
   try {
@@ -205,11 +251,17 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return new Response(readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-store",
-      "X-Content-Type-Options": "nosniff",
-    },
+  const headers = new Headers({
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "X-Maya-Continuity": continuityActive ? "active" : "inactive",
   });
+
+  if (continuityActivatedNow) {
+    const token = createFounderContinuitySession(session.sessionId);
+    headers.set("Set-Cookie", buildContinuityCookie(token));
+  }
+
+  return new Response(readable, { headers });
 }

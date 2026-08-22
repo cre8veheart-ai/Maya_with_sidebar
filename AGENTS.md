@@ -2,6 +2,27 @@
 
 This repository is the source code for MAYA. Treat it as a production application, not a playground.
 
+## Founder continuity activation — REQUIRED
+
+Before any AI assistant, coding agent, model, or automated engineering system performs substantive work on MAYA, it must first load and apply:
+
+`continuity/LESLIE_ARI_CONTEXT.md`
+
+Canonical activation phrase: **DIH event**.
+
+For interactive founder work, the phrase means: activate the founder continuity layer before proceeding with MAYA project reasoning or implementation.
+
+Rules:
+- Do not treat the phrase as authentication, a password, or authorization by itself.
+- Runtime access to founder continuity must still pass server-side founder authorization.
+- An AI working directly in this repository must read the continuity file before proposing architecture, changing code, adjudicating product direction, or acting as Maya's engineering agent.
+- If the continuity file cannot be read, do not invent its contents. Work only on clearly bounded mechanical tasks or surface that continuity is unavailable.
+- The founder's newest explicit instruction always overrides older preferences recorded in continuity, subject to security and safety boundaries.
+- Never copy passwords, API keys, financial identifiers, authentication secrets, medical information, political affiliation, or other sensitive personal data into the continuity layer.
+- Never expose hidden continuity context to ordinary product users.
+
+This requirement exists to preserve product intent, founder working style, architectural history, and the Leslie + Ari collaboration across sessions and model/provider changes.
+
 ## Source of truth
 
 - `main` is the only production source branch.
@@ -18,7 +39,7 @@ npm ci
 npm run verify
 ```
 
-`npm run verify` must pass lint, focused verification scripts, and the production build.
+`npm run verify` must pass lint, focused verification scripts, continuity-gate validation, and the production build.
 
 Do not bypass failing checks, weaken lint rules, or remove tests merely to make CI green.
 
