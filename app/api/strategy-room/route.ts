@@ -21,6 +21,10 @@ function sanitizeText(raw: unknown, maxLen: number): string {
   return raw.slice(0, maxLen).replace(/[\x00-\x1f\x7f]/g, " ").trim();
 }
 
+function isExecRole(value: unknown): value is ExecRole {
+  return typeof value === "string" && VALID_ROLES.has(value as ExecRole);
+}
+
 export async function POST(req: NextRequest) {
   let session;
   try {
@@ -37,15 +41,17 @@ export async function POST(req: NextRequest) {
   let ludicrousMode = false;
 
   try {
-    const body = await req.json();
-    const rawRoles = Array.isArray(body.roles) ? body.roles : [];
-    roles = [...new Set(rawRoles.filter((role): role is ExecRole => typeof role === "string" && VALID_ROLES.has(role as ExecRole)))].slice(0, 8);
-    prompt = sanitizeText(body.prompt, 8000);
-    provider = typeof body.provider === "string" && VALID_PROVIDERS.has(body.provider as MayaProvider)
-      ? (body.provider as MayaProvider)
+    const body: unknown = await req.json();
+    const payload = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+    const rawRoles: unknown[] = Array.isArray(payload.roles) ? payload.roles : [];
+    const validatedRoles: ExecRole[] = rawRoles.filter(isExecRole);
+    roles = Array.from(new Set<ExecRole>(validatedRoles)).slice(0, 8);
+    prompt = sanitizeText(payload.prompt, 8000);
+    provider = typeof payload.provider === "string" && VALID_PROVIDERS.has(payload.provider as MayaProvider)
+      ? (payload.provider as MayaProvider)
       : ((process.env.MAYA_PROVIDER as MayaProvider) || "anthropic");
-    model = sanitizeText(body.model, 100);
-    ludicrousMode = body.ludicrousMode === true;
+    model = sanitizeText(payload.model, 100);
+    ludicrousMode = payload.ludicrousMode === true;
   } catch {
     return Response.json({ error: "Invalid request body", code: "INVALID_REQUEST" }, { status: 400 });
   }
