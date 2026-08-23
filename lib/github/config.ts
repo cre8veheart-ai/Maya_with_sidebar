@@ -2,7 +2,11 @@ import type { GitHubPermissions, GitHubRepoConfig } from "./types";
 
 export const GITHUB_SESSION_COOKIE = "maya_github_session";
 export const GITHUB_OAUTH_STATE_COOKIE = "maya_github_oauth_state";
-export const DEFAULT_GITHUB_SCOPES = ["repo", "workflow", "read:user", "user:email"];
+
+// MAYA app-level GitHub OAuth is intentionally read-minimal. Repository writes
+// are performed only through externally governed engineering tooling, never by
+// the running product.
+export const DEFAULT_GITHUB_SCOPES = ["read:user", "user:email"];
 
 function clean(raw: unknown, maxLen: number, pattern: RegExp): string {
   if (typeof raw !== "string") return "";
@@ -47,23 +51,17 @@ export function sanitizeRepoConfig(raw: unknown): GitHubRepoConfig | null {
 export function getRequestedScopes(): string[] {
   const raw = process.env.GITHUB_OAUTH_SCOPES?.trim();
   if (!raw) return DEFAULT_GITHUB_SCOPES;
-  return raw
-    .split(/[,\s]+/)
-    .map((scope) => scope.trim())
-    .filter(Boolean);
+  const requested = raw.split(/[,\s]+/).map((scope) => scope.trim()).filter(Boolean);
+  // Product OAuth must never request repository or workflow write-capable scopes.
+  return requested.filter((scope) => !["repo", "public_repo", "workflow"].includes(scope));
 }
 
 export function getGitHubPermissions(scopes: string[]): GitHubPermissions {
   const normalized = new Set(scopes.map((scope) => scope.trim()).filter(Boolean));
-  const hasRepo = normalized.has("repo") || normalized.has("public_repo");
   return {
-    read:
-      hasRepo ||
-      normalized.has("read:user") ||
-      normalized.has("user:email") ||
-      normalized.has("read:org"),
-    write: hasRepo,
-    workflow: hasRepo || normalized.has("workflow"),
+    read: normalized.has("read:user") || normalized.has("user:email") || normalized.has("read:org"),
+    write: false,
+    workflow: false,
   };
 }
 
@@ -73,9 +71,7 @@ export function getAllowedRepos(): string[] {
     .map((entry) => entry.trim().toLowerCase())
     .filter(Boolean);
 
-  if (configured.length > 0) {
-    return configured;
-  }
+  if (configured.length > 0) return configured;
 
   const owner = sanitizeOwner(process.env.GITHUB_DEFAULT_OWNER);
   const repo = sanitizeRepo(process.env.GITHUB_DEFAULT_REPO);
@@ -84,7 +80,9 @@ export function getAllowedRepos(): string[] {
 
 export function isRepoAllowed(repoConfig: GitHubRepoConfig): boolean {
   const allowed = getAllowedRepos();
-  if (allowed.length === 0) return true;
+  // Fail closed. An absent allowlist is not permission to roam across every
+  // repository visible to a connected account.
+  if (allowed.length === 0) return false;
   return allowed.includes(`${repoConfig.owner}/${repoConfig.repo}`.toLowerCase());
 }
 
@@ -98,9 +96,7 @@ export function getDefaultRepoConfig(): GitHubRepoConfig | null {
 
 export function getBaseUrl(origin: string): string {
   const configured = process.env.NEXTAUTH_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
+  if (configured) return configured.replace(/\/+$/, "");
   return origin.replace(/\/+$/, "");
 }
 
