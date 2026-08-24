@@ -14,7 +14,7 @@ const requiredAdjudicationGuards = [
   /Identify materially rejected paths plainly/,
   /hold \/ evidence-needed decision/,
   /Keep role attribution intact/,
-  /reversal or stop/i,
+  /evidence that would reverse or stop it/i,
   /human authorizes any consequential external action/i,
   /preserved_positions/,
   /winning_path/,
