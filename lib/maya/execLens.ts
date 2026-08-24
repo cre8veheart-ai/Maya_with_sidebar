@@ -2,6 +2,7 @@ import type { ExecRole, RoleLens } from "./types";
 import { roleBaselines } from "./roleBaselines";
 import { ceoChassis } from "./executives/ceo";
 import { cmoChassis } from "./executives/cmo";
+import { cfoChassis } from "./executives/cfo";
 import { ctoChassis } from "./executives/cto";
 
 export interface ExecProfile {
@@ -11,9 +12,7 @@ export interface ExecProfile {
   industry: string;
 }
 
-const hardRoleGoals: Partial<Record<ExecRole, string>> = {
-  cfo: "Protect financial viability and optimize risk-adjusted capital allocation using the math and evidence available.",
-};
+const hardRoleGoals: Partial<Record<ExecRole, string>> = {};
 
 function buildRoleFidelityContract(role: ExecRole): string {
   const hardGoal = hardRoleGoals[role];
@@ -32,13 +31,13 @@ function executiveCoreContract(role: ExecRole): string {
   if (role === "cmo") {
     return `${cmoChassis.systemContract}\n\n${cmoChassis.responseContract}`;
   }
+  if (role === "cfo") {
+    return `${cfoChassis.systemContract}\n\n${cfoChassis.responseContract}`;
+  }
 
   return `${roleBaselines[role]}${buildRoleFidelityContract(role)}`;
 }
 
-/**
- * Returns the trusted system prompt for a given exec role.
- */
 export function buildExecSystemPrompt(role: ExecRole): string {
   return `${executiveCoreContract(role)}
 
@@ -60,9 +59,6 @@ EXECUTIVE RESPONSE STANDARD:
 - Keep the interaction strategic, practical, attributable, and easy to act on`;
 }
 
-/**
- * Packages user-provided executive context as reference data for the model.
- */
 export function buildExecContextMessage(
   lens: RoleLens,
   profile?: ExecProfile | null
@@ -96,9 +92,6 @@ export function buildExecContextMessage(
   ].join("\n");
 }
 
-/**
- * Returns a fresh lens for a role with no overrides.
- */
 export function createFreshLens(role: ExecRole): RoleLens {
   return { role, overrides: [] };
 }
