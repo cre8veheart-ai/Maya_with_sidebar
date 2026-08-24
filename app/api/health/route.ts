@@ -1,31 +1,14 @@
+import { evaluateHealth } from "@/lib/server/health-core.mjs";
+
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const checks = {
-    app: true,
-    anthropicConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-    betaSessionSecretConfigured: Boolean(
-      process.env.BETA_SESSION_SECRET && process.env.BETA_SESSION_SECRET.length >= 32,
-    ),
-    redisConfigured: Boolean(
-      process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN,
-    ),
-  };
+  const { payload, statusCode } = evaluateHealth(process.env, new Date());
 
-  const ready = Object.values(checks).every(Boolean);
-
-  return Response.json(
-    {
-      service: "maya-with-sidebar",
-      status: ready ? "ready" : "degraded",
-      checks,
-      timestamp: new Date().toISOString(),
+  return Response.json(payload, {
+    status: statusCode,
+    headers: {
+      "Cache-Control": "no-store",
     },
-    {
-      status: ready ? 200 : 503,
-      headers: {
-        "Cache-Control": "no-store",
-      },
-    },
-  );
+  });
 }
