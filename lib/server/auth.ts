@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
+import { BETA_SESSION_COOKIE } from "@/lib/beta/session";
 import {
-  BETA_SESSION_COOKIE,
-  verifyBetaSession,
-} from "@/lib/beta/session";
+  authenticateBetaToken,
+  isResponseError as isResponseErrorCore,
+} from "./auth-core.mjs";
 
 export type AuthenticatedSession = {
   sessionId: string;
@@ -10,24 +11,9 @@ export type AuthenticatedSession = {
 
 export function requireBetaSession(req: NextRequest): AuthenticatedSession {
   const token = req.cookies.get(BETA_SESSION_COOKIE)?.value;
-  const session = verifyBetaSession(token);
-
-  if (!session) {
-    throw new Response(
-      JSON.stringify({ error: "Unauthorized", code: "AUTH_REQUIRED" }),
-      {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store",
-        },
-      },
-    );
-  }
-
-  return { sessionId: session.sub };
+  return authenticateBetaToken(token) as AuthenticatedSession;
 }
 
 export function isResponseError(error: unknown): error is Response {
-  return error instanceof Response;
+  return isResponseErrorCore(error);
 }
