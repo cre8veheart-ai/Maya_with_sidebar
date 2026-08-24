@@ -1,0 +1,81 @@
+name: MAYA Branch Lifecycle
+
+on:
+  create:
+  pull_request:
+    types: [closed]
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  reject-copilot-branches:
+    if: github.event_name == 'create' && github.event.ref_type == 'branch' && startsWith(github.event.ref, 'copilot/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete unauthorized copilot branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.ref }}
+        run: |
+          echo "Rejecting unauthorized branch: ${BRANCH}"
+          gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}"
+
+  delete-merged-head:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref != 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged pull request branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}" || true
+
+  cleanup-stale-branches:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove closed-PR and merged stale branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t OPEN_HEADS < <(gh api --paginate "repos/${REPO}/pulls?state=open&per_page=100" --jq '.[].head.ref')
+          mapfile -t CLOSED_HEADS < <(gh api --paginate "repos/${REPO}/pulls?state=closed&per_page=100" --jq '.[].head.ref')
+          mapfile -t BRANCHES < <(gh api --paginate "repos/${REPO}/branches?per_page=100" --jq '.[].name')
+
+          is_open() {
+            local candidate="$1"
+            for b in "${OPEN_HEADS[@]:-}"; do
+              [[ "$b" == "$candidate" ]] && return 0
+            done
+            return 1
+          }
+
+          was_closed_pr() {
+            local candidate="$1"
+            for b in "${CLOSED_HEADS[@]:-}"; do
+              [[ "$b" == "$candidate" ]] && return 0
+            done
+            return 1
+          }
+
+          for branch in "${BRANCHES[@]}"; do
+            [[ "$branch" == "main" ]] && continue
+            is_open "$branch" && continue
+
+            if was_closed_pr "$branch"; then
+              echo "Deleting closed-PR branch: $branch"
+              gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
+            fi
+          done
+
+          echo "Cleanup complete. Open PR branches and main were preserved."
