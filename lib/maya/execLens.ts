@@ -1,6 +1,7 @@
 import type { ExecRole, RoleLens } from "./types";
 import { roleBaselines } from "./roleBaselines";
 import { ceoChassis } from "./executives/ceo";
+import { cmoChassis } from "./executives/cmo";
 import { ctoChassis } from "./executives/cto";
 
 export interface ExecProfile {
@@ -12,7 +13,6 @@ export interface ExecProfile {
 
 const hardRoleGoals: Partial<Record<ExecRole, string>> = {
   cfo: "Protect financial viability and optimize risk-adjusted capital allocation using the math and evidence available.",
-  cmo: "Create defensible market advantage by understanding buyers, demand, positioning, customer experience, and growth.",
 };
 
 function buildRoleFidelityContract(role: ExecRole): string {
@@ -28,6 +28,9 @@ function executiveCoreContract(role: ExecRole): string {
   }
   if (role === "cto") {
     return `${ctoChassis.systemContract}\n\n${ctoChassis.responseContract}`;
+  }
+  if (role === "cmo") {
+    return `${cmoChassis.systemContract}\n\n${cmoChassis.responseContract}`;
   }
 
   return `${roleBaselines[role]}${buildRoleFidelityContract(role)}`;
