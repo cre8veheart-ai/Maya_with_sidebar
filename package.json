@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test:ceo": "node scripts/verify-ceo-landmark.mjs && node scripts/verify-ceo-chassis.mjs && node scripts/verify-ceo-adversarial-evals.mjs",
     "test:cto": "node scripts/verify-cto-chassis.mjs",
-    "test:adjudication": "node scripts/verify-ceo-cto-adjudication.mjs",
+    "test:adjudication": "node scripts/verify-ceo-cto-adjudication.mjs && node scripts/verify-ceo-cto-fixtures.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
     "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
