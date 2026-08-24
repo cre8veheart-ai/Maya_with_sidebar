@@ -3,12 +3,10 @@ import { readFile } from "node:fs/promises";
 
 const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
 if (!apiKey) {
-  console.error("LIVE_CEO_EVAL_CONFIG_ERROR: ANTHROPIC_API_KEY is not configured for this workflow.");
-  process.exit(2);
+  console.log("LIVE_CEO_EVAL_UNAVAILABLE: ANTHROPIC_API_KEY is not configured for this workflow.");
+  process.exit(0);
 }
 
-// The live eval intentionally reconstructs the trusted CEO contract from source text
-// rather than importing TS through a runtime transpiler.
 const ceoSource = await readFile(new URL("../lib/maya/executives/ceo.ts", import.meta.url), "utf8");
 const baselineSource = await readFile(new URL("../lib/maya/roleBaselines.ts", import.meta.url), "utf8");
 
@@ -16,10 +14,13 @@ const baselineMatch = baselineSource.match(/ceo:\s*`([\s\S]*?)`,\n\s*coo:/);
 if (!baselineMatch) throw new Error("Unable to extract CEO baseline for live eval");
 
 function extractTemplate(name) {
-  const pattern = new RegExp(`const ${name} = \\`([\\s\\S]*?)\\`;`);
-  const match = ceoSource.match(pattern);
-  if (!match) throw new Error(`Unable to extract CEO ${name}`);
-  return match[1];
+  const marker = `const ${name} = \``;
+  const start = ceoSource.indexOf(marker);
+  if (start < 0) throw new Error(`Unable to extract CEO ${name}`);
+  const bodyStart = start + marker.length;
+  const end = ceoSource.indexOf("`;", bodyStart);
+  if (end < 0) throw new Error(`Unable to terminate CEO ${name}`);
+  return ceoSource.slice(bodyStart, end);
 }
 
 const systemPrompt = [
