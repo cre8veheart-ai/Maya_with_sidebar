@@ -25,11 +25,11 @@ jobs:
           echo "Rejecting unauthorized branch: ${BRANCH}"
           gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}"
 
-  delete-merged-head:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref != 'main'
+  delete-closed-head:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref != 'main'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete merged pull request branch
+      - name: Delete closed pull request branch
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
