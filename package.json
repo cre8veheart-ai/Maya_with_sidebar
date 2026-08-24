@@ -11,10 +11,11 @@
     "test:cto": "node scripts/verify-cto-chassis.mjs",
     "test:adjudication": "node scripts/verify-ceo-cto-adjudication.mjs && node scripts/verify-ceo-cto-fixtures.mjs",
     "test:blackbox": "node scripts/verify-model-blackbox.mjs",
+    "test:sprawl": "node scripts/verify-repo-sprawl.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
     "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
-    "verify": "npm run lint && npm run test:permissions && npm run test:ceo && npm run test:cto && npm run test:adjudication && npm run test:blackbox && npm run test:beta && npm run test:continuity && npm run build"
+    "verify": "npm run lint && npm run test:permissions && npm run test:ceo && npm run test:cto && npm run test:adjudication && npm run test:blackbox && npm run test:sprawl && npm run test:beta && npm run test:continuity && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
