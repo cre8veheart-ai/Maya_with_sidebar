@@ -1,6 +1,7 @@
 import type { ExecRole, RoleLens } from "./types";
 import { roleBaselines } from "./roleBaselines";
 import { ceoChassis } from "./executives/ceo";
+import { ctoChassis } from "./executives/cto";
 
 export interface ExecProfile {
   name: string;
@@ -24,6 +25,9 @@ function buildRoleFidelityContract(role: ExecRole): string {
 function executiveCoreContract(role: ExecRole): string {
   if (role === "ceo") {
     return `${ceoChassis.systemContract}\n\n${ceoChassis.responseContract}`;
+  }
+  if (role === "cto") {
+    return `${ctoChassis.systemContract}\n\n${ctoChassis.responseContract}`;
   }
 
   return `${roleBaselines[role]}${buildRoleFidelityContract(role)}`;
