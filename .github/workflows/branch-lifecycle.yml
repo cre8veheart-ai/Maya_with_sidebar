@@ -36,11 +36,11 @@ jobs:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}" || true
 
-  cleanup-stale-branches:
+  cleanup-inactive-branches:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Remove stale and prohibited branches
+      - name: Remove every inactive branch
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -49,7 +49,6 @@ jobs:
           set -euo pipefail
 
           mapfile -t OPEN_HEADS < <(gh api --paginate "repos/${REPO}/pulls?state=open&per_page=100" --jq '.[].head.ref')
-          mapfile -t CLOSED_HEADS < <(gh api --paginate "repos/${REPO}/pulls?state=closed&per_page=100" --jq '.[].head.ref')
           mapfile -t BRANCHES < <(gh api --paginate "repos/${REPO}/branches?per_page=100" --jq '.[].name')
 
           is_open() {
@@ -60,28 +59,12 @@ jobs:
             return 1
           }
 
-          was_closed_pr() {
-            local candidate="$1"
-            for b in "${CLOSED_HEADS[@]:-}"; do
-              [[ "$b" == "$candidate" ]] && return 0
-            done
-            return 1
-          }
-
           for branch in "${BRANCHES[@]}"; do
             [[ "$branch" == "main" ]] && continue
             is_open "$branch" && continue
 
-            if [[ "$branch" == copilot/* ]]; then
-              echo "Deleting prohibited legacy copilot branch: $branch"
-              gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
-              continue
-            fi
-
-            if was_closed_pr "$branch"; then
-              echo "Deleting closed-PR branch: $branch"
-              gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
-            fi
+            echo "Deleting inactive branch: $branch"
+            gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
           done
 
           echo "Cleanup complete. Main and open-PR branches were preserved."
