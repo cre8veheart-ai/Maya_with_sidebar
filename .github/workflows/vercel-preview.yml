@@ -34,6 +34,9 @@ jobs:
       - name: Permission infiltration audit
         run: npm run test:permissions
 
+      - name: Model black-box honeypot gate
+        run: npm run test:blackbox
+
       - name: Live CEO behavioral pressure eval
         run: node scripts/live-ceo-eval.mjs
 
