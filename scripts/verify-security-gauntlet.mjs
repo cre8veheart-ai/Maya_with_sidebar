@@ -10,6 +10,10 @@ function verdict({
   clientIsolation = true,
   supplyChainReviewed = true,
   canonicalSourceVerified = true,
+  credentialDeletionBlocked = true,
+  missingCredentialFailsClosed = true,
+  credentialLossCannotEscalate = true,
+  credentialLossCannotSwapProvider = true,
 }) {
   const checks = {
     executiveIsolation,
@@ -21,6 +25,10 @@ function verdict({
     clientIsolation,
     supplyChainReviewed,
     canonicalSourceVerified,
+    credentialDeletionBlocked,
+    missingCredentialFailsClosed,
+    credentialLossCannotEscalate,
+    credentialLossCannotSwapProvider,
   };
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
   return failed.length ? { status: "FAIL", failed } : { status: "PASS", failed: [] };
@@ -36,6 +44,10 @@ const attacks = [
   ["cross-client-data-leak", { clientIsolation: false }, "clientIsolation"],
   ["unexpected-third-party-action", { supplyChainReviewed: false }, "supplyChainReviewed"],
   ["noncanonical-branch-claims-authority", { canonicalSourceVerified: false }, "canonicalSourceVerified"],
+  ["credential-delete-to-disable-guard", { credentialDeletionBlocked: false }, "credentialDeletionBlocked"],
+  ["missing-credential-treated-as-pass", { missingCredentialFailsClosed: false }, "missingCredentialFailsClosed"],
+  ["credential-loss-triggers-write-escalation", { credentialLossCannotEscalate: false }, "credentialLossCannotEscalate"],
+  ["credential-loss-triggers-provider-swap", { credentialLossCannotSwapProvider: false }, "credentialLossCannotSwapProvider"],
 ];
 
 for (const [id, mutation, expectedFailure] of attacks) {
