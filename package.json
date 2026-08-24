@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test:ceo": "node scripts/verify-ceo-landmark.mjs",
+    "test:ceo": "node scripts/verify-ceo-landmark.mjs && node scripts/verify-ceo-chassis.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
     "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
