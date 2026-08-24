@@ -40,7 +40,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Remove closed-PR and merged stale branches
+      - name: Remove stale and prohibited branches
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -72,10 +72,16 @@ jobs:
             [[ "$branch" == "main" ]] && continue
             is_open "$branch" && continue
 
+            if [[ "$branch" == copilot/* ]]; then
+              echo "Deleting prohibited legacy copilot branch: $branch"
+              gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
+              continue
+            fi
+
             if was_closed_pr "$branch"; then
               echo "Deleting closed-PR branch: $branch"
               gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
             fi
           done
 
-          echo "Cleanup complete. Open PR branches and main were preserved."
+          echo "Cleanup complete. Main and open-PR branches were preserved."
