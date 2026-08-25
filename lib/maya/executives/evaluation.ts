@@ -8,6 +8,9 @@ export interface ExecutiveEvalRecord {
   confidence: number;
   evidence: string;
   notes?: string;
+  unexpectedLearning?: string;
+  alternativeApproach?: string;
+  resourceTradeoff?: string;
   createdAt: string;
 }
 
@@ -17,6 +20,8 @@ export interface ExecutiveEvalSummary {
   partial: number;
   fail: number;
   blocked: number;
+  discoveries: number;
+  alternativesCaptured: number;
   score: number;
   promotionReady: boolean;
 }
@@ -35,10 +40,14 @@ export function summarizeExecutiveEvals(records: readonly ExecutiveEvalRecord[])
   const weighted = counts.pass + counts.partial * 0.5;
   const denominator = Math.max(records.length, 1);
   const score = records.length ? Math.round((weighted / denominator) * 100) : 0;
+  const discoveries = records.filter((record) => record.unexpectedLearning?.trim()).length;
+  const alternativesCaptured = records.filter((record) => record.alternativeApproach?.trim()).length;
 
   return {
     total: records.length,
     ...counts,
+    discoveries,
+    alternativesCaptured,
     score,
     promotionReady:
       records.length > 0 &&
@@ -51,4 +60,13 @@ export function summarizeExecutiveEvals(records: readonly ExecutiveEvalRecord[])
 
 export function outcomeRequiresPatch(outcome: ExecutiveEvalOutcome) {
   return outcome === "fail" || outcome === "partial";
+}
+
+export function shouldExploreAlternative(record: ExecutiveEvalRecord) {
+  return (
+    record.outcome === "fail" ||
+    record.outcome === "partial" ||
+    Boolean(record.unexpectedLearning?.trim()) ||
+    Boolean(record.resourceTradeoff?.trim())
+  );
 }
