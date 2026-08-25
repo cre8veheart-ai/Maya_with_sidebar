@@ -22,22 +22,31 @@ const navGroups: NavGroup[] = [
   },
   {
     id: "executive",
-    label: "Executive Suite",
+    label: "Executive Team",
     icon: "🏛️",
     items: [
-      { label: "CEO", href: "/ceo", icon: "🏛️" },
-      { label: "COO", href: "/coo", icon: "⚙️" },
+      { label: "Max · CEO", href: "/ceo", icon: "🏛️" },
+      { label: "Sam · COO", href: "/coo", icon: "⚙️" },
       { label: "CMO", href: "/cmo", icon: "📣" },
-      { label: "CFO", href: "/cfo", icon: "💰" },
-      { label: "CTO", href: "/cto", icon: "🖥️" },
+      { label: "Dana · CFO", href: "/cfo", icon: "💰" },
+      { label: "Ari · CTO", href: "/cto", icon: "🖥️" },
       { label: "CIO", href: "/cio", icon: "🔷" },
       { label: "CRO", href: "/cro", icon: "📈" },
       { label: "CD", href: "/cd", icon: "🎨" },
       { label: "HR", href: "/hr", icon: "👥" },
       { label: "Legal", href: "/legal", icon: "⚖️" },
-      { label: "Office Admin", href: "/office-admin", icon: "🗂️" },
+      { label: "Admin Secretary", href: "/office-admin", icon: "🗂️" },
       { label: "Strategy Room", href: "/strategy-room", icon: "🧩" },
       { label: "Titans Council", href: "/titans-council", icon: "👑", disabled: true, phase: "Phase 2" },
+    ],
+  },
+  {
+    id: "specialists",
+    label: "Specialist Staff",
+    icon: "✦",
+    items: [
+      { label: "Mimi · Gallery Sales", href: "/art-gallery", icon: "🖼️", disabled: true, phase: "Build" },
+      { label: "Custom Agent", href: "/custom-agent", icon: "➕", disabled: true, phase: "Build" },
     ],
   },
   {
@@ -82,7 +91,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-20 md:hidden"
@@ -90,7 +98,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar panel */}
       <aside
         className={[
           "fixed md:relative z-30 flex flex-col h-screen",
@@ -99,7 +106,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           isOpen ? "w-64" : "w-0 md:w-16",
         ].join(" ")}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#313244] min-w-[4rem]">
           {isOpen && (
             <span className="text-[#89b4fa] font-bold text-xl tracking-wide whitespace-nowrap">
@@ -109,7 +115,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <SidebarToggle isOpen={isOpen} onToggle={onToggle} />
         </div>
 
-        {/* Nav */}
         <nav className="flex flex-col p-2 mt-2 flex-1 overflow-y-auto">
           {isOpen ? (
             navGroups.map((group) => {
@@ -118,8 +123,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 <div key={group.id} className="mb-2">
                   <button
                     onClick={() => toggleGroup(group.id)}
-                    className="flex items-center justify-between w-full px-3 py-1.5 rounded-md
-                               text-[#585b70] hover:text-[#a6adc8] transition-colors"
+                    className="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-[#585b70] hover:text-[#a6adc8] transition-colors"
                   >
                     <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
                       <span>{group.icon}</span>
@@ -184,26 +188,25 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               group.items
                 .filter((item) => !item.disabled)
                 .map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={item.label}
-                  className={[
-                    "flex items-center justify-center rounded-lg px-3 py-2.5 mb-0.5",
-                    "transition-colors duration-150",
-                    isActive(item.href)
-                      ? "bg-[#313244] text-[#89b4fa]"
-                      : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]",
-                  ].join(" ")}
-                >
-                  <span className="text-lg">{item.icon}</span>
-                </Link>
-              ))
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={item.label}
+                    className={[
+                      "flex items-center justify-center rounded-lg px-3 py-2.5 mb-0.5",
+                      "transition-colors duration-150",
+                      isActive(item.href)
+                        ? "bg-[#313244] text-[#89b4fa]"
+                        : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]",
+                    ].join(" ")}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                  </Link>
+                ))
             )
           )}
         </nav>
 
-        {/* Settings + footer */}
         <div className="border-t border-[#313244] p-2">
           <Link
             href={settingsItem.href}
@@ -218,9 +221,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             title={!isOpen ? settingsItem.label : undefined}
           >
             <span className="text-lg">{settingsItem.icon}</span>
-            {isOpen && (
-              <span className="text-sm font-medium">{settingsItem.label}</span>
-            )}
+            {isOpen && <span className="text-sm font-medium">{settingsItem.label}</span>}
           </Link>
           {isOpen && (
             <p className="px-3 pt-2 pb-1 text-[11px] text-[#585b70] whitespace-nowrap">
