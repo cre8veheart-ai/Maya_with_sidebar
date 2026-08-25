@@ -1,4 +1,5 @@
 import type { MayaMessage } from "../types";
+import { hasExactHumanApproval, type DihApprovalRecord } from "../dih";
 import {
   validateExecutiveModule,
   type ExecutiveModuleManifest,
@@ -11,7 +12,9 @@ export interface ExecutiveRunRequest {
   mode: ExecutiveRunMode;
   messages: readonly MayaMessage[];
   requestedAction?: string;
-  humanApprovedWrite?: boolean;
+  actionTarget?: string;
+  actionScope?: string;
+  approvals?: readonly DihApprovalRecord[];
 }
 
 export interface ExecutiveRunPlan {
@@ -27,12 +30,19 @@ export interface ExecutiveRunPlan {
 /**
  * Resolve whether an executive may run and what MAYA must enforce around it.
  * This function does not call an AI provider or mutate external state. It is the
- * policy seam between an executive module and whichever runtime adapter is used.
+ * default-deny policy seam between a module and every runtime adapter.
  */
 export function planExecutiveRun(request: ExecutiveRunRequest): ExecutiveRunPlan {
   const blockers = validateExecutiveModule(request.module);
   const warnings: string[] = [];
-  const { module, mode, requestedAction, humanApprovedWrite } = request;
+  const {
+    module,
+    mode,
+    requestedAction,
+    actionTarget,
+    actionScope,
+    approvals = [],
+  } = request;
 
   if (module.lifecycle === "retired") {
     blockers.push("retired modules cannot execute");
@@ -46,18 +56,20 @@ export function planExecutiveRun(request: ExecutiveRunRequest): ExecutiveRunPlan
     warnings.push("draft module is running experimentally and must not be treated as trusted");
   }
 
-  if (requestedAction && module.approvalBoundaries.includes(requestedAction)) {
-    if (!humanApprovedWrite) {
-      blockers.push(`human approval required for action: ${requestedAction}`);
+  if (requestedAction) {
+    if (module.toolAccess === "none") {
+      blockers.push("this module has no tool access");
+    } else if (module.toolAccess === "read") {
+      blockers.push("read-only modules cannot perform actions");
+    } else if (module.toolAccess === "propose") {
+      blockers.push("proposal-only modules cannot execute external actions");
     }
-  }
 
-  if (requestedAction && module.toolAccess === "none") {
-    blockers.push("this module has no tool access");
-  }
-
-  if (requestedAction && module.toolAccess === "read") {
-    blockers.push("read-only modules cannot perform actions");
+    if (!actionTarget?.trim() || !actionScope?.trim()) {
+      blockers.push("external actions require an exact target and scope");
+    } else if (!hasExactHumanApproval(approvals, requestedAction, actionTarget, actionScope)) {
+      blockers.push(`explicit human approval required for exact action: ${requestedAction}`);
+    }
   }
 
   if (module.hosting === "remote-service" && !module.endpoint) {
