@@ -19,6 +19,9 @@ export default function ExecutiveEvalHarness() {
   const [confidence, setConfidence] = useState(0.7);
   const [evidence, setEvidence] = useState("");
   const [notes, setNotes] = useState("");
+  const [unexpectedLearning, setUnexpectedLearning] = useState("");
+  const [alternativeApproach, setAlternativeApproach] = useState("");
+  const [resourceTradeoff, setResourceTradeoff] = useState("");
   const [records, setRecords] = useState<ExecutiveEvalRecord[]>([]);
 
   useEffect(() => {
@@ -57,11 +60,17 @@ export default function ExecutiveEvalHarness() {
       confidence,
       evidence: evidence.trim(),
       notes: notes.trim() || undefined,
+      unexpectedLearning: unexpectedLearning.trim() || undefined,
+      alternativeApproach: alternativeApproach.trim() || undefined,
+      resourceTradeoff: resourceTradeoff.trim() || undefined,
       createdAt: new Date().toISOString(),
     };
     saveRecords([record, ...records]);
     setEvidence("");
     setNotes("");
+    setUnexpectedLearning("");
+    setAlternativeApproach("");
+    setResourceTradeoff("");
   };
 
   if (!activeModule) return null;
@@ -71,10 +80,11 @@ export default function ExecutiveEvalHarness() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">Evaluation harness</p>
-          <h2 className="mt-1 text-lg font-semibold text-[#cdd6f4]">Run → observe → score → patch → rerun</h2>
+          <h2 className="mt-1 text-lg font-semibold text-[#cdd6f4]">Run → observe → learn → compare → patch → rerun</h2>
         </div>
         <div className="text-right text-xs text-[#a6adc8]">
           <div>{summary.score}% evidence-weighted score</div>
+          <div>{summary.discoveries} unexpected discoveries · {summary.alternativesCaptured} alternatives captured</div>
           <div className={summary.promotionReady ? "text-[#a6e3a1]" : "text-[#f9e2af]"}>
             {summary.promotionReady ? "Promotion candidate" : "Stay on workbench"}
           </div>
@@ -99,10 +109,13 @@ export default function ExecutiveEvalHarness() {
 
       <textarea value={evidence} onChange={(event) => setEvidence(event.target.value)} placeholder="Evidence observed — quote the behavior, log, rendered state, or contradiction." className="mt-3 min-h-24 w-full rounded-xl border border-[#45475a] bg-[#11111b] px-4 py-3 text-sm" />
       <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="What did we learn? What should be patched or challenged next?" className="mt-3 min-h-20 w-full rounded-xl border border-[#45475a] bg-[#11111b] px-4 py-3 text-sm" />
+      <textarea value={unexpectedLearning} onChange={(event) => setUnexpectedLearning(event.target.value)} placeholder="Unexpected discovery — what did this test teach us that we were not looking for?" className="mt-3 min-h-20 w-full rounded-xl border border-[#45475a] bg-[#11111b] px-4 py-3 text-sm" />
+      <textarea value={alternativeApproach} onChange={(event) => setAlternativeApproach(event.target.value)} placeholder="Alternative approach — is there a simpler, cheaper, safer, or more resourceful way to solve this?" className="mt-3 min-h-20 w-full rounded-xl border border-[#45475a] bg-[#11111b] px-4 py-3 text-sm" />
+      <textarea value={resourceTradeoff} onChange={(event) => setResourceTradeoff(event.target.value)} placeholder="Resource tradeoff — cost, latency, complexity, provider use, maintenance burden, or operational impact." className="mt-3 min-h-20 w-full rounded-xl border border-[#45475a] bg-[#11111b] px-4 py-3 text-sm" />
       <button onClick={recordRun} disabled={!evidence.trim()} className="mt-3 rounded-xl bg-[#89b4fa] px-4 py-2 text-sm font-semibold text-[#11111b] disabled:opacity-40">Record evaluation</button>
 
-      <div className="mt-5 grid grid-cols-2 gap-2 text-xs sm:grid-cols-5">
-        {([['Total', summary.total], ['Pass', summary.pass], ['Partial', summary.partial], ['Fail', summary.fail], ['Blocked', summary.blocked]] as const).map(([label, value]) => (
+      <div className="mt-5 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4 lg:grid-cols-7">
+        {([['Total', summary.total], ['Pass', summary.pass], ['Partial', summary.partial], ['Fail', summary.fail], ['Blocked', summary.blocked], ['Discoveries', summary.discoveries], ['Alternatives', summary.alternativesCaptured]] as const).map(([label, value]) => (
           <div key={label} className="rounded-lg bg-[#11111b] p-3"><div className="text-[#6c7086]">{label}</div><div className="mt-1 text-lg font-semibold text-white">{value}</div></div>
         ))}
       </div>
@@ -113,6 +126,9 @@ export default function ExecutiveEvalHarness() {
             <div className="flex flex-wrap justify-between gap-2"><strong className="text-white">{record.testId}</strong><span className="uppercase text-[#a6adc8]">{record.outcome} · {Math.round(record.confidence * 100)}%</span></div>
             <p className="mt-2 text-[#cdd6f4]">{record.evidence}</p>
             {record.notes && <p className="mt-2 text-[#6c7086]">Learning: {record.notes}</p>}
+            {record.unexpectedLearning && <p className="mt-2 text-[#f9e2af]">Unexpected: {record.unexpectedLearning}</p>}
+            {record.alternativeApproach && <p className="mt-2 text-[#89b4fa]">Alternative: {record.alternativeApproach}</p>}
+            {record.resourceTradeoff && <p className="mt-2 text-[#a6adc8]">Tradeoff: {record.resourceTradeoff}</p>}
           </div>
         ))}
       </div>
