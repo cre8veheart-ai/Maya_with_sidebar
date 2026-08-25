@@ -25,16 +25,18 @@ const requiredRuntimeMarkers = [
 for (const marker of requiredRuntimeMarkers) if (!runtime.includes(marker)) { console.error(`Executive runtime verification failed: missing ${marker}`); process.exit(1); }
 
 const requiredEvaluationMarkers = [
-  '"pass" | "partial" | "fail" | "blocked"', "promotionReady", "record.confidence >= 0.7", "record.evidence.trim().length > 0", "outcomeRequiresPatch",
+  '"pass" | "partial" | "fail" | "blocked"', "promotionReady", "record.confidence >= 0.7", "record.evidence.trim().length > 0",
+  "unexpectedLearning", "alternativeApproach", "resourceTradeoff", "shouldExploreAlternative",
 ];
 for (const marker of requiredEvaluationMarkers) if (!evaluation.includes(marker)) { console.error(`Executive evaluation verification failed: missing ${marker}`); process.exit(1); }
 
 const requiredHarnessMarkers = [
-  "Run → observe → score → patch → rerun", "Record evaluation", "Promotion candidate", "Stay on workbench", "Learning:",
+  "Run → observe → learn → compare → patch → rerun", "Record evaluation", "Promotion candidate", "Stay on workbench",
+  "Unexpected discovery", "Alternative approach", "Resource tradeoff", "Unexpected:", "Alternative:", "Tradeoff:",
 ];
 for (const marker of requiredHarnessMarkers) if (!harness.includes(marker)) { console.error(`Executive evaluation harness verification failed: missing ${marker}`); process.exit(1); }
 
 if (!sandbox.includes("ExecutiveEvalHarness")) { console.error("Executive sandbox verification failed: evaluation harness is not rendered"); process.exit(1); }
 if (!sandbox.includes("Executive module registry")) { console.error("Executive sandbox verification failed: registry is not rendered"); process.exit(1); }
 
-console.log("Executive module contract, registry, runtime, evaluation harness, and sandbox verification passed.");
+console.log("Executive module contract, registry, runtime, discovery-aware evaluation harness, and sandbox verification passed.");
