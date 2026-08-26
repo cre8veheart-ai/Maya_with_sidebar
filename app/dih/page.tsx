@@ -97,7 +97,10 @@ export default function DihEventPage() {
       classifiedBy: classifiedBy.trim(),
       classifiedAt: new Date().toISOString(),
     };
-    updateEvent({ evidence: [...eventRecord.evidence, item], state: "investigating" });
+    updateEvent({
+      evidence: [...eventRecord.evidence, item],
+      state: loopPaused ? "paused" : "investigating",
+    });
     setClaim("");
     setSource("");
     setObservation("");
