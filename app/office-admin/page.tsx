@@ -86,26 +86,23 @@ function ActionRow({ label, source }: { label: string; source: string }) {
 export default function OfficeAdminPage() {
   return (
     <PageShell
-      title="Office Admin"
-      subtitle="The operations backbone — anticipates, drafts, organizes. Draft everything, send nothing autonomously."
+      title="Admin Secretary"
+      subtitle="Executive administrative command post — anticipates, drafts, organizes, tracks, and follows through. Prepare everything; execute nothing externally without approval."
     >
       <div className="flex flex-col xl:flex-row gap-5 h-full">
-        {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
-          {/* Today's Agenda */}
           <SectionCard title="Today's Agenda">
             <AgendaRow time="—" label="Add calendar context to surface prep gaps" />
             <AgendaRow time="—" label="Double-books and travel time flagged automatically" />
             <p className="mt-3 text-[11px] text-[#585b70] text-center">
-              Connects to MS365 / Google Workspace when configured
+              Connects to Google Calendar / Workspace when configured
             </p>
           </SectionCard>
 
-          {/* Pending Drafts */}
           <SectionCard title="Pending Drafts">
             <DraftRow label="No drafts awaiting approval yet" recipient="—" />
             <div className="mt-3 space-y-1.5">
-              {["Offer letters", "PIPs & performance comms", "Board updates", "Vendor communications"].map((type) => (
+              {["Executive correspondence", "Board updates", "Vendor communications", "Meeting briefs and follow-ups"].map((type) => (
                 <div key={type} className="flex items-center gap-2">
                   <span className="text-[#89b4fa] shrink-0">·</span>
                   <span className="text-[12px] text-[#a6adc8]">{type}</span>
@@ -113,28 +110,34 @@ export default function OfficeAdminPage() {
               ))}
             </div>
             <p className="mt-3 text-[11px] text-[#585b70] text-center">
-              All drafts require exec approval before any outbound action
+              All outbound drafts require explicit approval before action
             </p>
           </SectionCard>
 
-          {/* Action Queue */}
           <SectionCard title="Action Queue">
-            <ActionRow label="Actions extract from sessions automatically" source="Strategy Room / Exec sessions" />
+            <ActionRow label="Extract owners, deadlines, decisions, and follow-ups from sessions" source="Strategy Room / Executive sessions" />
             <div className="mt-3 text-center">
               <p className="text-[12px] text-[#585b70]">
-                Owners, deadlines, and follow-ups surfaced — linked to Decisions layer
+                Cross-functional delivery routes to Sam; executive conflicts escalate to the appropriate executive owner
               </p>
             </div>
           </SectionCard>
 
-          {/* Integrations */}
+          <SectionCard title="Approval Gate">
+            <div className="space-y-2 text-[12px] text-[#a6adc8]">
+              <p>Draft, organize, schedule-plan, and prepare automatically.</p>
+              <p>Send, publish, book, purchase, or commit only after explicit authorization.</p>
+              <p>Missing consequential details are surfaced instead of silently guessed.</p>
+            </div>
+          </SectionCard>
+
           <SectionCard title="Integrations">
             <div className="space-y-2">
               {[
-                { name: "Microsoft 365", status: "Not connected" },
                 { name: "Google Workspace", status: "Not connected" },
-                { name: "Calendar", status: "Not connected" },
-                { name: "Email drafts", status: "Not connected" },
+                { name: "Google Calendar", status: "Not connected" },
+                { name: "Gmail drafts", status: "Not connected" },
+                { name: "Contacts", status: "Not connected" },
               ].map(({ name, status }) => (
                 <div key={name} className="flex items-center justify-between py-1.5 border-b border-[#313244] last:border-0">
                   <span className="text-[13px] text-[#cdd6f4]">{name}</span>
@@ -143,12 +146,11 @@ export default function OfficeAdminPage() {
               ))}
             </div>
             <p className="mt-3 text-[11px] text-[#585b70] text-center">
-              Integrations connect in Settings — MAYA never stores credentials
+              Integrations connect through authorized tools; MAYA does not expose credentials in the workspace
             </p>
           </SectionCard>
         </div>
 
-        {/* Right — MAYA Office Admin Agent */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
           <RoleChat role="admin" />
         </div>
