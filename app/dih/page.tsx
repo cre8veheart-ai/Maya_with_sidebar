@@ -76,6 +76,10 @@ export default function DihEventPage() {
   );
   const loopPaused = eventRecord?.state === "paused";
   const round = (eventRecord?.passes.length ?? 0) + 1;
+  const lastPass = eventRecord?.passes[eventRecord.passes.length - 1];
+  const hasEvidenceAfterPause = Boolean(
+    lastPass && eventRecord?.evidence.some((item) => item.classifiedAt > lastPass.recordedAt),
+  );
 
   if (!eventRecord) {
     return <main className="min-h-screen bg-[#11111b] p-8 text-[#cdd6f4]">Loading governed event…</main>;
@@ -123,7 +127,10 @@ export default function DihEventPage() {
     setFindingEvidence("");
   };
 
-  const reopenLoop = () => updateEvent({ state: "investigating" });
+  const reopenLoop = () => {
+    if (!hasEvidenceAfterPause) return;
+    updateEvent({ state: "investigating" });
+  };
 
   const requestApproval = () => {
     if (!action.trim() || !target.trim() || !scope.trim()) return;
@@ -231,7 +238,7 @@ export default function DihEventPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               <button onClick={() => addPass(true)} disabled={loopPaused || !finding.trim()} className="rounded-xl bg-[#89b4fa] px-4 py-2 text-sm font-semibold text-[#11111b] disabled:opacity-35">Record new finding</button>
               <button onClick={() => addPass(false)} disabled={loopPaused} className="rounded-xl border border-[#45475a] px-4 py-2 text-sm disabled:opacity-35">No new finding · pause</button>
-              {loopPaused && <button onClick={reopenLoop} className="rounded-xl border border-amber-400/40 px-4 py-2 text-sm text-amber-300">Human reopen after new evidence</button>}
+              {loopPaused && <button onClick={reopenLoop} disabled={!hasEvidenceAfterPause} className="rounded-xl border border-amber-400/40 px-4 py-2 text-sm text-amber-300 disabled:cursor-not-allowed disabled:opacity-35">Human reopen after new evidence</button>}
             </div>
             <div className="mt-4 space-y-2">{eventRecord.passes.map((pass) => <div key={pass.id} className="rounded-xl border border-[#313244] bg-[#11111b] p-3 text-sm"><div className="flex justify-between"><strong>Round {pass.round}</strong><span className={pass.materiallyNew ? "text-emerald-300" : "text-amber-300"}>{pass.materiallyNew ? "MATERIAL" : "STOPPED"}</span></div><p className="mt-1 text-[#a6adc8]">{pass.finding}</p></div>)}</div>
           </div>
