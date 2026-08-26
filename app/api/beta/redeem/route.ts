@@ -1,5 +1,5 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { redeemInvite } from "@/lib/beta/invites";
 import {
   BETA_SESSION_COOKIE,
   betaSessionMaxAge,
@@ -7,10 +7,21 @@ import {
   hasBetaSessionSecret,
 } from "@/lib/beta/session";
 
+function hasAccessCode(): boolean {
+  return Boolean(process.env.BETA_ACCESS_CODE?.trim());
+}
+
+function matchesAccessCode(candidate: string): boolean {
+  const configured = process.env.BETA_ACCESS_CODE?.trim() ?? "";
+  const actual = Buffer.from(candidate);
+  const expected = Buffer.from(configured);
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
 export async function POST(req: NextRequest) {
-  if (!hasBetaSessionSecret()) {
+  if (!hasBetaSessionSecret() || !hasAccessCode()) {
     return NextResponse.json(
-      { error: "Beta sessions are not configured." },
+      { error: "Beta access is not configured." },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }
@@ -18,14 +29,14 @@ export async function POST(req: NextRequest) {
   let code = "";
   try {
     const body = (await req.json()) as { code?: unknown };
-    code = typeof body.code === "string" ? body.code.trim().toLowerCase() : "";
+    code = typeof body.code === "string" ? body.code.trim() : "";
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  if (!code || !(await redeemInvite(code))) {
+  if (!code || !matchesAccessCode(code)) {
     return NextResponse.json(
-      { error: "This beta access code is invalid or has already been used." },
+      { error: "Invalid beta access code." },
       { status: 401, headers: { "Cache-Control": "no-store" } },
     );
   }
