@@ -35,7 +35,7 @@ const requiredDihContractMarkers = [
 for (const marker of requiredDihContractMarkers) if (!dihContract.includes(marker)) { console.error(`DIH governance verification failed: missing ${marker}`); process.exit(1); }
 
 const requiredDihPageMarkers = [
-  "window.localStorage", "canAssignEvidenceStatus", "eventRecord?.state === \\"paused\\"", "Actual materially-new finding",
+  "window.localStorage", "canAssignEvidenceStatus", 'eventRecord?.state === "paused"', "Actual materially-new finding",
   "Human reopen after new evidence", "External-action approval ledger", "Record pending request", "Human approve",
 ];
 for (const marker of requiredDihPageMarkers) if (!dihPage.includes(marker)) { console.error(`DIH workspace verification failed: missing ${marker}`); process.exit(1); }
