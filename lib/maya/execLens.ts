@@ -2,6 +2,7 @@ import type { ExecRole, RoleLens } from "./types";
 import { roleBaselines } from "./roleBaselines";
 import { ceoChassis } from "./executives/ceo";
 import { cmoChassis } from "./executives/cmo";
+import { cfoChassis } from "./executives/cfo";
 import { ctoChassis } from "./executives/cto";
 import { buildExecutiveOperatingContract } from "@/lib/executives/roles";
 import { buildExecutiveCollaborationContract } from "@/lib/executives/collaboration";

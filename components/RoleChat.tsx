@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import ProviderControls from "@/components/ProviderControls";
 import { EXEC_ROLE_OPTIONS, getRoleLabel } from "@/lib/maya/execRouting";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
@@ -189,6 +188,11 @@ export default function RoleChat({ role }: RoleChatProps) {
           ludicrousMode: providerSettings.ludicrousMode,
         }),
       });
+
+      if (res.status === 401) {
+        window.location.assign(`/beta?returnTo=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
 
       if (!res.ok) {
         const contentType = res.headers.get("content-type") || "";
@@ -379,13 +383,6 @@ export default function RoleChat({ role }: RoleChatProps) {
         </div>
       </div>
 
-      <div className="px-4 py-3 border-b border-[#313244] shrink-0">
-        <ProviderControls
-          settings={providerSettings}
-          onChange={updateProviderSettings}
-          compact
-        />
-      </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         {messages.length === 0 && (
