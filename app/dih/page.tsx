@@ -74,7 +74,7 @@ export default function DihEventPage() {
     () => eventRecord?.evidence.filter((item) => item.status === "contradicted").length ?? 0,
     [eventRecord],
   );
-  const loopPaused = eventRecord.state === "paused";
+  const loopPaused = eventRecord?.state === "paused";
   const round = (eventRecord?.passes.length ?? 0) + 1;
 
   if (!eventRecord) {
