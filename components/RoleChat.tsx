@@ -90,6 +90,7 @@ export default function RoleChat({ role }: RoleChatProps) {
   const [clipVendorName, setClipVendorName] = useState("");
   const [clipVendorUrl, setClipVendorUrl] = useState("");
   const [clipStatus, setClipStatus] = useState("");
+  const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -238,6 +239,16 @@ export default function RoleChat({ role }: RoleChatProps) {
     }
   }
 
+  async function copyMessage(content: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessage(index);
+      window.setTimeout(() => setCopiedMessage((current) => current === index ? null : current), 1600);
+    } catch {
+      setClipStatus("Copy was blocked. Press and hold the response text to select it.");
+    }
+  }
+
   function proposeAction(type: ActionType) {
     if (!lastAssistantMessage) return;
     setPendingActions((prev) => [
@@ -356,7 +367,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     !streaming;
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex h-[72dvh] min-h-[520px] flex-col overflow-hidden xl:h-full xl:min-h-0">
       <div className="px-4 py-2.5 border-b border-[#313244] shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#a6e3a1]" />
@@ -384,7 +395,7 @@ export default function RoleChat({ role }: RoleChatProps) {
       </div>
 
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-8 space-y-4 [-webkit-overflow-scrolling:touch]">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-[13px] text-[#585b70] text-center leading-relaxed">
@@ -401,21 +412,33 @@ export default function RoleChat({ role }: RoleChatProps) {
             className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap ${
+              className={`group max-w-[92%] px-4 py-3 rounded-xl text-[14px] leading-relaxed whitespace-pre-wrap break-words ${
                 message.role === "user"
                   ? "bg-[#89b4fa] text-[#1e1e2e] font-medium"
-                  : "bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
+                  : "select-text bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
               }`}
             >
-              {message.content || (
-                <span className="inline-block w-1.5 h-3.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
-              )}
-              {message.role === "assistant" &&
-                streaming &&
-                index === messages.length - 1 &&
-                message.content && (
-                  <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
+              <div className="select-text">
+                {message.content || (
+                  <span className="inline-block w-1.5 h-3.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
                 )}
+                {message.role === "assistant" &&
+                  streaming &&
+                  index === messages.length - 1 &&
+                  message.content && (
+                    <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
+                  )}
+              </div>
+              {message.role === "assistant" && message.content && !streaming && (
+                <button
+                  type="button"
+                  onClick={() => copyMessage(message.content, index)}
+                  className="mt-3 min-h-10 rounded-lg border border-[#45475a] bg-[#313244] px-3 py-2 text-[12px] font-semibold text-[#cdd6f4] active:bg-[#585b70]"
+                  aria-label="Copy this executive response"
+                >
+                  {copiedMessage === index ? "✓ Copied — paste into Notes" : "Copy response"}
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -655,7 +678,7 @@ export default function RoleChat({ role }: RoleChatProps) {
           </button>
         </div>
         <p className="mt-1.5 text-[10px] text-[#585b70]">
-          Enter to send · Shift+Enter for new line · Queries are auto-saved with estimated token fee
+          Scroll through the full conversation · Press and hold to select · Copy any response to Notes
         </p>
       </form>
     </div>
