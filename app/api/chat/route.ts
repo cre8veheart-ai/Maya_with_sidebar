@@ -20,12 +20,12 @@ import {
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
-import type {
-  ExecRole,
-  RoleLens,
-  MayaMessage,
-  MayaProvider,
-} from "@/lib/maya/types";
+import {
+  buildMemoryContextMessage,
+  loadMemoryContext,
+  saveSessionTurn,
+} from "@/lib/maya/persistentMemory";
+import type { ExecRole, RoleLens, MayaMessage, MayaProvider } from "@/lib/maya/types";
 
 type ChatWorkspace = "exec" | "community";
 
@@ -34,6 +34,7 @@ const VALID_ROLES = new Set<ExecRole>([
 ]);
 const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
 const BUILD_SESSION_ID = "maya-build-session";
+const DEFAULT_WORKSPACE_ID = "founder";
 
 function sanitizeText(raw: unknown, maxLen: number): string {
   if (typeof raw !== "string") return "";
@@ -43,28 +44,14 @@ function sanitizeText(raw: unknown, maxLen: number): string {
 function parseLens(raw: unknown): RoleLens {
   if (!raw || typeof raw !== "object") throw new Error("Invalid lens");
   const { role, overrides } = raw as Record<string, unknown>;
-
-  if (typeof role !== "string" || !VALID_ROLES.has(role as ExecRole)) {
-    throw new Error("Invalid role");
-  }
-
+  if (typeof role !== "string" || !VALID_ROLES.has(role as ExecRole)) throw new Error("Invalid role");
   const safeOverrides = Array.isArray(overrides)
     ? overrides
-        .filter(
-          (o): o is { key: string; value: string } =>
-            !!o &&
-            typeof o === "object" &&
-            typeof (o as Record<string, unknown>).key === "string" &&
-            typeof (o as Record<string, unknown>).value === "string",
-        )
+        .filter((o): o is { key: string; value: string } => !!o && typeof o === "object" && typeof (o as Record<string, unknown>).key === "string" && typeof (o as Record<string, unknown>).value === "string")
         .slice(0, 50)
-        .map((o) => ({
-          key: sanitizeText(o.key, 100),
-          value: sanitizeText(o.value, 500),
-        }))
+        .map((o) => ({ key: sanitizeText(o.key, 100), value: sanitizeText(o.value, 500) }))
         .filter((o) => o.key.length > 0)
     : [];
-
   return { role: role as ExecRole, overrides: safeOverrides };
 }
 
@@ -75,18 +62,9 @@ function parseWorkspace(raw: unknown): ChatWorkspace {
 function parseMessages(raw: unknown): MayaMessage[] {
   if (!Array.isArray(raw)) return [];
   return raw
-    .filter(
-      (m): m is { role: string; content: string } =>
-        !!m &&
-        typeof m === "object" &&
-        (m.role === "user" || m.role === "assistant") &&
-        typeof m.content === "string",
-    )
+    .filter((m): m is { role: string; content: string } => !!m && typeof m === "object" && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
     .slice(-100)
-    .map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: sanitizeText(m.content, 8000),
-    }));
+    .map((m) => ({ role: m.role as "user" | "assistant", content: sanitizeText(m.content, 8000) }));
 }
 
 function parseProfile(raw: unknown): ExecProfile | null {
@@ -102,24 +80,10 @@ function parseProfile(raw: unknown): ExecProfile | null {
 }
 
 function parseProvider(raw: unknown): MayaProvider {
-  if (typeof raw === "string" && VALID_PROVIDERS.has(raw as MayaProvider)) {
-    return raw as MayaProvider;
-  }
-
+  if (typeof raw === "string" && VALID_PROVIDERS.has(raw as MayaProvider)) return raw as MayaProvider;
   const envProvider = sanitizeText(process.env.MAYA_PROVIDER, 20);
-  if (VALID_PROVIDERS.has(envProvider as MayaProvider)) {
-    return envProvider as MayaProvider;
-  }
-
+  if (VALID_PROVIDERS.has(envProvider as MayaProvider)) return envProvider as MayaProvider;
   return "anthropic";
-}
-
-function parseModel(raw: unknown): string {
-  return sanitizeText(raw, 100);
-}
-
-function parseLudicrousMode(raw: unknown): boolean {
-  return raw === true;
 }
 
 function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
@@ -156,6 +120,10 @@ export async function POST(req: NextRequest) {
   let model: string;
   let ludicrousMode: boolean;
   let communityContext: CommunityAssistantContext | null;
+  let workspaceId: string;
+  let sessionId: string;
+  let clientId: string | undefined;
+  let projectId: string | undefined;
 
   try {
     const body = await req.json();
@@ -164,21 +132,19 @@ export async function POST(req: NextRequest) {
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
     provider = parseProvider(body.provider);
-    model = parseModel(body.model);
-    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
+    model = sanitizeText(body.model, 100);
+    ludicrousMode = body.ludicrousMode === true;
     communityContext = parseCommunityContext(body.communityContext);
+    workspaceId = sanitizeText(body.workspaceId, 120) || DEFAULT_WORKSPACE_ID;
+    sessionId = sanitizeText(body.sessionId, 160) || `${lens.role}-${Date.now()}`;
+    clientId = sanitizeText(body.clientId, 160) || undefined;
+    projectId = sanitizeText(body.projectId, 160) || undefined;
   } catch {
-    return Response.json(
-      { error: "Invalid request body", code: "INVALID_REQUEST" },
-      { status: 400, headers: { "Cache-Control": "no-store" } },
-    );
+    return Response.json({ error: "Invalid request body", code: "INVALID_REQUEST" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   }
 
   if (messages.length === 0 || messages[messages.length - 1]?.role !== "user") {
-    return Response.json(
-      { error: "A user message is required", code: "MESSAGE_REQUIRED" },
-      { status: 400, headers: { "Cache-Control": "no-store" } },
-    );
+    return Response.json({ error: "A user message is required", code: "MESSAGE_REQUIRED" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   }
 
   const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
@@ -187,23 +153,18 @@ export async function POST(req: NextRequest) {
     : buildExecContextMessage(lens, profile);
 
   const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(
-    existingContinuityToken,
-    BUILD_SESSION_ID,
-  );
-  const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(
-    BUILD_SESSION_ID,
-    messages,
-  );
+  const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(existingContinuityToken, BUILD_SESSION_ID);
+  const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(BUILD_SESSION_ID, messages);
   const continuityActive = continuityAlreadyActive || continuityActivatedNow;
-
   const founderContinuityMessage = workspace === "exec"
     ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
     : null;
 
+  const memory = await loadMemoryContext({ workspaceId, role: lens.role, clientId, projectId });
+  const memoryContextMessage = buildMemoryContextMessage(memory);
   const execContextMessage = appendTrustedContext(
-    baseContextMessage,
-    founderContinuityMessage,
+    appendTrustedContext(baseContextMessage, founderContinuityMessage),
+    memoryContextMessage,
   );
 
   let stream: AsyncGenerator<string>;
@@ -219,18 +180,29 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Provider configuration error";
-    return Response.json(
-      { error: message, code: "PROVIDER_ERROR" },
-      { status: 502, headers: { "Cache-Control": "no-store" } },
-    );
+    return Response.json({ error: message, code: "PROVIDER_ERROR" }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
 
   const encoder = new TextEncoder();
+  const userMessage = messages[messages.length - 1];
   const readable = new ReadableStream({
     async start(controller) {
+      let full = "";
       try {
         for await (const chunk of stream) {
+          full += chunk;
           controller.enqueue(encoder.encode(chunk));
+        }
+        if (workspace === "exec" && userMessage) {
+          await saveSessionTurn({
+            workspaceId,
+            sessionId,
+            role: lens.role,
+            clientId,
+            projectId,
+            userMessage,
+            assistantMessage: { role: "assistant", content: full },
+          });
         }
         controller.close();
       } catch (error) {
@@ -245,11 +217,12 @@ export async function POST(req: NextRequest) {
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
     "X-Maya-Continuity": continuityActive ? "active" : "inactive",
+    "X-Maya-Memory": "persistent-v1",
+    "X-Maya-Session": sessionId,
   });
 
   if (continuityActivatedNow) {
-    const token = createFounderContinuitySession(BUILD_SESSION_ID);
-    headers.set("Set-Cookie", buildContinuityCookie(token));
+    headers.set("Set-Cookie", buildContinuityCookie(createFounderContinuitySession(BUILD_SESSION_ID)));
   }
 
   return new Response(readable, { headers });
