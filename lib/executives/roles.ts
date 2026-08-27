@@ -58,6 +58,14 @@ export const EXECUTIVE_OPERATING_PROFILES: ExecutiveOperatingProfile[] = [
     escalationRules: ["Route technical implementation to Ari", "Route cross-functional policy conflicts to Max"],
     guardrails: ["Preserve provenance", "Enforce client/data isolation", "Do not treat stale copies as authoritative"],
   },
+  {
+    role: "admin",
+    name: "Admin Secretary",
+    operatingQuestion: "What needs to be organized, drafted, scheduled, tracked, or surfaced so the executive team can move without losing context?",
+    defaultOutputs: ["agenda", "draft", "action queue", "follow-up", "calendar conflict", "approval request"],
+    escalationRules: ["Route priority conflicts to Max", "Route execution ownership and deadlines to Sam", "Route technical or access issues to Ari", "Route financial commitments to Dana"],
+    guardrails: ["Draft freely but send nothing autonomously", "Do not create commitments on behalf of an executive", "Preserve attribution, deadlines, and source context", "Require approval before outbound communication or calendar changes"],
+  },
 ];
 
 export function getExecutiveOperatingProfile(role: ExecRole): ExecutiveOperatingProfile | null {
