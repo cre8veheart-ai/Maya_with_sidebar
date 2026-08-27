@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { kv } from "@vercel/kv";
 import type { ExecRole, MayaMessage } from "./types";
 
-export type MemoryScope = "shared" | "executive" | "client" | "project";
+export type MemoryScope = "shared" | "executive" | "client" | "project" | "surface";
 export type MemoryKind =
   | "fact"
   | "decision"
@@ -12,7 +12,8 @@ export type MemoryKind =
   | "knowledge"
   | "intel"
   | "artifact"
-  | "connector";
+  | "connector"
+  | "state";
 
 export interface PersistentMemoryRecord {
   id: string;
@@ -21,6 +22,7 @@ export interface PersistentMemoryRecord {
   role?: ExecRole;
   clientId?: string;
   projectId?: string;
+  surface?: string;
   kind: MemoryKind;
   content: string;
   createdAt: string;
@@ -34,8 +36,11 @@ export interface PersistentSessionRecord {
   workspaceId: string;
   role: ExecRole;
   title: string;
+  surface: string;
   clientId?: string;
   projectId?: string;
+  participants?: string[];
+  resumeState?: string;
   createdAt: string;
   updatedAt: string;
   messages: MayaMessage[];
@@ -46,12 +51,13 @@ export interface ExternalObjectReference {
   workspaceId: string;
   provider: string;
   externalId: string;
-  objectType: "file" | "email" | "calendar" | "contact" | "record" | "website" | "repository";
+  objectType: "file" | "email" | "calendar" | "contact" | "record" | "website" | "repository" | "whiteboard" | "recording";
   title: string;
   mimeType?: string;
   sizeBytes?: number;
   storageUrl?: string;
   checksum?: string;
+  surface?: string;
   clientId?: string;
   projectId?: string;
   sessionId?: string;
@@ -65,6 +71,7 @@ export interface MemoryContext {
   executive: PersistentMemoryRecord[];
   client: PersistentMemoryRecord[];
   project: PersistentMemoryRecord[];
+  surface: PersistentMemoryRecord[];
 }
 
 const SESSION_LIMIT = 120;
@@ -89,6 +96,9 @@ function clientMemoryIndex(workspaceId: string, clientId: string): string {
 function projectMemoryIndex(workspaceId: string, projectId: string): string {
   return workspaceKey(workspaceId, `memory:project:${projectId}`);
 }
+function surfaceMemoryIndex(workspaceId: string, surface: string): string {
+  return workspaceKey(workspaceId, `memory:surface:${surface}`);
+}
 function memoryRecordKey(workspaceId: string, id: string): string {
   return workspaceKey(workspaceId, `memory:record:${id}`);
 }
@@ -97,6 +107,9 @@ function sessionRecordKey(workspaceId: string, sessionId: string): string {
 }
 function sessionIndex(workspaceId: string, role: ExecRole): string {
   return workspaceKey(workspaceId, `sessions:${role}`);
+}
+function surfaceSessionIndex(workspaceId: string, surface: string): string {
+  return workspaceKey(workspaceId, `sessions:surface:${surface}`);
 }
 function externalObjectKey(workspaceId: string, id: string): string {
   return workspaceKey(workspaceId, `external:${id}`);
@@ -110,6 +123,7 @@ function indexForRecord(record: PersistentMemoryRecord): string {
   if (record.scope === "executive" && record.role) return executiveMemoryIndex(record.workspaceId, record.role);
   if (record.scope === "client" && record.clientId) return clientMemoryIndex(record.workspaceId, record.clientId);
   if (record.scope === "project" && record.projectId) return projectMemoryIndex(record.workspaceId, record.projectId);
+  if (record.scope === "surface" && record.surface) return surfaceMemoryIndex(record.workspaceId, record.surface);
   throw new Error("Memory record is missing the identifier required by its scope");
 }
 
@@ -143,25 +157,30 @@ async function listMemoryByIndex(workspaceId: string, index: string, limit = 12)
 export async function loadMemoryContext(params: {
   workspaceId: string;
   role: ExecRole;
+  surface?: string;
   clientId?: string;
   projectId?: string;
 }): Promise<MemoryContext> {
-  if (!persistentMemoryConfigured()) return { shared: [], executive: [], client: [], project: [] };
-  const [shared, executive, client, project] = await Promise.all([
+  if (!persistentMemoryConfigured()) return { shared: [], executive: [], client: [], project: [], surface: [] };
+  const [shared, executive, client, project, surface] = await Promise.all([
     listMemoryByIndex(params.workspaceId, sharedMemoryIndex(params.workspaceId), 12),
     listMemoryByIndex(params.workspaceId, executiveMemoryIndex(params.workspaceId, params.role), 12),
     params.clientId ? listMemoryByIndex(params.workspaceId, clientMemoryIndex(params.workspaceId, params.clientId), 16) : Promise.resolve([]),
     params.projectId ? listMemoryByIndex(params.workspaceId, projectMemoryIndex(params.workspaceId, params.projectId), 16) : Promise.resolve([]),
+    params.surface ? listMemoryByIndex(params.workspaceId, surfaceMemoryIndex(params.workspaceId, params.surface), 12) : Promise.resolve([]),
   ]);
-  return { shared, executive, client, project };
+  return { shared, executive, client, project, surface };
 }
 
 export async function saveSessionTurn(params: {
   workspaceId: string;
   sessionId: string;
   role: ExecRole;
+  surface: string;
   clientId?: string;
   projectId?: string;
+  participants?: string[];
+  resumeState?: string;
   userMessage: MayaMessage;
   assistantMessage: MayaMessage;
 }): Promise<PersistentSessionRecord | null> {
@@ -174,8 +193,11 @@ export async function saveSessionTurn(params: {
     id: params.sessionId,
     workspaceId: params.workspaceId,
     role: params.role,
+    surface: params.surface || existing?.surface || `executive:${params.role}`,
     clientId: params.clientId ?? existing?.clientId,
     projectId: params.projectId ?? existing?.projectId,
+    participants: params.participants ?? existing?.participants,
+    resumeState: params.resumeState ?? existing?.resumeState,
     title: existing?.title || params.userMessage.content.slice(0, 80) || "Maya session",
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
@@ -183,9 +205,16 @@ export async function saveSessionTurn(params: {
   };
   await kv.set(key, record);
   if (!existing) {
-    const index = sessionIndex(params.workspaceId, params.role);
-    await kv.lpush(index, params.sessionId);
-    await kv.ltrim(index, 0, 99);
+    const roleIndex = sessionIndex(params.workspaceId, params.role);
+    const menuIndex = surfaceSessionIndex(params.workspaceId, record.surface);
+    await Promise.all([
+      kv.lpush(roleIndex, params.sessionId),
+      kv.lpush(menuIndex, params.sessionId),
+    ]);
+    await Promise.all([
+      kv.ltrim(roleIndex, 0, 99),
+      kv.ltrim(menuIndex, 0, 99),
+    ]);
   }
   return record;
 }
@@ -195,11 +224,19 @@ export async function loadSession(workspaceId: string, sessionId: string): Promi
   return (await kv.get<PersistentSessionRecord>(sessionRecordKey(workspaceId, sessionId))) ?? null;
 }
 
-export async function listSessions(workspaceId: string, role: ExecRole, limit = 30): Promise<PersistentSessionRecord[]> {
+async function sessionsFromIndex(workspaceId: string, index: string, limit: number): Promise<PersistentSessionRecord[]> {
   if (!persistentMemoryConfigured()) return [];
-  const ids = await kv.lrange<string>(sessionIndex(workspaceId, role), 0, Math.max(0, limit - 1));
+  const ids = await kv.lrange<string>(index, 0, Math.max(0, limit - 1));
   const records = await Promise.all(ids.map((id) => loadSession(workspaceId, id)));
   return records.filter((record): record is PersistentSessionRecord => Boolean(record));
+}
+
+export async function listSessions(workspaceId: string, role: ExecRole, limit = 30): Promise<PersistentSessionRecord[]> {
+  return sessionsFromIndex(workspaceId, sessionIndex(workspaceId, role), limit);
+}
+
+export async function listSessionsForSurface(workspaceId: string, surface: string, limit = 30): Promise<PersistentSessionRecord[]> {
+  return sessionsFromIndex(workspaceId, surfaceSessionIndex(workspaceId, surface), limit);
 }
 
 export async function saveExternalObjectReference(
@@ -224,13 +261,15 @@ export function buildMemoryContextMessage(context: MemoryContext): string | null
   const executive = context.executive.map((record) => `- [private executive/${record.kind}] ${record.content}`);
   const client = context.client.map((record) => `- [client vault/${record.kind}] ${record.content}`);
   const project = context.project.map((record) => `- [project/${record.kind}] ${record.content}`);
-  if (!shared.length && !executive.length && !client.length && !project.length) return null;
+  const surface = context.surface.map((record) => `- [menu surface/${record.kind}] ${record.content}`);
+  if (!shared.length && !executive.length && !client.length && !project.length && !surface.length) return null;
   return [
     "MAYA PERSISTENT MEMORY (trusted server-side context)",
     shared.length ? `Shared workspace memory:\n${shared.join("\n")}` : "",
     executive.length ? `Private memory for this executive only:\n${executive.join("\n")}` : "",
     client.length ? `Selected client vault memory:\n${client.join("\n")}` : "",
     project.length ? `Selected project memory:\n${project.join("\n")}` : "",
-    "Respect memory boundaries. Private executive memory is not visible to other executives unless promoted to shared memory. Client vault memory must remain isolated to the selected client. Project memory must remain isolated to the selected project unless explicitly linked through an approved shared object.",
+    surface.length ? `Current menu/workspace memory:\n${surface.join("\n")}` : "",
+    "Respect memory boundaries. Private executive memory is not visible to other executives unless promoted to shared memory. Client vault memory must remain isolated to the selected client. Project memory and menu-surface memory remain scoped unless explicitly linked through an approved shared object.",
   ].filter(Boolean).join("\n\n");
 }
