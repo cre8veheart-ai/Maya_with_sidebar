@@ -15,6 +15,7 @@ interface ClientHandoff {
   recommendations: string;
   nextActions: string;
   includeTranscript: boolean;
+  privateNotes: string;
   approvedAt: string;
   deliveredAt?: string;
 }
@@ -83,11 +84,14 @@ export default function ClientHandoffPage() {
     recommendations,
     nextActions,
     includeTranscript,
+    privateNotes,
     approvedAt: new Date().toISOString(),
   }), [clientName, engagement, includeTranscript, nextActions, recommendations, selectedId]);
 
+  const sourceComplete = Boolean(selected?.transcript && selected.transcript.length >= 2);
+
   function saveApproved() {
-    if (!clientName.trim() || !selected || !confirmed) return;
+    if (!clientName.trim() || !selected || !confirmed || !sourceComplete) return;
     const approved = { ...draft, id: `handoff-${crypto.randomUUID()}`, approvedAt: new Date().toISOString() };
     const next = [approved, ...handoffs].slice(0, 50);
     setHandoffs(next);
@@ -150,6 +154,16 @@ export default function ClientHandoffPage() {
               {sessions.map((session) => <option key={session.id} value={session.id}>{session.savedAt} · {session.role.toUpperCase()} · {session.title}</option>)}
             </select>
           </label>
+          {!sourceComplete && (
+            <div role="alert" className="rounded-lg border border-[#f38ba8]/40 bg-[#f38ba8]/10 p-3 text-[12px] text-[#f5c2e7]">
+              Handoff blocked: this source does not contain a complete saved transcript. Choose a complete session or return to the executive workspace.
+            </div>
+          )}
+          {sourceComplete && (
+            <div className="rounded-lg border border-[#a6e3a1]/30 bg-[#a6e3a1]/10 p-3 text-[12px] text-[#a6e3a1]">
+              Context check passed: {selected?.transcript?.length} source messages are attached to this session.
+            </div>
+          )}
 
           <label className="block text-[12px] text-[#a6adc8]">
             Findings and recommendations
@@ -177,9 +191,9 @@ export default function ClientHandoffPage() {
           </label>
 
           <div className="flex flex-wrap gap-2">
-            <button onClick={saveApproved} disabled={!clientName.trim() || !selected || !confirmed} className="min-h-11 rounded-lg bg-[#89b4fa] px-4 py-2 text-[13px] font-semibold text-[#1e1e2e] disabled:opacity-35">Approve and save brief</button>
-            <button onClick={() => copyBrief()} disabled={!clientName.trim() || !confirmed} className="min-h-11 rounded-lg border border-[#45475a] px-4 py-2 text-[13px] font-semibold text-[#cdd6f4] disabled:opacity-35">Copy client brief</button>
-            <button onClick={() => downloadBrief()} disabled={!clientName.trim() || !confirmed} className="min-h-11 rounded-lg border border-[#45475a] px-4 py-2 text-[13px] font-semibold text-[#cdd6f4] disabled:opacity-35">Download brief</button>
+            <button onClick={saveApproved} disabled={!clientName.trim() || !selected || !confirmed || !sourceComplete} className="min-h-11 rounded-lg bg-[#89b4fa] px-4 py-2 text-[13px] font-semibold text-[#1e1e2e] disabled:opacity-35">Approve and save brief</button>
+            <button onClick={() => copyBrief()} disabled={!clientName.trim() || !confirmed || !sourceComplete} className="min-h-11 rounded-lg border border-[#45475a] px-4 py-2 text-[13px] font-semibold text-[#cdd6f4] disabled:opacity-35">Copy client brief</button>
+            <button onClick={() => downloadBrief()} disabled={!clientName.trim() || !confirmed || !sourceComplete} className="min-h-11 rounded-lg border border-[#45475a] px-4 py-2 text-[13px] font-semibold text-[#cdd6f4] disabled:opacity-35">Download brief</button>
           </div>
           {status && <p role="status" className="text-[12px] text-[#a6e3a1]">{status}</p>}
         </section>
