@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import type { MayaMessage } from "@/lib/maya/types";
 
 type ChatError = {
@@ -13,7 +13,23 @@ export default function CeoChatOnly() {
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
+  const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);
+
+  async function copyMessage(content: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessage(index);
+      window.setTimeout(() => setCopiedMessage((current) => current === index ? null : current), 1600);
+    } catch {
+      setError({ message: "Copy was blocked. Press and hold the response text to select it." });
+    }
+  }
 
   async function send(e: FormEvent | KeyboardEvent) {
     e.preventDefault();
@@ -106,17 +122,50 @@ export default function CeoChatOnly() {
     setStreaming(false);
   }
 
-  const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-
   return (
-    <main className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8" aria-labelledby="ceo-title">
-      <section className="w-full max-w-2xl -translate-y-[8vh]">
-        <div className="mb-5 text-center">
+    <main className="flex min-h-[calc(100dvh-64px)] justify-center px-3 py-4 sm:px-4 sm:py-8" aria-labelledby="ceo-title">
+      <section className="flex h-[calc(100dvh-96px)] min-h-[520px] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#313244] bg-[#181825]">
+        <div className="shrink-0 border-b border-[#313244] px-4 py-4 text-center">
           <h1 id="ceo-title" className="text-3xl font-semibold text-[#cdd6f4]">CEO</h1>
           <p className="mt-1 text-sm text-[#7f849c]">Executive decision workspace</p>
         </div>
 
-        <form onSubmit={send} className="flex gap-2 items-end" aria-busy={streaming}>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 [-webkit-overflow-scrolling:touch]">
+          {messages.length === 0 && (
+            <p className="mt-10 text-center text-sm text-[#7f849c]">Ask your CEO anything.</p>
+          )}
+          <div className="space-y-4">
+            {messages.map((message, index) => (
+              <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[92%] break-words whitespace-pre-wrap rounded-xl px-4 py-3 text-[14px] leading-relaxed ${
+                  message.role === "user"
+                    ? "bg-[#89b4fa] font-medium text-[#1e1e2e]"
+                    : "select-text border border-[#313244] bg-[#1e1e2e] text-[#cdd6f4]"
+                }`}>
+                  <div className="select-text">
+                    {message.content || <span className="inline-block h-4 w-1.5 animate-pulse bg-[#89b4fa]" />}
+                    {message.role === "assistant" && streaming && index === messages.length - 1 && message.content && (
+                      <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#89b4fa] align-text-bottom" />
+                    )}
+                  </div>
+                  {message.role === "assistant" && message.content && !streaming && (
+                    <button
+                      type="button"
+                      onClick={() => copyMessage(message.content, index)}
+                      className="mt-3 min-h-10 rounded-lg border border-[#45475a] bg-[#313244] px-3 py-2 text-[12px] font-semibold text-[#cdd6f4] active:bg-[#585b70]"
+                    >
+                      {copiedMessage === index ? "✓ Copied — paste into Notes" : "Copy response"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+            <div ref={bottomRef} />
+          </div>
+        </div>
+
+        <form onSubmit={send} className="shrink-0 border-t border-[#313244] bg-[#181825] p-3" aria-busy={streaming}>
+          <div className="flex gap-2 items-end">
           <label className="sr-only" htmlFor="ceo-prompt">Message your CEO</label>
           <textarea
             id="ceo-prompt"
@@ -147,23 +196,16 @@ export default function CeoChatOnly() {
               Send
             </button>
           )}
+          </div>
+          <p className="mt-2 text-[11px] text-[#6c7086]">Scroll the full conversation · Press and hold to select · Copy responses to Notes</p>
         </form>
 
         {error && (
-          <div role="alert" className="mt-4 rounded-xl border border-[#f38ba8]/40 bg-[#f38ba8]/10 p-4 text-sm text-[#f5c2e7]">
+          <div role="alert" className="mx-3 mb-3 rounded-xl border border-[#f38ba8]/40 bg-[#f38ba8]/10 p-3 text-sm text-[#f5c2e7]">
             {error.message}
           </div>
         )}
 
-        {lastAssistant && (
-          <div
-            aria-live="polite"
-            className="mt-5 rounded-xl border border-[#313244] bg-[#181825] p-5 text-[14px] leading-relaxed text-[#cdd6f4] whitespace-pre-wrap"
-          >
-            {lastAssistant.content}
-            {streaming && <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#89b4fa] align-text-bottom" />}
-          </div>
-        )}
       </section>
     </main>
   );
