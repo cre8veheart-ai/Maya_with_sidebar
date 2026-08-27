@@ -20,7 +20,6 @@ import {
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
-import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import type {
   ExecRole,
   RoleLens,
@@ -34,6 +33,7 @@ const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
 const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
+const BUILD_SESSION_ID = "maya-build-session";
 
 function sanitizeText(raw: unknown, maxLen: number): string {
   if (typeof raw !== "string") return "";
@@ -148,17 +148,6 @@ function buildContinuityCookie(token: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  let session;
-  try {
-    session = requireBetaSession(req);
-  } catch (error) {
-    if (isResponseError(error)) return error;
-    return Response.json(
-      { error: "Authentication failed", code: "AUTH_ERROR" },
-      { status: 500, headers: { "Cache-Control": "no-store" } },
-    );
-  }
-
   let workspace: ChatWorkspace;
   let lens: RoleLens;
   let messages: MayaMessage[];
@@ -200,16 +189,16 @@ export async function POST(req: NextRequest) {
   const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
   const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(
     existingContinuityToken,
-    session.sessionId,
+    BUILD_SESSION_ID,
   );
   const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(
-    session.sessionId,
+    BUILD_SESSION_ID,
     messages,
   );
   const continuityActive = continuityAlreadyActive || continuityActivatedNow;
 
   const founderContinuityMessage = workspace === "exec"
-    ? buildFounderContinuityMessage(session.sessionId, continuityActive)
+    ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
     : null;
 
   const execContextMessage = appendTrustedContext(
@@ -259,7 +248,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (continuityActivatedNow) {
-    const token = createFounderContinuitySession(session.sessionId);
+    const token = createFounderContinuitySession(BUILD_SESSION_ID);
     headers.set("Set-Cookie", buildContinuityCookie(token));
   }
 
