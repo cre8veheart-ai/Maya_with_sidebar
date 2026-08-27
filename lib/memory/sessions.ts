@@ -18,3 +18,25 @@ export function getSessionMessages(sessionId: string, limit = 500) {
   const params = new URLSearchParams({ select: "*", session_id: `eq.${sessionId}`, order: "created_at.asc", limit: String(Math.min(limit, 1000)) });
   return supabaseRest<Record<string, unknown>[]>(`messages?${params.toString()}`);
 }
+
+export function getWorkspaceSessions(workspaceId: string, limit = 200) {
+  const params = new URLSearchParams({
+    select: "*",
+    workspace_id: `eq.${workspaceId}`,
+    order: "updated_at.desc",
+    limit: String(Math.min(Math.max(limit, 1), 500)),
+  });
+  return supabaseRest<Record<string, unknown>[]>(`sessions?${params.toString()}`);
+}
+
+export async function getWorkspaceSessionMessages(workspaceId: string, sessionId: string, limit = 500) {
+  const sessionParams = new URLSearchParams({
+    select: "id,workspace_id",
+    id: `eq.${sessionId}`,
+    workspace_id: `eq.${workspaceId}`,
+    limit: "1",
+  });
+  const sessions = await supabaseRest<Array<{ id: string; workspace_id: string }>>(`sessions?${sessionParams.toString()}`);
+  if (sessions.length === 0) return [];
+  return getSessionMessages(sessionId, limit);
+}
