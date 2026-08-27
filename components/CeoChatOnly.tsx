@@ -49,7 +49,9 @@ export default function CeoChatOnly() {
           | null;
 
         if (res.status === 401) {
-          throw { message: "Your Maya session has expired. Please sign in again.", code: "AUTH_REQUIRED" };
+          const returnTo = `${window.location.pathname}${window.location.search}`;
+          window.location.assign(`/beta?returnTo=${encodeURIComponent(returnTo)}`);
+          return;
         }
 
         throw {
