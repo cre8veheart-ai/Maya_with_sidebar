@@ -122,6 +122,7 @@ export async function POST(req: NextRequest) {
   let communityContext: CommunityAssistantContext | null;
   let workspaceId: string;
   let sessionId: string;
+  let surface: string;
   let clientId: string | undefined;
   let projectId: string | undefined;
 
@@ -137,6 +138,7 @@ export async function POST(req: NextRequest) {
     communityContext = parseCommunityContext(body.communityContext);
     workspaceId = sanitizeText(body.workspaceId, 120) || DEFAULT_WORKSPACE_ID;
     sessionId = sanitizeText(body.sessionId, 160) || `${lens.role}-${Date.now()}`;
+    surface = sanitizeText(body.surface, 160) || (workspace === "community" ? "community" : `executive:${lens.role}`);
     clientId = sanitizeText(body.clientId, 160) || undefined;
     projectId = sanitizeText(body.projectId, 160) || undefined;
   } catch {
@@ -160,7 +162,7 @@ export async function POST(req: NextRequest) {
     ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
     : null;
 
-  const memory = await loadMemoryContext({ workspaceId, role: lens.role, clientId, projectId });
+  const memory = await loadMemoryContext({ workspaceId, role: lens.role, surface, clientId, projectId });
   const memoryContextMessage = buildMemoryContextMessage(memory);
   const execContextMessage = appendTrustedContext(
     appendTrustedContext(baseContextMessage, founderContinuityMessage),
@@ -198,8 +200,10 @@ export async function POST(req: NextRequest) {
             workspaceId,
             sessionId,
             role: lens.role,
+            surface,
             clientId,
             projectId,
+            participants: [lens.role],
             userMessage,
             assistantMessage: { role: "assistant", content: full },
           });
@@ -219,6 +223,7 @@ export async function POST(req: NextRequest) {
     "X-Maya-Continuity": continuityActive ? "active" : "inactive",
     "X-Maya-Memory": "persistent-v1",
     "X-Maya-Session": sessionId,
+    "X-Maya-Surface": surface,
   });
 
   if (continuityActivatedNow) {
