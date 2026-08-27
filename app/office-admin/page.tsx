@@ -86,13 +86,11 @@ function ActionRow({ label, source }: { label: string; source: string }) {
 export default function OfficeAdminPage() {
   return (
     <PageShell
-      title="Office Admin"
-      subtitle="The operations backbone — anticipates, drafts, organizes. Draft everything, send nothing autonomously."
+      title="Admin Secretary"
+      subtitle="The executive coordination backbone — organizes, drafts, tracks, and surfaces what needs attention. Draft freely; send or schedule nothing without approval."
     >
       <div className="flex flex-col xl:flex-row gap-5 h-full">
-        {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
-          {/* Today's Agenda */}
           <SectionCard title="Today's Agenda">
             <AgendaRow time="—" label="Add calendar context to surface prep gaps" />
             <AgendaRow time="—" label="Double-books and travel time flagged automatically" />
@@ -101,7 +99,6 @@ export default function OfficeAdminPage() {
             </p>
           </SectionCard>
 
-          {/* Pending Drafts */}
           <SectionCard title="Pending Drafts">
             <DraftRow label="No drafts awaiting approval yet" recipient="—" />
             <div className="mt-3 space-y-1.5">
@@ -117,7 +114,6 @@ export default function OfficeAdminPage() {
             </p>
           </SectionCard>
 
-          {/* Action Queue */}
           <SectionCard title="Action Queue">
             <ActionRow label="Actions extract from sessions automatically" source="Strategy Room / Exec sessions" />
             <div className="mt-3 text-center">
@@ -127,7 +123,6 @@ export default function OfficeAdminPage() {
             </div>
           </SectionCard>
 
-          {/* Integrations */}
           <SectionCard title="Integrations">
             <div className="space-y-2">
               {[
@@ -148,7 +143,6 @@ export default function OfficeAdminPage() {
           </SectionCard>
         </div>
 
-        {/* Right — MAYA Office Admin Agent */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
           <RoleChat role="admin" />
         </div>
