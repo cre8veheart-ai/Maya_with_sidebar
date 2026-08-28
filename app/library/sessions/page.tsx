@@ -37,6 +37,30 @@ interface ExecReportSection {
   fallbackActionItems: string[];
 }
 
+function downloadSessionFile(session: MayaSessionRecord) {
+  const role = session.role.toUpperCase();
+  const transcript = session.transcript?.length
+    ? session.transcript
+        .map((message) => `${message.role.toUpperCase()}\n${message.content}`)
+        .join("\n\n")
+    : `USER\n${session.query}\n\n${role}\n${session.answer}`;
+  const contents = [
+    `MAYA ${role} SESSION FILE`,
+    `Title: ${session.title}`,
+    `Saved: ${session.savedAt}`,
+    "",
+    transcript,
+  ].join("\n");
+  const blob = new Blob([contents], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const safeDate = session.savedAt.replace(/[^0-9]+/g, "-").replace(/-+$/, "");
+  link.href = url;
+  link.download = `MAYA-${role}-session-${safeDate}.txt`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -325,6 +349,13 @@ export default function SessionsPage() {
                     Saved {selectedSession.savedAt} · {selectedSession.role.toUpperCase()} · {reportSections.length} exec section{reportSections.length === 1 ? "" : "s"}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-3 print:hidden">
+                    <button
+                      type="button"
+                      onClick={() => downloadSessionFile(selectedSession)}
+                      className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
+                    >
+                      Download session file
+                    </button>
                     <Link
                       href="/library/knowledge"
                       className="text-[11px] text-[#89b4fa] hover:text-[#b4d0fb]"
