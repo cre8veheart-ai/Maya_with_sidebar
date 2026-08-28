@@ -10,7 +10,7 @@ export default function MainContent({ isOpen, onToggle, children }: MainContentP
   return (
     <main
       className={[
-        "flex flex-col flex-1 min-w-0 h-screen overflow-y-auto",
+        "flex flex-col flex-1 min-w-0 w-full max-w-full h-screen overflow-x-hidden overflow-y-auto",
         "bg-[#1a1a2e] transition-all duration-300 ease-in-out",
       ].join(" ")}
     >
@@ -33,7 +33,7 @@ export default function MainContent({ isOpen, onToggle, children }: MainContentP
       </div>
 
       {/* Page content */}
-      <div className="flex-1 p-4 md:p-6">
+      <div className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden p-4 md:p-6">
         {children}
       </div>
     </main>
