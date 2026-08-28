@@ -38,7 +38,17 @@ const navGroups: NavGroup[] = [
       { label: "Legal", href: "/legal", icon: "⚖️" },
       { label: "Admin Secretary", href: "/office-admin", icon: "🗂️" },
       { label: "Strategy Room", href: "/strategy-room", icon: "🧩" },
+      { label: "Recommendations", href: "/recommendations", icon: "💡", disabled: true, phase: "Next" },
       { label: "Titans Council", href: "/titans-council", icon: "👑", disabled: true, phase: "Phase 2" },
+    ],
+  },
+  {
+    id: "workspaces",
+    label: "Workspaces",
+    icon: "🧰",
+    items: [
+      { label: "Client Vaults", href: "/client-vaults", icon: "🔐" },
+      { label: "White Boardroom", href: "/white-boardroom", icon: "🎨" },
     ],
   },
   {
