@@ -230,16 +230,16 @@ export default function SessionsPage() {
       title="Sessions"
       subtitle="Your full conversation history with Maya — plus separate exec reports, clips, and action items"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="md:col-span-2 space-y-4 print:hidden">
-          <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl px-4 py-3 flex items-center gap-3">
+      <div className="grid w-full min-w-0 max-w-full grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="min-w-0 space-y-4 print:hidden md:col-span-2">
+          <div className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-[#313244] bg-[#1e1e2e] px-4 py-3">
             <span className="text-[#585b70]">🔍</span>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search sessions…"
-              className="flex-1 bg-transparent text-[13px] text-[#cdd6f4] placeholder-[#585b70] focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent text-[13px] text-[#cdd6f4] placeholder-[#585b70] focus:outline-none"
             />
           </div>
 
@@ -274,18 +274,18 @@ export default function SessionsPage() {
                     type="button"
                     onClick={() => setSelectedId(session.id)}
                     className={[
-                      "w-full text-left rounded-lg border p-4 transition-colors",
+                      "w-full min-w-0 overflow-hidden text-left rounded-lg border p-4 transition-colors",
                       selectedSession?.id === session.id
                         ? "border-[#89b4fa]/40 bg-[#181825]"
                         : "border-[#313244] bg-[#181825] hover:border-[#585b70]",
                     ].join(" ")}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[13px] text-[#cdd6f4] font-medium">{session.title}</p>
-                        <p className="text-[12px] text-[#a6adc8] mt-1 line-clamp-2">{session.answer}</p>
+                    <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:justify-between sm:gap-3">
+                      <div className="min-w-0 max-w-full">
+                        <p className="break-words text-[13px] font-medium text-[#cdd6f4]">{session.title}</p>
+                        <p className="mt-1 line-clamp-2 break-words text-[12px] text-[#a6adc8]">{session.answer}</p>
                       </div>
-                      <div className="text-right shrink-0">
+                      <div className="shrink-0 text-left sm:text-right">
                         <p className="text-[10px] text-[#585b70] uppercase">{session.role}</p>
                         <p className="text-[10px] text-[#585b70] mt-1">{session.savedAt}</p>
                       </div>
@@ -297,7 +297,7 @@ export default function SessionsPage() {
           </div>
         </div>
 
-        <div className="space-y-4 md:col-span-1 print:col-span-3">
+        <div className="min-w-0 space-y-4 md:col-span-1 print:col-span-3">
           <div className="bg-[#1e1e2e] border border-[#313244] rounded-xl p-5 print:hidden">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -376,14 +376,14 @@ export default function SessionsPage() {
                   reportSections.map((section) => (
                     <section
                       key={`${selectedSession.id}-${section.role}`}
-                      className="rounded-xl border border-[#313244] bg-[#181825] p-4 space-y-4 print:bg-white print:border-slate-300"
+                      className="min-w-0 space-y-4 overflow-hidden rounded-xl border border-[#313244] bg-[#181825] p-4 print:bg-white print:border-slate-300"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
+                      <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:justify-between">
+                        <div className="min-w-0 max-w-full">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa] print:text-slate-600">
                             {getRoleLabel(section.role)} Recommendation
                           </p>
-                          <p className="text-[13px] text-[#cdd6f4] mt-2 whitespace-pre-wrap print:text-black">
+                          <p className="mt-2 max-w-full whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-[13px] text-[#cdd6f4] print:text-black">
                             {section.recommendation}
                           </p>
                         </div>
