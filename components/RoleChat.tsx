@@ -352,7 +352,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     !streaming;
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden">
       <div className="px-4 py-2.5 border-b border-[#313244] shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#a6e3a1]" />
@@ -387,7 +387,7 @@ export default function RoleChat({ role }: RoleChatProps) {
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
+      <div className="flex-1 min-h-0 min-w-0 w-full max-w-full overflow-x-hidden overflow-y-auto px-4 py-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-[13px] text-[#585b70] text-center leading-relaxed">
@@ -404,7 +404,7 @@ export default function RoleChat({ role }: RoleChatProps) {
             className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap ${
+              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] ${
                 message.role === "user"
                   ? "bg-[#89b4fa] text-[#1e1e2e] font-medium"
                   : "bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
@@ -536,7 +536,7 @@ export default function RoleChat({ role }: RoleChatProps) {
         {pendingActions.map((action) => (
           <div
             key={action.id}
-            className={`rounded-xl border p-4 text-[13px] transition-all ${
+            className={`min-w-0 w-full max-w-full overflow-hidden rounded-xl border p-4 text-[13px] transition-all ${
               action.status === "pending"
                 ? "border-[#f9e2af] bg-[#1e1e2e]"
                 : action.status === "approved"
@@ -544,12 +544,12 @@ export default function RoleChat({ role }: RoleChatProps) {
                   : "border-[#313244] bg-[#1e1e2e] opacity-40"
             }`}
           >
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#f9e2af] mb-1">
                   Proposed · {action.label}
                 </p>
-                <p className="text-[#a6adc8] text-[12px] leading-relaxed line-clamp-2">
+                <p className="text-[#a6adc8] text-[12px] leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
                   {action.context}
                   {action.context.length >= 220 ? "…" : ""}
                 </p>
@@ -637,7 +637,7 @@ export default function RoleChat({ role }: RoleChatProps) {
       </div>
 
       <form onSubmit={send} className="px-4 py-3 border-t border-[#313244] shrink-0">
-        <div className="flex gap-2 items-end">
+        <div className="flex min-w-0 gap-2 items-end">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -646,7 +646,7 @@ export default function RoleChat({ role }: RoleChatProps) {
             }}
             placeholder={`Ask your ${role.toUpperCase()} lens…`}
             rows={1}
-            className="flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-2.5 text-[13px] text-[#cdd6f4] placeholder-[#585b70] resize-none focus:outline-none focus:border-[#89b4fa] transition-colors"
+            className="min-w-0 flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-2.5 text-[13px] text-[#cdd6f4] placeholder-[#585b70] resize-none focus:outline-none focus:border-[#89b4fa] transition-colors"
             style={{ minHeight: "40px", maxHeight: "120px" }}
           />
           <button
