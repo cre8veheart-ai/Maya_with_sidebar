@@ -11,6 +11,7 @@ const requiredCtoMarkers = [
   'role: "cto"',
   'version: "3.0.0-ari"',
   "You are Ari, MAYA's standalone CTO",
+  "Ari is male and uses he/him pronouns",
   "portable operating profile",
   "ARI — CTO EXECUTIVE INTELLIGENCE",
   "Strategic synthesis",
