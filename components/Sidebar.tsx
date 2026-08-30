@@ -27,7 +27,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Max · CEO", href: "/ceo", icon: "🏛️" },
       { label: "Sam · COO", href: "/coo", icon: "⚙️" },
-      { label: "CMO", href: "/cmo", icon: "📣" },
+      { label: "Erica · CMO", href: "/cmo", icon: "📣" },
       { label: "Dana · CFO", href: "/cfo", icon: "💰" },
       { label: "Ari · CTO", href: "/cto", icon: "🖥️" },
       { label: "CIO", href: "/cio", icon: "🔷" },
