@@ -69,7 +69,7 @@ function BetRow({ name, type, risk }: { name: string; type: string; risk: "low" 
 
 export default function CtoPage() {
   return (
-    <PageShell title="CTO" subtitle="Chief Technology Officer workspace">
+    <PageShell title="Ari · CTO" subtitle="Architecture, engineering, security, adjudication, continuity, and reliable delivery.">
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
@@ -118,7 +118,7 @@ export default function CtoPage() {
           </SectionCard>
         </div>
 
-        {/* Right — MAYA CTO Agent */}
+        {/* Right — Ari, MAYA CTO */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
           <RoleChat role="cto" />
         </div>
