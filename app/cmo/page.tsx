@@ -59,7 +59,7 @@ function CampaignRow({ name, stage }: { name: string; stage: string }) {
 
 export default function CmoPage() {
   return (
-    <PageShell title="CMO" subtitle="Market position, buyer psychology, and brand — what lands in the market is the only story that counts.">
+    <PageShell title="Erica · CMO" subtitle="Brand, market intelligence, integrated communications, partnerships, and measurable growth.">
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
@@ -108,7 +108,7 @@ export default function CmoPage() {
           </SectionCard>
         </div>
 
-        {/* Right — MAYA CMO Agent */}
+        {/* Right — Erica, MAYA CMO */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
           <RoleChat role="cmo" />
         </div>
