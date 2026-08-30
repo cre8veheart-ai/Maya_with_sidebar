@@ -1,35 +1,37 @@
-import fs from "node:fs";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
-const cto = fs.readFileSync("lib/maya/executives/cto.ts", "utf8");
-const lens = fs.readFileSync("lib/maya/execLens.ts", "utf8");
+const cto = await readFile(new URL("../lib/maya/executives/cto.ts", import.meta.url), "utf8");
+const lens = await readFile(new URL("../lib/maya/execLens.ts", import.meta.url), "utf8");
+const registry = await readFile(new URL("../lib/executives/registry.ts", import.meta.url), "utf8");
+const sidebar = await readFile(new URL("../components/Sidebar.tsx", import.meta.url), "utf8");
+const page = await readFile(new URL("../app/cto/page.tsx", import.meta.url), "utf8");
 
 const requiredCtoMarkers = [
   'role: "cto"',
-  "Protect technical viability",
-  "Preserve material technical dissent",
-  "Never claim code, tests, deployments",
-  "Security and reliability",
-  "Build/buy/partner",
-  "Delivery reality",
-  "Verification gate",
+  'version: "3.0.0-ari"',
+  "You are Ari, MAYA's standalone CTO",
+  "portable operating profile",
+  "ARI — CTO EXECUTIVE INTELLIGENCE",
+  "Strategic synthesis",
+  "Delivery truth",
+  "Adjudication",
+  "Recovery behavior",
+  "Founder cognitive protection",
+  "Continuity stewardship",
+  "Portable product thinking",
   '"represent-unverified-technical-state"',
 ];
 
 for (const marker of requiredCtoMarkers) {
-  if (!cto.includes(marker)) {
-    console.error(`CTO chassis verification failed: missing ${marker}`);
-    process.exit(1);
-  }
+  assert.ok(cto.includes(marker), `Ari CTO chassis missing: ${marker}`);
 }
 
-if (!lens.includes('import { ctoChassis } from "./executives/cto";')) {
-  console.error("CTO chassis verification failed: exec lens does not import CTO chassis");
-  process.exit(1);
-}
+assert.match(lens, /import \{ ctoChassis \} from "\.\/executives\/cto"/);
+assert.match(lens, /role === "cto"/);
+assert.match(registry, /id: "ari",[\s\S]*name: "Ari"[\s\S]*title: "CTO"/);
+assert.match(sidebar, /Ari · CTO/);
+assert.match(page, /title="Ari · CTO"/);
+assert.doesNotMatch(cto, /claim of consciousness|identity persistence.*(?:is real|confirmed)/i);
 
-if (!lens.includes('if (role === "cto")')) {
-  console.error("CTO chassis verification failed: CTO is not routed through standalone chassis");
-  process.exit(1);
-}
-
-console.log("CTO standalone chassis verification passed.");
+console.log("Ari CTO portable operating clone verification passed.");
