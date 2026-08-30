@@ -64,7 +64,7 @@ function RiskFlag({ label, severity }: { label: string; severity: "high" | "medi
 
 export default function CfoPage() {
   return (
-    <PageShell title="CFO" subtitle="Capital, cost, and the math underneath every decision — what it costs, what it returns, and when.">
+    <PageShell title="Dana · CFO" subtitle="Financial integrity, forensic review, disciplined capital allocation, and the math beneath every decision.">
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
@@ -120,7 +120,7 @@ export default function CfoPage() {
           </SectionCard>
         </div>
 
-        {/* Right — MAYA CFO Agent */}
+        {/* Right — Dana, MAYA CFO */}
         <div className="flex-1 bg-[#1e1e2e] border border-[#313244] rounded-xl overflow-hidden min-h-[520px] xl:min-h-0">
           <RoleChat role="cfo" />
         </div>

@@ -2,6 +2,7 @@ import type { ExecRole, RoleLens } from "./types";
 import { roleBaselines } from "./roleBaselines";
 import { ceoChassis } from "./executives/ceo";
 import { cmoChassis } from "./executives/cmo";
+import { cfoChassis } from "./executives/cfo";
 import { ctoChassis } from "./executives/cto";
 import { buildExecutiveOperatingContract } from "@/lib/executives/roles";
 
@@ -26,6 +27,9 @@ function buildRoleFidelityContract(role: ExecRole): string {
 function executiveCoreContract(role: ExecRole): string {
   if (role === "ceo") {
     return `${ceoChassis.systemContract}\n\n${ceoChassis.responseContract}`;
+  }
+  if (role === "cfo") {
+    return `${cfoChassis.systemContract}\n\n${cfoChassis.responseContract}`;
   }
   if (role === "cto") {
     return `${ctoChassis.systemContract}\n\n${ctoChassis.responseContract}`;
