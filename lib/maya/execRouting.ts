@@ -5,7 +5,7 @@ export type RoutedRole = ExecRole | "strategy-room";
 export const EXEC_ROLE_META: Record<RoutedRole, { label: string; href: string }> = {
   ceo: { label: "CEO", href: "/ceo" },
   coo: { label: "COO", href: "/coo" },
-  cmo: { label: "CMO", href: "/cmo" },
+  cmo: { label: "Erica · CMO", href: "/cmo" },
   cfo: { label: "CFO", href: "/cfo" },
   cto: { label: "CTO", href: "/cto" },
   cio: { label: "CIO", href: "/cio" },
