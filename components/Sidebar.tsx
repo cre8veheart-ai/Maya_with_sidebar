@@ -68,6 +68,7 @@ const navGroups: NavGroup[] = [
       { label: "Decisions", href: "/decisions", icon: "⚖️" },
       { label: "Campaigns", href: "/campaigns", icon: "🚀" },
       { label: "Adobe Studio", href: "/adobe", icon: "🎨" },
+      { label: "White Boardroom", href: "/white-boardroom", icon: "🧑‍💼" },
       { label: "Tool Sandbox", href: "/tool-sandbox", icon: "🧪" },
     ],
   },
