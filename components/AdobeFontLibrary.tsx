@@ -46,6 +46,7 @@ export default function AdobeFontLibrary({ connected }: { connected: boolean }) 
   const [category, setCategory] = useState<(typeof categories)[number]>("All");
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [comparison, setComparison] = useState<string[]>([]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -54,6 +55,14 @@ export default function AdobeFontLibrary({ connected }: { connected: boolean }) 
       (!needle || font.name.toLowerCase().includes(needle)),
     );
   }, [category, query]);
+
+  const toggleComparison = (name: string) => {
+    setComparison((current) =>
+      current.includes(name)
+        ? current.filter((item) => item !== name)
+        : [...current.slice(-2), name],
+    );
+  };
 
   const toggleFavorite = (name: string) => {
     setFavorites((current) =>
@@ -145,9 +154,17 @@ export default function AdobeFontLibrary({ connected }: { connected: boolean }) 
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/40">Board preview</p>
             <p className="mt-1 text-sm text-black/55">{selected.name} · {selected.category}</p>
           </div>
-          <button className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white">
-            Use font
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => toggleComparison(selected.name)}
+              className="rounded-lg border border-black/15 bg-white px-4 py-2 text-sm font-semibold"
+            >
+              {comparison.includes(selected.name) ? "Remove comparison" : "Compare"}
+            </button>
+            <button className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white">
+              Use font
+            </button>
+          </div>
         </div>
         <div className="grid min-h-80 place-items-center px-2 py-10 text-center">
           <div style={{ fontFamily: stack(selected) }}>
@@ -157,6 +174,26 @@ export default function AdobeFontLibrary({ connected }: { connected: boolean }) 
             </p>
           </div>
         </div>
+        {comparison.length > 0 && (
+          <div className="mb-4 grid gap-2 border-t border-black/10 pt-4 md:grid-cols-3">
+            {comparison.map((name) => {
+              const font = fonts.find((item) => item.name === name);
+              if (!font) return null;
+              return (
+                <button
+                  key={font.name}
+                  onClick={() => setSelected(font)}
+                  className="rounded-xl border border-black/10 bg-white p-4 text-left"
+                >
+                  <span className="text-xs text-black/40">{font.name}</span>
+                  <span className="mt-3 block text-xl" style={{ fontFamily: stack(font) }}>
+                    The decision is clear.
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
         {!connected && (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900">
             Add an Adobe Fonts Web Project ID to activate licensed previews. Until connected, MAYA uses a safe local fallback while preserving each font selection.
