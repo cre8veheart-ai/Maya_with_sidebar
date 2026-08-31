@@ -23,15 +23,10 @@ function assert(condition, message) {
 const chatRoute = read("app/api/chat/route.ts");
 const roleChat = read("components/RoleChat.tsx");
 
-assertMatch(
+assertNoMatch(
   chatRoute,
-  /requireBetaSession\(req\)/,
-  "Executive chat must enforce the signed beta-session boundary",
-);
-assertMatch(
-  chatRoute,
-  /isResponseError\(error\)/,
-  "Executive chat must preserve structured authorization failures",
+  /requireBetaSession|AUTH_REQUIRED|isResponseError/,
+  "Executive chat must remain available without the retired beta-session gate",
 );
 
 assert(
