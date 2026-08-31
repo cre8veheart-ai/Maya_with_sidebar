@@ -113,8 +113,15 @@ export async function GET(req: NextRequest) {
     120,
   );
   const roleValue = req.nextUrl.searchParams.get("role");
-  const role = roleValue ? parseRole(roleValue) : undefined;
-  if (!clientVaultId || (roleValue && !role)) {
+  let role: MayaPocketOfficeSession["role"] | undefined;
+  if (roleValue) {
+    const parsedRole = parseRole(roleValue);
+    if (!parsedRole) {
+      return noStore({ error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
+    }
+    role = parsedRole;
+  }
+  if (!clientVaultId) {
     return noStore({ error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
   }
 
