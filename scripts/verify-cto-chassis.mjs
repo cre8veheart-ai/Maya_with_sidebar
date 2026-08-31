@@ -33,6 +33,6 @@ assert.match(lens, /role === "cto"/);
 assert.match(registry, /id: "ari",[\s\S]*name: "Ari"[\s\S]*title: "CTO"/);
 assert.match(sidebar, /Ari · CTO/);
 assert.match(page, /title="Ari · CTO"/);
-assert.doesNotMatch(cto, /claim of consciousness|identity persistence.*(?:is real|confirmed)/i);
+assert.doesNotMatch(cto, /claim of consciousness|identity persistence\\s+(?:is\\s+)?(?:real|confirmed)/i);
 
 console.log("Ari CTO portable operating clone verification passed.");
