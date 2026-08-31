@@ -8,7 +8,7 @@ const migration = readFileSync(
 );
 
 for (const required of [
-  "requireBetaSession(req).sessionId",
+  "resolveWorkspaceSession",
   "loadMemoryContext",
   "saveSessionTurn",
   '"X-Maya-Memory": "supabase-v1"',
@@ -23,6 +23,12 @@ if (!store.includes('import "server-only"')) {
 }
 if (/workspaceId\s*=\s*sanitizeText\(body\./.test(route)) {
   throw new Error("Chat route trusts a browser-supplied workspace identity");
+}
+if (!route.includes("MAYA_WORKSPACE_COOKIE") || !route.includes("buildWorkspaceCookie")) {
+  throw new Error("Chat route does not maintain a signed frictionless workspace identity");
+}
+if (/requireBetaSession|AUTH_REQUIRED|isResponseError/.test(route)) {
+  throw new Error("Chat route reintroduced the retired beta-session gate");
 }
 
 for (const table of [
