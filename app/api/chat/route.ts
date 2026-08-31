@@ -20,7 +20,11 @@ import {
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
-import { isResponseError, requireBetaSession } from "@/lib/server/auth";
+import {
+  buildWorkspaceCookie,
+  MAYA_WORKSPACE_COOKIE,
+  resolveWorkspaceSession,
+} from "@/lib/maya/workspaceSession";
 import {
   buildMemoryContextMessage,
   loadMemoryContext,
@@ -154,16 +158,19 @@ function buildContinuityCookie(token: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  let workspaceId: string;
+  let workspaceSession: ReturnType<typeof resolveWorkspaceSession>;
   try {
-    workspaceId = requireBetaSession(req).sessionId;
+    workspaceSession = resolveWorkspaceSession(
+      req.cookies.get(MAYA_WORKSPACE_COOKIE)?.value,
+    );
   } catch (error) {
-    if (isResponseError(error)) return error;
+    console.error("MAYA workspace identity failed", error);
     return Response.json(
-      { error: "Authorization failed", code: "AUTH_ERROR" },
-      { status: 500, headers: { "Cache-Control": "no-store" } },
+      { error: "Workspace unavailable", code: "WORKSPACE_UNAVAILABLE" },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }
+  const workspaceId = workspaceSession.workspaceId;
 
   let workspace: ChatWorkspace;
   let lens: RoleLens;
@@ -312,10 +319,14 @@ export async function POST(req: NextRequest) {
     "X-Maya-Surface": surface,
   });
 
-  if (continuityActivatedNow) {
-    const token = createFounderContinuitySession(BUILD_SESSION_ID);
-    headers.set("Set-Cookie", buildContinuityCookie(token));
+  const cookies: string[] = [];
+  if (workspaceSession.token) {
+    cookies.push(buildWorkspaceCookie(workspaceSession.token));
   }
+  if (continuityActivatedNow) {
+    cookies.push(buildContinuityCookie(createFounderContinuitySession(BUILD_SESSION_ID)));
+  }
+  for (const cookie of cookies) headers.append("Set-Cookie", cookie);
 
   return new Response(readable, { headers });
 }
