@@ -4,6 +4,10 @@ function read(path) {
   return fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 }
 
+function exists(path) {
+  return fs.existsSync(new URL(`../${path}`, import.meta.url));
+}
+
 function assertMatch(source, pattern, message) {
   if (!pattern.test(source)) throw new Error(message);
 }
@@ -12,25 +16,41 @@ function assertNoMatch(source, pattern, message) {
   if (pattern.test(source)) throw new Error(message);
 }
 
-const betaRoute = read("app/api/beta-validate/route.ts");
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
 const chatRoute = read("app/api/chat/route.ts");
-const invites = read("lib/beta/invites.ts");
-const session = read("lib/beta/session.ts");
-const proxy = read("proxy.ts");
 const roleChat = read("components/RoleChat.tsx");
 
-assertNoMatch(betaRoute, /inviteCodes\s*:/, "Beta API must not return invite codes");
-assertMatch(betaRoute, /httpOnly:\s*true/, "Beta cookie must be HTTP-only");
-assertMatch(betaRoute, /sameSite:\s*"lax"/, "Beta cookie must use SameSite protection");
-assertMatch(invites, /timingSafeEqual/, "Invite comparisons must be timing-safe");
-assertMatch(invites, /\{ nx: true \}/, "Invite redemption must be atomic");
-assertMatch(session, /createHmac\("sha256"/, "Beta sessions must be signed");
-assertMatch(session, /timingSafeEqual/, "Session signatures must be timing-safe");
-assertMatch(chatRoute, /verifyBetaSession/, "Chat must require a signed beta session");
-assertMatch(chatRoute, /status: 429/, "Chat must enforce a request limit");
-assertMatch(chatRoute, /workspace === "community" \? body\.provider : undefined/, "Executive providers must be server-controlled");
-assertMatch(proxy, /BETA_SESSION_SECRET/, "Protected routes must fail closed without a session secret");
-assertNoMatch(roleChat, /ProviderControls|Claude|OpenClaw|Oracle/, "Executive chat must not expose infrastructure providers");
-assertMatch(roleChat, /Approved · Not executed/, "Approval UI must not imply execution");
+assert(
+  !exists("app/api/beta-validate/route.ts"),
+  "Legacy beta-password validation route must not be reintroduced",
+);
+assertNoMatch(
+  chatRoute,
+  /verifyBetaSession|BETA_SESSION_SECRET/,
+  "Executive chat must not restore the retired beta-password gate",
+);
+assertMatch(
+  chatRoute,
+  /workspace === "community" \? body\.provider : undefined/,
+  "Executive providers must be server-controlled",
+);
+assertNoMatch(
+  roleChat,
+  /ProviderControls|providerSettings|Claude|OpenClaw|Oracle/,
+  "Executive chat must not expose infrastructure providers",
+);
+assertMatch(
+  roleChat,
+  /window\.confirm/,
+  "Consequential approval records must require explicit human confirmation",
+);
+assertMatch(
+  roleChat,
+  /Approved · Not executed/,
+  "Approval UI must not imply external execution",
+);
 
-console.log("Private beta hardening checks passed.");
+console.log("No-friction access and executive boundary checks passed.");
