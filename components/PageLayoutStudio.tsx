@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 const presets = [
-  { name: "Letter", width: 8.5, height: 11, unit: "in" },
+  { name: "MAYA Letterhead", width: 8.5, height: 11, unit: "in" },
+  { name: "Business Card", width: 3.5, height: 2, unit: "in" },
   { name: "A4", width: 210, height: 297, unit: "mm" },
   { name: "Presentation", width: 13.333, height: 7.5, unit: "in" },
   { name: "Square", width: 10, height: 10, unit: "in" },
