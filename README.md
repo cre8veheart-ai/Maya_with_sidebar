@@ -50,7 +50,7 @@ npm run lint
 
 ## Current beta limitations
 
-- User profiles, surveys, role lenses, provider preferences, and community posts currently use browser storage; they are not synced across browsers or persisted server-side.
-- The Cloud storage adapter references `/api/user/*`, but those API routes are not implemented.
+- User profiles and role lenses have authenticated server API routes backed by Supabase. During the private beta they are isolated by the signed beta-session subject, so they persist for that authorized session but are not yet portable across separately authenticated devices.
+- Surveys, provider preferences, and community posts still use browser storage and are not synced across browsers.
 - Documents, sessions, knowledge vault, search, decisions, campaigns, external-source connections, and action approvals are UI-only workflows; they do not yet store data, upload files, call connectors, or create external records.
 - There is no automated test suite. The project should not be released until `npm run build` passes for the beta branch.
