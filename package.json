@@ -18,7 +18,8 @@
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
     "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
-    "verify": "npm run lint && npm run test:permissions && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:continuity && npm run build"
+    "verify": "npm run lint && npm run test:permissions && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:continuity && npm run test:persistence && npm run build",
+    "test:persistence": "node scripts/verify-persistence-foundation.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
@@ -27,7 +28,9 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
-  "engines": { "node": ">=20.9.0" },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19.2.18",
