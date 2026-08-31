@@ -12,7 +12,7 @@ import {
   type MayaVaultClip,
   type MayaWorkItem,
 } from "@/lib/maya/libraryData";
-import type { ExecRole } from "@/lib/maya/types";
+import type { ExecRole, MayaMessage } from "@/lib/maya/types";
 
 const ROLES = ["All", "CEO", "COO", "CMO", "CFO", "CTO", "CIO", "CRO", "CD", "Strategy Room"];
 const EXEC_ROLE_ORDER: ExecRole[] = [
@@ -188,9 +188,68 @@ export default function SessionsPage() {
   const [selectedId, setSelectedId] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     setSessions(loadSavedSessions());
     setClips(loadVaultClips());
     setItems(loadWorkItems());
+
+    void fetch("/api/sessions?clientVaultId=personal&limit=30", {
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        if (!response.ok) return [];
+        const payload = (await response.json()) as {
+          sessions?: Array<{
+            id: string;
+            clientVaultId: string;
+            role: MayaSessionRecord["role"];
+            title: string;
+            transcript: MayaMessage[];
+            status: MayaSessionRecord["status"];
+            lastActivityAt: string;
+            closeout?: MayaSessionRecord["closeout"];
+          }>;
+        };
+        return payload.sessions ?? [];
+      })
+      .then((durable) => {
+        if (cancelled || durable.length === 0) return;
+        const mapped: MayaSessionRecord[] = durable.map((session) => {
+          const lastUser = [...session.transcript]
+            .reverse()
+            .find((message) => message.role === "user");
+          const lastAssistant = [...session.transcript]
+            .reverse()
+            .find((message) => message.role === "assistant");
+          return {
+            id: session.id,
+            role: session.role,
+            title: session.title,
+            query: lastUser?.content ?? "",
+            answer: lastAssistant?.content ?? "",
+            savedAt: new Date(session.lastActivityAt)
+              .toISOString()
+              .slice(0, 16)
+              .replace("T", " "),
+            sourceCount: 0,
+            transcript: session.transcript,
+            clientVaultId: session.clientVaultId,
+            status: session.status,
+            closeout: session.closeout,
+          };
+        });
+        setSessions((current) => [
+          ...mapped,
+          ...current.filter(
+            (item) => !mapped.some((durableItem) => durableItem.id === item.id),
+          ),
+        ]);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -207,7 +266,16 @@ export default function SessionsPage() {
       const query = search.trim().toLowerCase();
       const matchesSearch =
         !query ||
-        [session.title, session.query, session.answer]
+        [
+          session.title,
+          session.query,
+          session.answer,
+          session.closeout?.whatChanged.join(" "),
+          session.closeout?.keyDecisions.join(" "),
+          session.closeout?.unresolvedBlockers.join(" "),
+          session.closeout?.securityOrDeploymentIssues.join(" "),
+          session.closeout?.nextAction,
+        ]
           .join(" ")
           .toLowerCase()
           .includes(query);
@@ -494,6 +562,44 @@ export default function SessionsPage() {
                       </div>
                     </section>
                   ))
+                )}
+
+                {selectedSession.closeout && (
+                  <div className="rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 p-4 print:border-slate-300 print:bg-white">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa] print:text-slate-600">
+                      MAYA automatic closeout
+                    </p>
+                    {[
+                      ["What changed", selectedSession.closeout.whatChanged],
+                      ["Key decisions", selectedSession.closeout.keyDecisions],
+                      ["Unresolved blockers", selectedSession.closeout.unresolvedBlockers],
+                      [
+                        "Security or deployment",
+                        selectedSession.closeout.securityOrDeploymentIssues,
+                      ],
+                    ].map(([label, values]) => (
+                      <div key={label as string} className="mt-3">
+                        <p className="text-[10px] uppercase text-[#6c7086] print:text-slate-500">
+                          {label as string}
+                        </p>
+                        <ul className="mt-1 space-y-1">
+                          {(values as string[]).map((value) => (
+                            <li key={value} className="text-[12px] text-[#a6adc8] print:text-slate-800">
+                              · {value}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    <div className="mt-3 border-t border-[#89b4fa]/20 pt-3">
+                      <p className="text-[10px] uppercase text-[#6c7086] print:text-slate-500">
+                        Exact restart point
+                      </p>
+                      <p className="mt-1 text-[12px] font-medium text-[#cdd6f4] print:text-slate-900">
+                        {selectedSession.closeout.nextAction}
+                      </p>
+                    </div>
+                  </div>
                 )}
 
                 {selectedSession.transcript && selectedSession.transcript.length > 0 && (

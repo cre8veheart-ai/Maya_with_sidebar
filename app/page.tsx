@@ -1,8 +1,12 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { saveSessionRecord } from "@/lib/maya/libraryData";
+import {
+  checkpointPocketOfficeSession,
+  recoverPocketOfficeSession,
+} from "@/lib/maya/sessionLifecycleClient";
 import type { MayaMessage } from "@/lib/maya/types";
 
 interface Recommendation {
@@ -27,7 +31,24 @@ export default function Home() {
   const [streaming, setStreaming] = useState(false);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [restartPoint, setRestartPoint] = useState("");
   const sessionId = useRef<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void recoverPocketOfficeSession("personal", "ceo").then((saved) => {
+      if (cancelled || !saved) return;
+      if (saved.status === "active") {
+        sessionId.current = saved.id;
+        setMessages(saved.transcript);
+        return;
+      }
+      setRestartPoint(saved.closeout?.nextAction ?? "");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function send(e: FormEvent | React.KeyboardEvent) {
     e.preventDefault();
@@ -41,6 +62,7 @@ export default function Home() {
     const userMsg: MayaMessage = { role: "user", content: text };
     const thread: MayaMessage[] = [...messages, userMsg];
     setInput("");
+    setRestartPoint("");
     setStreaming(true);
     setRecommendations([]);
     setSavedId(null);
@@ -82,14 +104,22 @@ export default function Home() {
       // Save full session
       const finalThread: MayaMessage[] = [...thread, { role: "assistant", content: full }];
       const sid = sessionId.current;
+      const title = text.slice(0, 80);
       saveSessionRecord({
         id: sid,
         role: "ceo",
-        title: text.slice(0, 80),
+        title,
         query: text,
         answer: full,
         savedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
         sourceCount: bullets.length,
+        transcript: finalThread,
+      });
+      checkpointPocketOfficeSession({
+        id: sid,
+        clientVaultId: "personal",
+        role: "ceo",
+        title,
         transcript: finalThread,
       });
       setSavedId(sid);
@@ -119,6 +149,16 @@ export default function Home() {
 
       {/* Chat box */}
       <div className="w-full max-w-2xl">
+        {restartPoint && (
+          <div className="mb-4 rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 px-4 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa]">
+              MAYA restart point
+            </p>
+            <p className="mt-1 text-[12px] leading-relaxed text-[#cdd6f4]">
+              {restartPoint}
+            </p>
+          </div>
+        )}
         <form onSubmit={send} className="flex gap-2 items-end">
           <textarea
             value={input}

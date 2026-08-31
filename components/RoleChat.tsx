@@ -8,6 +8,10 @@ import {
   saveVaultClip,
   saveWorkItem,
 } from "@/lib/maya/libraryData";
+import {
+  checkpointPocketOfficeSession,
+  recoverPocketOfficeSession,
+} from "@/lib/maya/sessionLifecycleClient";
 import type {
   ExecRole,
   MayaMessage,
@@ -36,6 +40,7 @@ const ACTION_LABELS: Record<ActionType, string> = {
 
 interface RoleChatProps {
   role: ExecRole;
+  clientVaultId?: string;
 }
 
 function estimateTokens(text: string) {
@@ -48,7 +53,10 @@ function normalizeVendorUrl(url: string) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
-export default function RoleChat({ role }: RoleChatProps) {
+export default function RoleChat({
+  role,
+  clientVaultId = "personal",
+}: RoleChatProps) {
   const [lens, setLens] = useState<RoleLens>({ role, overrides: [] });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
@@ -61,9 +69,11 @@ export default function RoleChat({ role }: RoleChatProps) {
   const [clipVendorName, setClipVendorName] = useState("");
   const [clipVendorUrl, setClipVendorUrl] = useState("");
   const [clipStatus, setClipStatus] = useState("");
+  const [restartPoint, setRestartPoint] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let cancelled = false;
     setLens(loadLens(role));
     setMessages([]);
     setPendingActions([]);
@@ -74,7 +84,22 @@ export default function RoleChat({ role }: RoleChatProps) {
     setClipVendorName("");
     setClipVendorUrl("");
     setClipStatus("");
-  }, [role]);
+    setRestartPoint("");
+
+    void recoverPocketOfficeSession(clientVaultId, role).then((saved) => {
+      if (cancelled || !saved) return;
+      if (saved.status === "active") {
+        setSessionId(saved.id);
+        setMessages(saved.transcript);
+        return;
+      }
+      setRestartPoint(saved.closeout?.nextAction ?? "");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientVaultId, role]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,10 +132,11 @@ export default function RoleChat({ role }: RoleChatProps) {
 
     const promptTokens = estimateTokens(nextMessages.map((message) => message.content).join("\n"));
     const completionTokens = estimateTokens(lastAssistant.content);
+    const title = lastUser.content.slice(0, 80);
     saveSessionRecord({
       id: sessionId,
       role,
-      title: lastUser.content.slice(0, 80),
+      title,
       query: lastUser.content,
       answer: lastAssistant.content,
       savedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
@@ -118,6 +144,13 @@ export default function RoleChat({ role }: RoleChatProps) {
       transcript: nextMessages,
       estimatedPromptTokens: promptTokens,
       estimatedCompletionTokens: completionTokens,
+    });
+    checkpointPocketOfficeSession({
+      id: sessionId,
+      clientVaultId,
+      role,
+      title,
+      transcript: nextMessages,
     });
   }
 
@@ -129,6 +162,7 @@ export default function RoleChat({ role }: RoleChatProps) {
     const userMsg: MayaMessage = { role: "user", content: text };
     const thread = [...messages, userMsg];
     setInput("");
+    setRestartPoint("");
     setStreaming(true);
     setClipStatus("");
     setMessages([...thread, { role: "assistant", content: "" }]);
@@ -322,6 +356,17 @@ export default function RoleChat({ role }: RoleChatProps) {
           Talk to your {role.toUpperCase()} · MAYA executive workspace
         </span>
       </div>
+
+      {restartPoint && (
+        <div className="mx-4 mt-3 rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa]">
+            MAYA restart point
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-[#cdd6f4]">
+            {restartPoint}
+          </p>
+        </div>
+      )}
 
       <div className="flex-1 min-h-0 min-w-0 w-full max-w-full overflow-x-hidden overflow-y-auto px-4 py-4 space-y-4">
         {messages.length === 0 && (

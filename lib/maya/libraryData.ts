@@ -1,4 +1,8 @@
 import type { ExecRole, MayaMessage } from "./types";
+import type {
+  MayaSessionCloseout,
+  MayaSessionStatus,
+} from "./sessionLifecycle";
 import {
   type HardenedIntelRecord,
   listHardenedIntelRecords,
@@ -25,6 +29,9 @@ export interface MayaSessionRecord {
   estimatedPromptTokens?: number;
   estimatedCompletionTokens?: number;
   estimatedFeeUsd?: number;
+  clientVaultId?: string;
+  status?: MayaSessionStatus;
+  closeout?: MayaSessionCloseout | null;
 }
 
 export interface MayaVaultClip {
