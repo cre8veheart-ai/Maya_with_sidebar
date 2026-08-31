@@ -12,6 +12,7 @@ type FontChoice = {
 };
 
 const fonts: FontChoice[] = [
+  { name: "Helvetica · Device", family: "Helvetica Neue", category: "Modern", fallback: "Helvetica, Arial, sans-serif" },
   { name: "Acumin Pro", family: "acumin-pro", category: "Modern", fallback: "Arial, sans-serif" },
   { name: "Source Sans 3", family: "source-sans-3", category: "Modern", fallback: "Arial, sans-serif" },
   { name: "Proxima Nova", family: "proxima-nova", category: "Modern", fallback: "Arial, sans-serif" },
