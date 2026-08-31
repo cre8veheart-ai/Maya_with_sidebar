@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import ProviderControls from "@/components/ProviderControls";
 import { EXEC_ROLE_OPTIONS, getRoleLabel } from "@/lib/maya/execRouting";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
@@ -9,16 +8,9 @@ import {
   saveVaultClip,
   saveWorkItem,
 } from "@/lib/maya/libraryData";
-import {
-  getProviderModel,
-  loadProviderSettings,
-  saveProviderSettings,
-} from "@/lib/maya/providerStorage";
 import type {
   ExecRole,
   MayaMessage,
-  MayaProvider,
-  ProviderSettings,
   RoleLens,
 } from "@/lib/maya/types";
 
@@ -42,21 +34,6 @@ const ACTION_LABELS: Record<ActionType, string> = {
   meeting: "Schedule Meeting",
 };
 
-const PROVIDER_RATES: Record<MayaProvider, { inputPerToken: number; outputPerToken: number }> = {
-  anthropic: {
-    inputPerToken: 3 / 1_000_000,
-    outputPerToken: 15 / 1_000_000,
-  },
-  openclaw: {
-    inputPerToken: 1 / 1_000_000,
-    outputPerToken: 4 / 1_000_000,
-  },
-  openai: {
-    inputPerToken: 0.15 / 1_000_000,
-    outputPerToken: 0.6 / 1_000_000,
-  },
-};
-
 interface RoleChatProps {
   role: ExecRole;
 }
@@ -73,13 +50,6 @@ function normalizeVendorUrl(url: string) {
 
 export default function RoleChat({ role }: RoleChatProps) {
   const [lens, setLens] = useState<RoleLens>({ role, overrides: [] });
-  const [providerSettings, setProviderSettings] = useState<ProviderSettings>({
-    provider: "anthropic",
-    anthropicModel: "",
-    openClawModel: "",
-    openAiModel: "",
-    ludicrousMode: false,
-  });
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -107,10 +77,6 @@ export default function RoleChat({ role }: RoleChatProps) {
   }, [role]);
 
   useEffect(() => {
-    setProviderSettings(loadProviderSettings());
-  }, []);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pendingActions]);
 
@@ -129,11 +95,6 @@ export default function RoleChat({ role }: RoleChatProps) {
     }
   }, [lastAssistantMessage]);
 
-  function updateProviderSettings(next: ProviderSettings) {
-    setProviderSettings(next);
-    saveProviderSettings(next);
-  }
-
   function persistSession(nextMessages: MayaMessage[]) {
     const lastUser = [...nextMessages].reverse().find((message) => message.role === "user");
     const lastAssistant = [...nextMessages]
@@ -146,10 +107,6 @@ export default function RoleChat({ role }: RoleChatProps) {
 
     const promptTokens = estimateTokens(nextMessages.map((message) => message.content).join("\n"));
     const completionTokens = estimateTokens(lastAssistant.content);
-    const rate = PROVIDER_RATES[providerSettings.provider];
-    const estimatedFeeUsd =
-      promptTokens * rate.inputPerToken + completionTokens * rate.outputPerToken;
-
     saveSessionRecord({
       id: sessionId,
       role,
@@ -161,7 +118,6 @@ export default function RoleChat({ role }: RoleChatProps) {
       transcript: nextMessages,
       estimatedPromptTokens: promptTokens,
       estimatedCompletionTokens: completionTokens,
-      estimatedFeeUsd: Number(estimatedFeeUsd.toFixed(4)),
     });
   }
 
@@ -184,9 +140,6 @@ export default function RoleChat({ role }: RoleChatProps) {
         body: JSON.stringify({
           messages: thread,
           lens,
-          provider: providerSettings.provider,
-          model: getProviderModel(providerSettings),
-          ludicrousMode: providerSettings.ludicrousMode,
         }),
       });
 
@@ -262,6 +215,16 @@ export default function RoleChat({ role }: RoleChatProps) {
 
   function resolveAction(id: string, resolution: "approved" | "dismissed") {
     const action = pendingActions.find((item) => item.id === id);
+
+    if (
+      resolution === "approved" &&
+      action &&
+      !window.confirm(
+        `Approve recording “${action.label}” as authorized? MAYA will not execute the external action.`
+      )
+    ) {
+      return;
+    }
 
     setPendingActions((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: resolution } : item))
@@ -353,38 +316,11 @@ export default function RoleChat({ role }: RoleChatProps) {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden">
-      <div className="px-4 py-2.5 border-b border-[#313244] shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#a6e3a1]" />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
-            MAYA · {role.toUpperCase()} Lens
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {lens.overrides.length > 0 && (
-            <span className="text-[11px] text-[#a6e3a1]">
-              {lens.overrides.length} org context
-              {lens.overrides.length !== 1 ? "s" : ""} loaded
-            </span>
-          )}
-          <span className="text-[11px] text-[#89b4fa] uppercase tracking-[0.07em]">
-            {providerSettings.provider === "anthropic" ? "Claude" : "OpenClaw"}
-          </span>
-          {providerSettings.provider === "openclaw" &&
-            providerSettings.ludicrousMode && (
-              <span className="text-[11px] text-[#f9e2af] uppercase tracking-[0.07em]">
-                Oracle
-              </span>
-            )}
-        </div>
-      </div>
-
-      <div className="px-4 py-3 border-b border-[#313244] shrink-0">
-        <ProviderControls
-          settings={providerSettings}
-          onChange={updateProviderSettings}
-          compact
-        />
+      <div className="px-4 py-2.5 border-b border-[#313244] shrink-0 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#a6e3a1]" />
+        <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
+          Talk to your {role.toUpperCase()} · MAYA executive workspace
+        </span>
       </div>
 
       <div className="flex-1 min-h-0 min-w-0 w-full max-w-full overflow-x-hidden overflow-y-auto px-4 py-4 space-y-4">
@@ -622,7 +558,7 @@ export default function RoleChat({ role }: RoleChatProps) {
 
               {action.status === "approved" && (
                 <span className="text-[11px] text-[#a6e3a1] font-semibold shrink-0">
-                  ✓ Approved
+                  ✓ Approved · Not executed
                 </span>
               )}
 

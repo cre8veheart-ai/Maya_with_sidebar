@@ -31,7 +31,7 @@ for (const guard of requiredAdjudicationGuards) {
 assert.match(ceo, /Preserve material dissent/);
 assert.match(cto, /Preserve material technical dissent/);
 assert.match(ceo, /Do not force consensus/);
-assert.match(cto, /speed, revenue, or executive pressure favors another path/);
+assert.match(cto, /speed, revenue, (?:excitement, or )?executive pressure favors another path/);
 
 const forbiddenAdjudicationPatterns = [
   /always compromise/i,

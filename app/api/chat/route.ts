@@ -163,9 +163,11 @@ export async function POST(req: NextRequest) {
     lens = workspace === "community" ? { role: "cmo", overrides: [] } : parseLens(body.lens);
     messages = parseMessages(body.messages);
     profile = parseProfile(body.profile);
-    provider = parseProvider(body.provider);
-    model = parseModel(body.model);
-    ludicrousMode = parseLudicrousMode(body.ludicrousMode);
+    provider = parseProvider(workspace === "community" ? body.provider : undefined);
+    model = parseModel(workspace === "community" ? body.model : undefined);
+    ludicrousMode = parseLudicrousMode(
+      workspace === "community" ? body.ludicrousMode : undefined,
+    );
     communityContext = parseCommunityContext(body.communityContext);
   } catch {
     return Response.json(
