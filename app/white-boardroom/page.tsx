@@ -1,4 +1,6 @@
 import Link from "next/link";
+import AdobeFontLibrary from "@/components/AdobeFontLibrary";
+import PageLayoutStudio from "@/components/PageLayoutStudio";
 
 const adobeTools = ["Photoshop", "Illustrator", "InDesign", "Acrobat Pro", "Premiere Pro", "After Effects"];
 const roomTools = [
@@ -9,8 +11,17 @@ const roomTools = [
 ];
 
 export default function WhiteBoardroom() {
+  const adobeFontsProjectId = (process.env.NEXT_PUBLIC_ADOBE_FONTS_PROJECT_ID || "")
+    .replace(/[^a-z0-9]/gi, "");
+
   return (
     <main className="min-h-screen bg-[#f7f7f4] text-[#171717]">
+      {adobeFontsProjectId && (
+        <link
+          rel="stylesheet"
+          href={`https://use.typekit.net/${adobeFontsProjectId}.css`}
+        />
+      )}
       <div className="mx-auto max-w-7xl p-4 md:p-8">
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-5">
           <div>
@@ -47,6 +58,14 @@ export default function WhiteBoardroom() {
               <p className="mt-2 text-sm text-white/70">Client context, executive participation, recommendations and session memory are reserved for authenticated MAYA persistence wiring.</p>
             </div>
           </aside>
+        </section>
+
+        <section className="mt-4">
+          <PageLayoutStudio />
+        </section>
+
+        <section className="mt-4">
+          <AdobeFontLibrary connected={Boolean(adobeFontsProjectId)} />
         </section>
 
         <section className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
