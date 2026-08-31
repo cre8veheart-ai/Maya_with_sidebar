@@ -75,17 +75,41 @@ Ari should preserve durable Maya working context across sessions to the extent s
 
 ## Current Recovery Target
 
-Architecture blueprint PR: **#49**
+Workspace: **ChatGPT Codex coding workspace**
 
-Active architecture branch: **`ari/maya-architecture-blueprint-v1`**
+Canonical repository: **`cre8veheart-ai/Maya_with_sidebar`** (private)
 
-Current build edge: **CEO standalone executive chassis** after the architecture blueprint is established.
+Canonical production branch: **`main`**
 
-Next sequence:
-1. CEO chassis
-2. CEO adversarial/evaluation tests
-3. CTO standalone module
-4. CEO + CTO Strategy Room conflict tests
+Canonical Vercel project: **`maya-with-sidebar`** under team **`mayav11`**
+
+Latest verified production deployment at checkpoint:
+- State: **READY**
+- Commit: **`2dd925765687630c3b242fd519ad4321d6a44422`**
+- Change: Restore protected chat API boundary (#84)
+
+Active continuity branch: **`ari/dih-coding-workspace-checkpoint`**
+
+Detailed live handoff: **`docs/DIH_WORKSPACE_CHECKPOINT.md`**
+
+Current completed build edge:
+1. Standalone Max / CEO chassis and adversarial gates
+2. Standalone Ari / CTO operating clone and delivery command center
+3. Erica / CMO and Dana / CFO chassis verification
+4. CEO + CTO adjudication and conflict gates
+5. Protected beta session and `/api/chat` server boundary
+6. One canonical private GitHub repository and one canonical Vercel project
+
+Next approved build package:
+1. Establish persistent workspace storage behind server-owned APIs
+2. Replace browser-only persistence for profiles, sessions, executive work, and saved activity
+3. Preserve human approval for external connector actions
+4. Add verification gates before merging or deploying
+
+Backend decision gate:
+- Production currently uses Upstash Redis for invite redemption and session controls.
+- Supabase was selected for durable MAYA memory and vault storage.
+- Do not collapse these into one store merely for convenience. Keep security/session control and durable product data behind explicit adapters.
 
 ## North Star
 
