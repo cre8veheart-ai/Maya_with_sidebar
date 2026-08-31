@@ -27,5 +27,5 @@ alter table public.maya_role_lenses enable row level security;
 -- API routes enforce the authenticated workspace boundary.
 revoke all on public.maya_user_profiles from anon, authenticated;
 revoke all on public.maya_role_lenses from anon, authenticated;
-grant all on public.maya_user_profiles to service_role;
-grant all on public.maya_role_lenses to service_role;
+grant select, insert, update, delete on public.maya_user_profiles to service_role;
+grant select, insert, update, delete on public.maya_role_lenses to service_role;
