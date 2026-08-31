@@ -20,6 +20,12 @@ import {
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
+import { isResponseError, requireBetaSession } from "@/lib/server/auth";
+import {
+  buildMemoryContextMessage,
+  loadMemoryContext,
+  saveSessionTurn,
+} from "@/lib/storage/persistentMemory";
 import type {
   ExecRole,
   RoleLens,
@@ -32,7 +38,7 @@ type ChatWorkspace = "exec" | "community";
 const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
-const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
+const VALID_PROVIDERS = new Set<MayaProvider>(["openclaw", "openai"]);
 const BUILD_SESSION_ID = "maya-build-session";
 
 function sanitizeText(raw: unknown, maxLen: number): string {
@@ -111,7 +117,7 @@ function parseProvider(raw: unknown): MayaProvider {
     return envProvider as MayaProvider;
   }
 
-  return "anthropic";
+  return "openai";
 }
 
 function parseModel(raw: unknown): string {
@@ -148,6 +154,16 @@ function buildContinuityCookie(token: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  let workspaceId: string;
+  try {
+    workspaceId = requireBetaSession(req).sessionId;
+  } catch (error) {
+    if (isResponseError(error)) return error;
+    return Response.json(
+      { error: "Authorization failed", code: "AUTH_ERROR" },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
 
   let workspace: ChatWorkspace;
   let lens: RoleLens;
@@ -157,6 +173,10 @@ export async function POST(req: NextRequest) {
   let model: string;
   let ludicrousMode: boolean;
   let communityContext: CommunityAssistantContext | null;
+  let sessionId: string;
+  let surface: string;
+  let clientId: string | undefined;
+  let projectId: string | undefined;
 
   try {
     const body = await req.json();
@@ -170,6 +190,11 @@ export async function POST(req: NextRequest) {
       workspace === "community" ? body.ludicrousMode : undefined,
     );
     communityContext = parseCommunityContext(body.communityContext);
+    sessionId = sanitizeText(body.sessionId, 160) || `${lens.role}-${Date.now()}`;
+    surface = sanitizeText(body.surface, 160) ||
+      (workspace === "community" ? "community" : `executive:${lens.role}`);
+    clientId = sanitizeText(body.clientId, 160) || undefined;
+    projectId = sanitizeText(body.projectId, 160) || undefined;
   } catch {
     return Response.json(
       { error: "Invalid request body", code: "INVALID_REQUEST" },
@@ -204,9 +229,27 @@ export async function POST(req: NextRequest) {
     ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
     : null;
 
+  let memoryContextMessage: string | null;
+  try {
+    const memory = await loadMemoryContext({
+      workspaceId,
+      role: lens.role,
+      surface,
+      clientId,
+      projectId,
+    });
+    memoryContextMessage = buildMemoryContextMessage(memory);
+  } catch (error) {
+    console.error("MAYA memory read failed", error);
+    return Response.json(
+      { error: "Persistent memory unavailable", code: "MEMORY_UNAVAILABLE" },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   const execContextMessage = appendTrustedContext(
-    baseContextMessage,
-    founderContinuityMessage,
+    appendTrustedContext(baseContextMessage, founderContinuityMessage),
+    memoryContextMessage,
   );
 
   let stream: AsyncGenerator<string>;
@@ -229,11 +272,27 @@ export async function POST(req: NextRequest) {
   }
 
   const encoder = new TextEncoder();
+  const userMessage = messages[messages.length - 1];
   const readable = new ReadableStream({
     async start(controller) {
+      let fullResponse = "";
       try {
         for await (const chunk of stream) {
+          fullResponse += chunk;
           controller.enqueue(encoder.encode(chunk));
+        }
+        if (workspace === "exec" && userMessage && fullResponse.trim()) {
+          await saveSessionTurn({
+            workspaceId,
+            sessionId,
+            role: lens.role,
+            surface,
+            clientId,
+            projectId,
+            participants: [lens.role],
+            userMessage,
+            assistantMessage: { role: "assistant", content: fullResponse },
+          });
         }
         controller.close();
       } catch (error) {
@@ -248,6 +307,9 @@ export async function POST(req: NextRequest) {
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
     "X-Maya-Continuity": continuityActive ? "active" : "inactive",
+    "X-Maya-Memory": "supabase-v1",
+    "X-Maya-Session": sessionId,
+    "X-Maya-Surface": surface,
   });
 
   if (continuityActivatedNow) {
