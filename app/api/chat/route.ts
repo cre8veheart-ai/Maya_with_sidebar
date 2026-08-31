@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import {
   buildCommunityContextMessage,
   buildCommunitySystemPrompt,
@@ -148,6 +149,16 @@ function buildContinuityCookie(token: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    requireBetaSession(req);
+  } catch (error) {
+    if (isResponseError(error)) return error;
+    return Response.json(
+      { error: "Authorization failed", code: "AUTH_ERROR" },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   let workspace: ChatWorkspace;
   let lens: RoleLens;
   let messages: MayaMessage[];
