@@ -1,7 +1,11 @@
 "use client";
 
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import type { MayaMessage } from "@/lib/maya/types";
+import {
+  checkpointPocketOfficeSession,
+  recoverPocketOfficeSession,
+} from "@/lib/maya/sessionLifecycleClient";
 
 type ChatError = {
   message: string;
@@ -13,7 +17,26 @@ export default function CeoChatOnly() {
   const [messages, setMessages] = useState<MayaMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
+  const [restartPoint, setRestartPoint] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  const sessionIdRef = useRef("");
+
+  useEffect(() => {
+    let cancelled = false;
+    sessionIdRef.current = `ceo-${crypto.randomUUID()}`;
+    void recoverPocketOfficeSession("personal", "ceo").then((saved) => {
+      if (cancelled || !saved) return;
+      if (saved.status === "active") {
+        sessionIdRef.current = saved.id;
+        setMessages(saved.transcript);
+        return;
+      }
+      setRestartPoint(saved.closeout?.nextAction ?? "");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function send(e: FormEvent | KeyboardEvent) {
     e.preventDefault();
@@ -27,6 +50,7 @@ export default function CeoChatOnly() {
     const userMsg: MayaMessage = { role: "user", content: text };
     const thread = [...messages, userMsg];
     setInput("");
+    setRestartPoint("");
     setStreaming(true);
     setMessages([...thread, { role: "assistant", content: "" }]);
 
@@ -76,6 +100,22 @@ export default function CeoChatOnly() {
           return next;
         });
       }
+
+      const completedThread: MayaMessage[] = [
+        ...thread,
+        { role: "assistant", content: full },
+      ];
+      setMessages(completedThread);
+      const sessionId =
+        sessionIdRef.current || `ceo-${crypto.randomUUID()}`;
+      sessionIdRef.current = sessionId;
+      checkpointPocketOfficeSession({
+        id: sessionId,
+        clientVaultId: "personal",
+        role: "ceo",
+        title: text.slice(0, 80),
+        transcript: completedThread,
+      });
     } catch (cause) {
       if (controller.signal.aborted) return;
 
@@ -113,6 +153,17 @@ export default function CeoChatOnly() {
           <h1 id="ceo-title" className="text-3xl font-semibold text-[#cdd6f4]">CEO</h1>
           <p className="mt-1 text-sm text-[#7f849c]">Executive decision workspace</p>
         </div>
+
+        {restartPoint && (
+          <div className="mb-4 rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 px-4 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa]">
+              MAYA restart point
+            </p>
+            <p className="mt-1 text-[12px] leading-relaxed text-[#cdd6f4]">
+              {restartPoint}
+            </p>
+          </div>
+        )}
 
         <form onSubmit={send} className="flex gap-2 items-end" aria-busy={streaming}>
           <label className="sr-only" htmlFor="ceo-prompt">Message your CEO</label>
