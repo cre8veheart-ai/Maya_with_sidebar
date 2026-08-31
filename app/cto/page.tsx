@@ -1,5 +1,6 @@
 import PageShell from "@/components/PageShell";
 import RoleChat from "@/components/RoleChat";
+import CtoWorkflow from "@/components/CtoWorkflow";
 
 function SectionCard({
   title,
@@ -73,6 +74,8 @@ export default function CtoPage() {
       <div className="flex flex-col xl:flex-row gap-5 h-full">
         {/* Left — Dashboard */}
         <div className="flex flex-col gap-5 xl:w-[420px] shrink-0">
+          <CtoWorkflow />
+
           {/* Platform Health */}
           <SectionCard title="Platform Health">
             <StatusRow label="Core infrastructure" detail="Uptime & reliability" status="green" />
