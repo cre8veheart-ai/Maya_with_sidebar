@@ -15,6 +15,38 @@ Blueprint governance:
 - When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
 - The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
 
+## Preapproved Tool Register
+
+This register authorizes categories, not unlimited access. Every actual addition, upgrade, configuration change or removal still receives a dated Work History entry with the affected PR, commit and deployment.
+
+### Preapproved for autonomous use within existing MAYA authority
+
+| Tool/category | Permitted purpose | Boundary | Verification | Removal/rollback |
+|---|---|---|---|---|
+| GitHub repository tools | Inspect, branch, commit, open/update/close PRs and maintain documentation in the canonical MAYA repository | No new repositories, broad permission changes, secrets or destructive history rewrites | Diff, status, checks and resulting commit/PR state | Revert scoped commit or close unmerged PR |
+| Canonical Vercel project tools | Inspect configuration, builds, logs, previews and production state; deploy/redeploy approved MAYA changes | Existing `maya-with-sidebar` project only; no new paid resource or credential | Build result plus browser/capability test; READY alone is insufficient | Roll back to last verified deployment |
+| Next.js, React, TypeScript and Tailwind | Implement and repair the existing application stack | Stay compatible with the canonical repository and blueprint | Typecheck, lint, tests, build and browser verification as applicable | Revert dependency/code change |
+| Local build, lint and test tooling | Diagnose, format, typecheck, test and reproduce failures | No client production data or secret extraction | Record exact command, output and capability test | Remove temporary tooling/config or revert commit |
+| Browser and API verification | Test user flows, routes, responsive behavior and API boundaries | Use approved test state; never expose client-vault plaintext | Screenshot/log evidence plus expected-versus-actual result | Stop test session and remove temporary test artifacts |
+| Official documentation and web research | Compare implementation options and verify current platform behavior | Read-only research; claims remain sourced and evidence-labelled | Link authoritative source and record decision impact | No persistent dependency unless separately adopted |
+| Built-in document, diagram and image tools | Produce blueprints, specifications, UI references and build artifacts | No external publishing or client-data disclosure | Review generated artifact against request | Delete or supersede artifact through recorded change |
+| Reversible open-source packages | Add a narrowly scoped package when needed for an approved feature or test | No telemetry, new account, paid plan, secret, client-data transfer or material architecture shift | Dependency audit, build/test and runtime capability test | Remove package, lockfile change and dependent code |
+
+### Founder decision required before use
+
+- Any new credential, OAuth grant, account registration or broadened permission.
+- Any paid plan, usage commitment or service likely to create material cost.
+- Any external service receiving client data, user memory, prompts, files or analytics.
+- Authentication, encryption, key management, database, vault-storage or recovery architecture changes.
+- New AI/model providers that receive MAYA or client context.
+- External sending, publishing, financial execution or repository-administration authority.
+- Destructive or difficult-to-reverse operations.
+- Any tool that materially changes MAYA's product direction or zero-access promise.
+
+### Tool-entry template
+
+Each adopted tool or material version change must record: UTC date; tool/version; purpose; blueprint requirement; permissions; data accessed; sign-in and cost impact; files/services changed; PR/commit/deployment; expected behavior; test performed; actual result; errors and regressions; attempted fixes; final verification; rollback/removal steps; current status (`ACTIVE`, `REMOVED`, `ROLLED BACK`, `BLOCKED` or `SUPERSEDED`).
+
 ## Current Working Checkpoint
 
 Last updated: 2026-09-02 UTC
@@ -137,6 +169,16 @@ Failure-record rules:
 - Result: APPROVED amendment recorded. The earlier approval-first wording is superseded and must not govern future routine tooling work.
 - First next action: apply this trace-first rule to all tooling used while rebuilding PR #88.
 
+### 2026-09-02 — Initial preapproved-tool register
+
+- Trigger: Founder authorized creation of a preapproved-tool list.
+- Blueprint sections amended: Preapproved Tool Register.
+- Change: Preapproved routine use of the existing GitHub/Vercel/application stack, local verification tooling, browser/API testing, authoritative research, build-artifact tools and narrowly scoped reversible open-source packages.
+- Guardrail: new credentials, costs, client-data transfers, authentication/encryption/storage changes, AI providers, external authority, destructive actions and material product changes still require Founder decision.
+- Result: APPROVED register created. This does not install or connect any new external service.
+- Verification: blueprint contains explicit purpose, boundary, verification and rollback requirements for each preapproved category.
+- First next action: log each actual tool adoption or change against the template while continuing PR #88.
+
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
 
 Scope and evidence:
@@ -249,6 +291,7 @@ Scope and evidence:
 - 2026-09-02: Established client menu activation, closeout, off-site transfer, portability and erasure rules.
 - 2026-09-02: Initially required Founder approval before tooling changes; superseded later the same day.
 - 2026-09-02: Authorized autonomous reversible tooling changes within existing authority, with mandatory blueprint traceability and Founder approval retained for credentials, costs, client-data exposure, destructive action and material product-direction changes.
+- 2026-09-02: Created the initial preapproved-tool register and mandatory per-tool trace template.
 
 ## 1. Platform Rule
 
