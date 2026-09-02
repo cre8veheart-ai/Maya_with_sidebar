@@ -2,6 +2,7 @@
 
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import type { MayaMessage } from "@/lib/maya/types";
+import { loadSavedSessions, saveSessionRecord } from "@/lib/maya/libraryData";
 import {
   checkpointPocketOfficeSession,
   recoverPocketOfficeSession,
@@ -25,13 +26,26 @@ export default function CeoChatOnly() {
     let cancelled = false;
     sessionIdRef.current = `ceo-${crypto.randomUUID()}`;
     void recoverPocketOfficeSession("personal", "ceo").then((saved) => {
-      if (cancelled || !saved) return;
-      if (saved.status === "active") {
+      if (cancelled) return;
+      if (saved?.status === "active") {
         sessionIdRef.current = saved.id;
         setMessages(saved.transcript);
         return;
       }
-      setRestartPoint(saved.closeout?.nextAction ?? "");
+      if (saved) {
+        setRestartPoint(saved.closeout?.nextAction ?? "");
+        return;
+      }
+
+      const local = loadSavedSessions().find(
+        (session) =>
+          session.role === "ceo" &&
+          (session.clientVaultId ?? "personal") === "personal" &&
+          Boolean(session.transcript?.length),
+      );
+      if (!local?.transcript) return;
+      sessionIdRef.current = local.id;
+      setMessages(local.transcript);
     });
     return () => {
       cancelled = true;
@@ -109,6 +123,19 @@ export default function CeoChatOnly() {
       const sessionId =
         sessionIdRef.current || `ceo-${crypto.randomUUID()}`;
       sessionIdRef.current = sessionId;
+      const savedAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+      saveSessionRecord({
+        id: sessionId,
+        role: "ceo",
+        title: text.slice(0, 80),
+        query: text,
+        answer: full,
+        savedAt,
+        sourceCount: 0,
+        transcript: completedThread,
+        clientVaultId: "personal",
+        status: "active",
+      });
       checkpointPocketOfficeSession({
         id: sessionId,
         clientVaultId: "personal",
