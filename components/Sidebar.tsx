@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import SidebarToggle from "./SidebarToggle";
+import WorkspaceSwitcher from "./WorkspaceSwitcher";
 
 type NavItem = { label: string; href: string; icon: string; disabled?: boolean; phase?: string };
 type NavGroup = { id: string; label: string; icon: string; items: NavItem[] };
@@ -108,6 +109,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           {isOpen && <span className="text-[#89b4fa] font-bold text-xl tracking-wide whitespace-nowrap">Maya</span>}
           <SidebarToggle isOpen={isOpen} onToggle={onToggle} />
         </div>
+        <WorkspaceSwitcher compact={!isOpen} />
         <nav className="flex flex-col p-2 mt-2 flex-1 overflow-y-auto">
           {isOpen ? (
             navGroups.map((group) => {
