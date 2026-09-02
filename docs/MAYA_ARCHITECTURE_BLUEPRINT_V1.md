@@ -13,7 +13,7 @@ Blueprint governance:
 - Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
 - The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
 - When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
-- No new tool, provider, plug-in, connector, framework or material architecture replacement may be introduced into MAYA until its need, permissions, data boundary, operational dependency, exit path and tradeoffs are presented to the Founder, approved, and recorded in this blueprint first.
+- The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
 
 ## Current Working Checkpoint
 
@@ -64,7 +64,7 @@ When **DIH EVENT MAYA** is invoked:
 - Superseded requirements are removed from the active design so agents cannot follow stale instructions.
 - Material deletions or replacements are summarized in the Amendment History below.
 - PR descriptions, code comments and implementation documents are then synchronized to the amended blueprint.
-- Tooling proposals remain proposals until Founder approval is recorded here. Each approved tooling change must state what it replaces or adds, why it is needed, what data it can access, sign-in/permission impact, failure modes, rollback/removal path and verification gate.
+- Reversible tooling changes within existing authority may be implemented autonomously, but each must be logged here before or alongside implementation. The entry must state what it replaces or adds, why it is needed, what data it can access, sign-in/permission and cost impact, failure modes, rollback/removal path and verification gate. Ask the Founder first when new credentials, payment, client-data exposure, destructive action or a material product-direction choice is involved.
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
@@ -126,6 +126,16 @@ Failure-record rules:
 - Result: APPROVED process rule is active. Research and recommendations are allowed; adoption or connection waits for Founder approval and blueprint entry.
 - Failure-trace rule: all implementation errors, failed fixes, regressions and reversals must reference the approving blueprint entry and affected PR/commit/deployment.
 - First next action: apply this gate before changing PR #88's encryption/storage approach or adding any supporting dependency.
+
+### 2026-09-02 — Correction: autonomous, traceable tooling authority
+
+- Trigger: Founder clarified that useful tools may be implemented without asking first; the essential requirement is a complete traceable record.
+- Corrects: the earlier 2026-09-02 “Founder-first tooling and change-control rule.”
+- Active rule: CTO may autonomously add, replace or remove reversible task-relevant tooling within existing authority.
+- Mandatory record: purpose, affected boundary, permissions, data access, sign-in and cost impact, PR/commit/deployment, expected test, actual result, errors, attempted fixes, verification and rollback/removal path.
+- Founder decision still required before: obtaining or repurposing credentials, accepting payment/cost commitments, exposing client data, destructive or difficult-to-reverse action, or changing material product direction.
+- Result: APPROVED amendment recorded. The earlier approval-first wording is superseded and must not govern future routine tooling work.
+- First next action: apply this trace-first rule to all tooling used while rebuilding PR #88.
 
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
 
@@ -237,7 +247,8 @@ Scope and evidence:
 - 2026-09-02: Established multiple active Pocket Desk clients with zero background context contribution.
 - 2026-09-02: Rejected server-readable client-vault plaintext; required client-side encryption and ciphertext-only storage.
 - 2026-09-02: Established client menu activation, closeout, off-site transfer, portability and erasure rules.
-- 2026-09-02: Required Founder approval and a prior blueprint decision record before adopting or replacing build tools and material dependencies.
+- 2026-09-02: Initially required Founder approval before tooling changes; superseded later the same day.
+- 2026-09-02: Authorized autonomous reversible tooling changes within existing authority, with mandatory blueprint traceability and Founder approval retained for credentials, costs, client-data exposure, destructive action and material product-direction changes.
 
 ## 1. Platform Rule
 
