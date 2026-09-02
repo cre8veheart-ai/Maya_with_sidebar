@@ -783,3 +783,12 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Root cause: `RoleChat` depended only on the durable session API for workspace recovery even though Library also held a device-local saved transcript; when durable recovery returned no session, the chat reset.
 - Beta fix: executive session records now retain `clientVaultId`, and `RoleChat` falls back to the latest matching vault-scoped Library transcript when durable recovery is unavailable.
 - Required proof before Beta 1 promotion: repeat the leave-and-return test for Max, Dana, Erica, and Ari; verify the correct vault-scoped transcript resumes and no client context crosses vault boundaries.
+
+
+### 2026-09-02 — DIH Event Maya continuity proof on Beta preview
+
+- Rebuilt preview passed the leave-and-return checkpoint test for **Max · CEO, Dana · CFO, Erica · CMO, and Ari · CTO**.
+- Library retrieval passed: all four unique DIH Event Maya checkpoint sessions appeared in Recent Sessions with the correct executive role.
+- Max used a separate CEO chat implementation and was missing the device-local Library fallback; commit `514a594` connected Max to the same vault-scoped continuity behavior.
+- Preview runtime evidence showed unauthenticated `/api/sessions` calls returning `401`. This is expected for the protected durable endpoint, but means cross-device persistence remains **unverified** until tested inside an authenticated Beta session.
+- Promotion status: same-device core continuity is proven; authenticated durable/cross-device continuity and vault-isolation proof remain required.
