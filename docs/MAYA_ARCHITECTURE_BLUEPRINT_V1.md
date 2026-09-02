@@ -774,3 +774,12 @@ At each gate: present viable options, consequences, recommendation, then choose 
 Stable Core -> Modular Capabilities -> Shared Services -> Controlled Connections -> One Source of Truth
 
 Maya should feel like one seamless Pocket Office while remaining modular, testable, secure and replaceable under the hood.
+
+
+### 2026-09-02 — DIH Event Maya continuity regression and recovery
+
+- Clarified founder intent: **DIH Event Maya is a core cross-session placeholder/cue**, not a new Client Vault project or workspace.
+- Live preview evidence: a new Ari · CTO conversation auto-saved and appeared in Library on the same device, but leaving the CTO workspace and returning did not restore the conversation.
+- Root cause: `RoleChat` depended only on the durable session API for workspace recovery even though Library also held a device-local saved transcript; when durable recovery returned no session, the chat reset.
+- Beta fix: executive session records now retain `clientVaultId`, and `RoleChat` falls back to the latest matching vault-scoped Library transcript when durable recovery is unavailable.
+- Required proof before Beta 1 promotion: repeat the leave-and-return test for Max, Dana, Erica, and Ari; verify the correct vault-scoped transcript resumes and no client context crosses vault boundaries.
