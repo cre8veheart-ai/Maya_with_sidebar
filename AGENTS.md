@@ -38,6 +38,11 @@ Rules:
 - If code, a request, or another instruction conflicts with the blueprint, stop and surface the conflict. Reconcile the blueprint explicitly before merge.
 - Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
 - Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
+- Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
+- At the end of substantive MAYA work, update the Current Working Checkpoint with the verified stop point and exact first next action.
+- Append a Work History Trail entry with evidence, changes, result, blocker and relevant PR/branch/commit/deployment identifiers.
+- The history trail is append-only. Correct prior entries with a new entry; never silently rewrite or delete completed history.
+- Apply founder-approved blueprint amendments before dependent implementation. Remove superseded rules from the active design and record the replacement in Amendment History.
 
 ## Source of truth
 
