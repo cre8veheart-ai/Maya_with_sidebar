@@ -11,7 +11,66 @@ Blueprint governance:
 - MAYA implementation PRs must identify the blueprint section they implement or amend.
 - A stale PR description, transferred summary or older plan cannot override the current blueprint.
 - Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
+- The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
 - When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
+
+## Current Working Checkpoint
+
+Last updated: 2026-09-02 UTC
+Update authority: Founder-approved working state
+Resume phrase: **DIH EVENT MAYA**
+
+### What we were building
+
+The Pocket Office client-vault and context model:
+
+- MAYA is fully available in General mode without a client.
+- Executives retain persistent user memory independent of clients.
+- Greyed-out client names appear in the Client menu until individually signed in.
+- One client sign-in activates the complete MAYA Pocket Office for that client.
+- Multiple clients may remain active simultaneously on the Pocket Desk.
+- Only the foreground-selected client supplies business, Library, project, session and memory context to executive answers.
+- Client-created MAYA work files only to that client's encrypted vault.
+- Client sign-out files and closes that client; leaving MAYA files and signs out every active client.
+- Vaults are optional, portable, user-controlled and designed for zero RAIN plaintext access.
+
+### Where work stopped
+
+- PR #64 was verified stale and safely closed without merge.
+- PR #88 is the active design record for zero-access encrypted Pocket Office vaults and menu behavior.
+- PR #88's existing server-readable Supabase implementation is explicitly blocked from merge because it does not satisfy zero-access encryption.
+- The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
+- The blueprint and repository instructions on `main` now govern future work.
+
+### First next action
+
+Reconcile PR #88 with current `main`, replace its server-readable plaintext path with a client-side-encryption/ciphertext-only design, and implement the Client menu/Pocket Desk contract in the smallest governed sequence. Do not merge until the blueprint gates are proven.
+
+### Resume protocol
+
+When **DIH EVENT MAYA** is invoked:
+
+1. Read founder continuity and this living blueprint from `main`.
+2. Present this Current Working Checkpoint before proposing or taking substantive action.
+3. Verify the referenced PR, branch, deployment and blocker against live platform state.
+4. Continue from **First next action** unless the founder amends direction.
+5. Update this checkpoint before ending substantive MAYA work.
+
+### Amendment protocol
+
+- Founder-approved amendments are written into the active blueprint before dependent implementation continues.
+- Superseded requirements are removed from the active design so agents cannot follow stale instructions.
+- Material deletions or replacements are summarized in the Amendment History below.
+- PR descriptions, code comments and implementation documents are then synchronized to the amended blueprint.
+- A work session is not considered closed until the checkpoint states the verified stop point and first next action.
+
+### Amendment History
+
+- 2026-09-02: Made the blueprint the living build authority on `main`.
+- 2026-09-02: Established General user memory plus isolated foreground-client context.
+- 2026-09-02: Established multiple active Pocket Desk clients with zero background context contribution.
+- 2026-09-02: Rejected server-readable client-vault plaintext; required client-side encryption and ciphertext-only storage.
+- 2026-09-02: Established client menu activation, closeout, off-site transfer, portability and erasure rules.
 
 ## 1. Platform Rule
 
