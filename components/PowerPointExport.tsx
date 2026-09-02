@@ -70,11 +70,9 @@ export default function PowerPointExport() {
       pptx.company = "RAIN";
       pptx.subject = "White Boardroom export";
       pptx.title = deckTitle.trim();
-      pptx.lang = "en-US";
       pptx.theme = {
         headFontFace: "Aptos Display",
         bodyFontFace: "Aptos",
-        lang: "en-US",
       };
 
       const titleSlide = pptx.addSlide();
