@@ -47,6 +47,40 @@ This register authorizes categories, not unlimited access. Every actual addition
 
 Each adopted tool or material version change must record: UTC date; tool/version; purpose; blueprint requirement; permissions; data accessed; sign-in and cost impact; files/services changed; PR/commit/deployment; expected behavior; test performed; actual result; errors and regressions; attempted fixes; final verification; rollback/removal steps; current status (`ACTIVE`, `REMOVED`, `ROLLED BACK`, `BLOCKED` or `SUPERSEDED`).
 
+### Candidate Tool Watchlist
+
+This is the discovery queue for tools not yet known or adopted. A candidate may be added whenever research or implementation exposes a useful capability. Listing is not installation, endorsement, connection or proof.
+
+Candidate statuses:
+- `CANDIDATE` — potentially useful; not yet evaluated.
+- `RESEARCHING` — documentation, permissions, costs and alternatives under review.
+- `TRIAL` — reversible isolated test in progress; no production/client data unless separately approved.
+- `REJECTED` — unsuitable; retain the reason so it is not repeatedly reconsidered.
+- `PROMOTED` — adopted and moved into the active tool history with full verification and rollback record.
+
+Each candidate entry must state:
+- Tool/provider and capability it might supply
+- MAYA problem or future trigger it could address
+- Existing built-in/current-stack alternative
+- Expected permissions, sign-in, cost and data exposure
+- Zero-access/client-vault compatibility
+- Lock-in and removal risk
+- What evidence would justify a trial
+- Current status and dated disposition
+
+Discovery rule: use the most direct built-in or already-connected capability first. Search for a new plugin or provider only when a concrete MAYA need would materially benefit. Never claim a candidate is installed, connected or functional without verification.
+
+Initial candidate categories (providers intentionally undecided):
+- Durable workflow/retry engine for reliable session filing and closeout
+- Client-side cryptography/key-recovery library suitable for zero-access vaults
+- Portable encrypted export/manifest verifier
+- Error monitoring with strict redaction and no client plaintext
+- End-to-end browser testing for Pocket Desk and multi-client isolation
+- Accessibility and mobile regression testing
+- Dependency/security scanning without repository administration authority
+- Offline/local-first synchronization conflict testing
+
+
 ## Current Working Checkpoint
 
 Last updated: 2026-09-02 UTC
@@ -178,6 +212,15 @@ Failure-record rules:
 - Result: APPROVED register created. This does not install or connect any new external service.
 - Verification: blueprint contains explicit purpose, boundary, verification and rollback requirements for each preapproved category.
 - First next action: log each actual tool adoption or change against the template while continuing PR #88.
+
+### 2026-09-02 — Candidate-tool watchlist clarification
+
+- Trigger: Founder clarified that the register should also capture tools that may become useful before their exact need or suitability is known.
+- Blueprint sections amended: Preapproved Tool Register / Candidate Tool Watchlist.
+- Change: Added evidence-labelled discovery statuses and an evaluation template; seeded capability categories relevant to current MAYA risks without selecting providers.
+- Result: APPROVED discovery queue created. No candidate was installed, connected or granted access.
+- Guardrail: candidates are not treated as working tools; promotion requires a concrete need, boundary review, trace entry and capability verification.
+- First next action: evaluate candidates only when a MAYA build requirement or failure creates a concrete trigger.
 
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
 
