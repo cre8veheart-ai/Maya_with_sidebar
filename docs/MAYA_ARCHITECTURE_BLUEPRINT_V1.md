@@ -1,9 +1,17 @@
 # Maya Architecture Blueprint v1.0
 
-Status: Working architectural source of truth
+Status: Living, active and amendable MAYA build authority
 Owner: Founder
 Technical lead: Ari / CTO
 Repository rule: One canonical private Maya repository. No duplicate repos or shadow deployments.
+
+Blueprint governance:
+- This document is the current build source of truth, not a historical artifact.
+- Founder-approved amendments are added here as decisions are made.
+- MAYA implementation PRs must identify the blueprint section they implement or amend.
+- A stale PR description, transferred summary or older plan cannot override the current blueprint.
+- Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
+- When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
 
 ## 1. Platform Rule
 
@@ -83,8 +91,23 @@ Connects to: COO, CTO, CEO, Executive Assistant, Tasks, Meetings, Whiteboard.
 
 ### Client Vaults
 Client-specific documents, history, decisions, campaigns and controlled context.
-Connects to: CRO, CMO, Legal, CEO, Projects, Email, Meetings.
-Rule: strong tenant isolation and role-based access.
+Connects to: every MAYA executive and menu tool, Projects, Library, Email, Meetings and the Pocket Desk.
+
+Authoritative workspace and memory rules:
+- MAYA remains fully available in General mode with no client active.
+- Executives maintain persistent user memory independent of clients: user-approved preferences, working style, goals, decisions, general projects and prior General sessions.
+- Signing a client in activates the complete MAYA Pocket Office for that client; it does not limit which executives or menu tools are available.
+- Multiple clients may remain active simultaneously on the Pocket Desk, but exactly one workspace is foreground-selected at a time: General or one active client.
+- Selecting a client supplies that client's authorized business information, Library, imported materials, projects, sessions, prior work, decisions, recommendations and client memory as context for executive answers.
+- In client mode, executive context is user memory plus only the foreground-selected client's authorized context. Active background clients contribute zero context.
+- New memories and work created in a client workspace are scoped and filed only to that client and project.
+- Client information never enters user/general memory without an explicit user-directed promotion.
+- Switching clients atomically replaces prompt context, retrieval results, caches, drafts, memory namespace and filing destination; no cross-client blending is permitted.
+- Signing a client out files and closes only that client. If no clients remain selected, MAYA returns to General mode with all tools available and user memory intact.
+- Leaving MAYA files and signs out every active client independently, clears decrypted client state and keys, and returns client names to greyed-out.
+- Client vault removal, transfer or erasure never deletes the user's General memory.
+
+Vault rule: optional client-side encryption, user-held credentials and keys, zero RAIN plaintext access, strong tenant isolation, user-directed portability and permanent erasure.
 
 ### Website Dashboard
 Maya-native control surface for website content, status, analytics and approved publishing.
