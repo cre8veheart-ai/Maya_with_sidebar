@@ -23,6 +23,22 @@ Rules:
 
 This requirement exists to preserve product intent, founder working style, architectural history, and the Leslie + Ari collaboration across sessions and model/provider changes.
 
+## Living MAYA blueprint — REQUIRED
+
+Before planning, architecture, implementation, review, testing, deployment, product interpretation, menu work, memory work, executive work, client-vault work, or merge decisions, every assistant or engineering agent must read and apply:
+
+`docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`
+
+Rules:
+- The blueprint on `main` is the living, active, amendable MAYA build authority.
+- State which blueprint section(s) govern the task before making substantive changes.
+- Every PR must identify the blueprint section it implements, preserves, or proposes to amend.
+- Founder-approved architectural decisions must be added to the blueprint on `main`; they must not remain only in chat, comments, transferred summaries, or feature branches.
+- A stale PR description, old branch, bot summary, or legacy implementation cannot override the current blueprint.
+- If code, a request, or another instruction conflicts with the blueprint, stop and surface the conflict. Reconcile the blueprint explicitly before merge.
+- Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
+- Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
+
 ## Source of truth
 
 - `main` is the only production source branch.
