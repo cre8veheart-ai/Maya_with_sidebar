@@ -42,6 +42,10 @@ Rules:
 - At the end of substantive MAYA work, update the Current Working Checkpoint with the verified stop point and exact first next action.
 - Append a Work History Trail entry with evidence, changes, result, blocker and relevant PR/branch/commit/deployment identifiers.
 - The history trail is append-only. Correct prior entries with a new entry; never silently rewrite or delete completed history.
+- Record all substantive work: successful changes, failures, exact errors, attempted fixes, failed fixes, verified fixes, regressions, rollbacks, reversals, removals and unresolved debt.
+- Link failures to fixes and fixes to post-fix verification evidence.
+- Use VERIFIED, CONTRADICTED, UNVERIFIED and UNKNOWN classifications; never convert a claim into proof merely because a build or check is green.
+- A later fix does not erase the failed attempt that led to it.
 - Apply founder-approved blueprint amendments before dependent implementation. Remove superseded rules from the active design and record the replacement in Amendment History.
 
 ## Source of truth
