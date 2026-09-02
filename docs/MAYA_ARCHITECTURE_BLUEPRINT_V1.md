@@ -95,7 +95,7 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - Dana · CFO
 - Erica · CMO
 - Ari · CTO
-- White Boardroom
+- White Boardroom with PowerPoint-compatible `.pptx` creation/export
 - Connected Library with saved and retrievable executive sessions
 - Client Vault with safe client separation and explicit foreground-client context
 - Beta access/login, mobile Safari usability, persistent sessions, clear failures and human-controlled saving/export
@@ -115,8 +115,9 @@ Beta 1 is complete only when a beta user can:
 5. Leave and return with the session still retrievable.
 6. Work in General or one explicitly selected Client Vault without cross-client context leakage.
 7. Open and save White Boardroom work in the correct workspace.
-8. Complete the flow on mobile Safari.
-9. Keep every outbound/save/export action behind explicit human approval.
+8. Export selected White Boardroom presentation content as a valid `.pptx` file that opens in PowerPoint.
+9. Complete the flow on mobile Safari.
+10. Keep every outbound/save/export action behind explicit human approval.
 
 A green build, READY deployment or successful API status alone is not completion evidence.
 
@@ -153,6 +154,17 @@ When **DIH EVENT MAYA** is invoked:
 - A work session is not closed until the checkpoint states the verified stop point and exact first next action.
 
 ## Work History Trail
+
+
+### 2026-09-02 — PowerPoint added to Beta 1 White Boardroom gate
+
+- Trigger: Founder required PowerPoint in Beta 1.
+- Decision: add a narrow native export capability: selected White Boardroom presentation content must download as a valid `.pptx` that opens in PowerPoint.
+- Existing evidence: production White Boardroom currently exposes only an external Microsoft 365 PowerPoint link; native `.pptx` creation/export is CONTRADICTED by the current UI and code.
+- Runtime failure discovered: production White Boardroom logged React hydration error #418 during browser inspection; exact application cause remains UNVERIFIED and must be isolated before release.
+- Boundary: no Microsoft 365 OAuth, OneDrive synchronization or cloud coauthoring is required for this Beta 1 gate. Existing Adobe Cloud access remains available and is not removed.
+- First next action: repair the White Boardroom runtime mismatch, implement dependency-minimal `.pptx` export on PR #96, then download and open-test the generated file.
+
 
 
 ### 2026-09-02 — Founder-approved Beta 1 completion lock
