@@ -792,3 +792,11 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Max used a separate CEO chat implementation and was missing the device-local Library fallback; commit `514a594` connected Max to the same vault-scoped continuity behavior.
 - Preview runtime evidence showed unauthenticated `/api/sessions` calls returning `401`. This is expected for the protected durable endpoint, but means cross-device persistence remains **unverified** until tested inside an authenticated Beta session.
 - Promotion status: same-device core continuity is proven; authenticated durable/cross-device continuity and vault-isolation proof remain required.
+
+
+### 2026-09-02 — White Boardroom Beta recheck
+
+- Current PR #96 preview rendered the native PowerPoint Deck Builder, editable title and slides, Adobe Studio link, Adobe Creative Cloud production lane, and existing room tools.
+- PowerPoint generation reached the in-app `PowerPoint downloaded` success state with no export error. The cloud browser did not expose the Blob download as a capturable file event, so opening the generated file in Microsoft PowerPoint remains **UNVERIFIED**.
+- The previously observed React hydration error `#418` was historical in the browser log; a clean reload of the current preview produced no new occurrence.
+- Adobe Cloud remains present and unchanged. Adobe licensed-font activation still requires the existing project credential and is not represented as connected when absent.
