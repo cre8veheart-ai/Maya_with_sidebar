@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { EXEC_ROLE_OPTIONS, getRoleLabel } from "@/lib/maya/execRouting";
 import { loadLens } from "@/lib/maya/lensStorage";
 import {
+  loadSavedSessions,
   saveSessionRecord,
   saveVaultClip,
   saveWorkItem,
@@ -87,13 +88,26 @@ export default function RoleChat({
     setRestartPoint("");
 
     void recoverPocketOfficeSession(clientVaultId, role).then((saved) => {
-      if (cancelled || !saved) return;
-      if (saved.status === "active") {
+      if (cancelled) return;
+      if (saved?.status === "active") {
         setSessionId(saved.id);
         setMessages(saved.transcript);
         return;
       }
-      setRestartPoint(saved.closeout?.nextAction ?? "");
+      if (saved) {
+        setRestartPoint(saved.closeout?.nextAction ?? "");
+        return;
+      }
+
+      const local = loadSavedSessions().find(
+        (session) =>
+          session.role === role &&
+          (session.clientVaultId ?? "personal") === clientVaultId &&
+          Boolean(session.transcript?.length),
+      );
+      if (!local?.transcript) return;
+      setSessionId(local.id);
+      setMessages(local.transcript);
     });
 
     return () => {
@@ -144,6 +158,8 @@ export default function RoleChat({
       transcript: nextMessages,
       estimatedPromptTokens: promptTokens,
       estimatedCompletionTokens: completionTokens,
+      clientVaultId,
+      status: "active",
     });
     checkpointPocketOfficeSession({
       id: sessionId,
