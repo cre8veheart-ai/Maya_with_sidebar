@@ -156,6 +156,22 @@ When **DIH EVENT MAYA** is invoked:
 ## Work History Trail
 
 
+### 2026-09-02 — PowerPoint export implementation attempt and recovery
+
+- Tool adopted: `pptxgenjs@4.0.1`, a reversible open-source browser-side generator.
+- Purpose: create a valid PowerPoint-compatible `.pptx` directly from White Boardroom content.
+- Permissions/data boundary: runs in the user's browser; receives only the deck title and slide text entered into the builder; no Microsoft login, OAuth, external upload or client-server plaintext transfer is introduced by export.
+- Cost/sign-in impact: none.
+- Files changed on PR #96: `package.json`, `package-lock.json`, `components/PowerPointExport.tsx`, `app/white-boardroom/page.tsx`.
+- Failed attempt: Vercel deployment `dpl_9SJQGdarviSourf1zogRSNJ8zctY` failed TypeScript validation because `pptx.lang` and `theme.lang` are not supported by the installed PptxGenJS type definitions.
+- Fix: removed the unsupported language properties in commit `31ec6fc3e875db7c2f6fbe9ca3059522d65a1e66`.
+- Verification after fix: Vercel deployment `46zmiWrETrobZJm8RpgY2GkxrpPX` completed; the PR preview rendered the PowerPoint Deck Builder; browser activation reached the visible status “PowerPoint downloaded.”
+- Remaining gate: the automated browser could not capture the download event for file-level inspection, so opening the generated file in PowerPoint remains UNVERIFIED.
+- Rollback: revert the component/page commits and remove `pptxgenjs` plus its lockfile entries.
+- First next action: perform a download/open test on mobile Safari or a browser capable of exposing the generated file, then continue the Library persistence fix.
+
+
+
 ### 2026-09-02 — PowerPoint added to Beta 1 White Boardroom gate
 
 - Trigger: Founder required PowerPoint in Beta 1.
