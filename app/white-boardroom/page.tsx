@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdobeFontLibrary from "@/components/AdobeFontLibrary";
 import PageLayoutStudio from "@/components/PageLayoutStudio";
+import PowerPointExport from "@/components/PowerPointExport";
 
 const adobeTools = ["Photoshop", "Illustrator", "InDesign", "Acrobat Pro", "Premiere Pro", "After Effects"];
 const roomTools = [
@@ -58,6 +59,10 @@ export default function WhiteBoardroom() {
               <p className="mt-2 text-sm text-white/70">Client context, executive participation, recommendations and session memory are reserved for authenticated MAYA persistence wiring.</p>
             </div>
           </aside>
+        </section>
+
+        <section className="mt-4">
+          <PowerPointExport />
         </section>
 
         <section className="mt-4">
