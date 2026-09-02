@@ -84,56 +84,88 @@ Initial candidate categories (providers intentionally undecided):
 ## Current Working Checkpoint
 
 Last updated: 2026-09-02 UTC
-Update authority: Founder-approved working state
+Update authority: Founder-approved Beta 1 scope lock
 Resume phrase: **DIH EVENT MAYA**
 
-### What we were building
+### What we are building now
 
-The Pocket Office client-vault and context model:
+A finishable MAYA Beta 1 with exactly these product capabilities:
 
-- MAYA is fully available in General mode without a client.
-- Executives retain persistent user memory independent of clients.
-- Greyed-out client names appear in the Client menu until individually signed in.
-- One client sign-in activates the complete MAYA Pocket Office for that client.
-- Multiple clients may remain active simultaneously on the Pocket Desk.
-- Only the foreground-selected client supplies business, Library, project, session and memory context to executive answers.
-- Client-created MAYA work files only to that client's encrypted vault.
-- Client sign-out files and closes that client; leaving MAYA files and signs out every active client.
-- Vaults are optional, portable, user-controlled and designed for zero RAIN plaintext access.
+- Max · CEO
+- Dana · CFO
+- Erica · CMO
+- Ari · CTO
+- White Boardroom
+- Connected Library with saved and retrievable executive sessions
+- Client Vault with safe client separation and explicit foreground-client context
+- Beta access/login, mobile Safari usability, persistent sessions, clear failures and human-controlled saving/export
 
-### Where work stopped
+### Beta 1 exclusions
 
-- PR #64 was verified stale and safely closed without merge.
-- PR #88 is the active design record for zero-access encrypted Pocket Office vaults and menu behavior.
-- PR #88's existing server-readable Supabase implementation is explicitly blocked from merge because it does not satisfy zero-access encryption.
-- The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
-- The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
-- The blueprint and repository instructions on `main` now govern future work.
+All other executives, Titans Council, Adobe production workflows, Maya Live, Campaigns expansion, gallery expansion, new external connectors and other menu tools are frozen for post-beta work. Existing routes may remain visible, but they are not Beta 1 completion gates and receive no new feature work unless required to prevent a Beta 1 regression.
+
+### Completion gate
+
+Beta 1 is complete only when a beta user can:
+
+1. Sign in.
+2. Open each of the four named executives.
+3. Receive a correct role-specific response from each.
+4. Save the session into the Library.
+5. Leave and return with the session still retrievable.
+6. Work in General or one explicitly selected Client Vault without cross-client context leakage.
+7. Open and save White Boardroom work in the correct workspace.
+8. Complete the flow on mobile Safari.
+9. Keep every outbound/save/export action behind explicit human approval.
+
+A green build, READY deployment or successful API status alone is not completion evidence.
+
+### Repository and release state
+
+- Canonical repository: `cre8veheart-ai/Maya_with_sidebar`.
+- Active implementation PR: #96, branch `maya-pocket-desk-context-v1`.
+- PR #64 and #88 are closed without merge.
+- Legacy open PRs #67, #70, #71 and draft #76 require evidence review and recorded disposition; they do not override this checkpoint.
+- No merge or production promotion until the Beta 1 completion gate is proven.
+- One active implementation lane: new Beta 1 work goes only through PR #96.
 
 ### First next action
 
-Reconcile PR #88 with current `main`, replace its server-readable plaintext path with a client-side-encryption/ciphertext-only design, and implement the Client menu/Pocket Desk contract in the smallest governed sequence. Do not merge until the blueprint gates are proven.
+Amend PR #96 to implement and verify the smallest end-to-end vertical slice: the four executive routes -> persistent saved session -> connected Library retrieval -> selected Client Vault filing/context -> White Boardroom persistence. Test desktop and mobile Safari, record each gate separately, and do not expand scope.
 
 ### Resume protocol
 
 When **DIH EVENT MAYA** is invoked:
 
-1. Read founder continuity and this living blueprint from `main`.
+1. Read founder continuity and this living blueprint from `main` and the active PR.
 2. Present this Current Working Checkpoint before proposing or taking substantive action.
-3. Verify the referenced PR, branch, deployment and blocker against live platform state.
-4. Continue from **First next action** unless the founder amends direction.
-5. Update this checkpoint before ending substantive MAYA work.
+3. Verify PR #96, its branch, deployment and Beta 1 gates against live platform state.
+4. Continue from **First next action** unless the Founder amends direction.
+5. Update this checkpoint and append the Work History Trail before ending substantive work.
 
 ### Amendment protocol
 
 - Founder-approved amendments are written into the active blueprint before dependent implementation continues.
-- Superseded requirements are removed from the active design so agents cannot follow stale instructions.
-- Material deletions or replacements are summarized in the Amendment History below.
-- PR descriptions, code comments and implementation documents are then synchronized to the amended blueprint.
-- Reversible tooling changes within existing authority may be implemented autonomously, but each must be logged here before or alongside implementation. The entry must state what it replaces or adds, why it is needed, what data it can access, sign-in/permission and cost impact, failure modes, rollback/removal path and verification gate. Ask the Founder first when new credentials, payment, client-data exposure, destructive action or a material product-direction choice is involved.
-- A work session is not considered closed until the checkpoint states the verified stop point and first next action.
+- Superseded active requirements are removed from the Current Working Checkpoint; their history remains preserved below.
+- Material deletions or replacements are summarized in the Amendment History.
+- Reversible tooling changes within existing authority may be implemented autonomously but must be logged with purpose, permissions, data boundary, cost/sign-in impact, verification and rollback.
+- Founder approval remains required for new credentials, payment, client-data exposure, destructive action or a material product-direction change.
+- A work session is not closed until the checkpoint states the verified stop point and exact first next action.
 
 ## Work History Trail
+
+
+### 2026-09-02 — Founder-approved Beta 1 completion lock
+
+- Trigger: Founder directed MAYA to build only a finishable beta and required CMO, White Boardroom, connected Library and Client Vault to remain.
+- Decision: Beta 1 is limited to Max CEO, Dana CFO, Erica CMO, Ari CTO, White Boardroom, connected Library, Client Vault, access/login, persistence, mobile Safari, clear failures and human-controlled saving/export.
+- Supersedes as active work: the prior checkpoint directing continued broad Pocket Office/client-vault expansion from PR #88.
+- Repository evidence: PR #64 and #88 are closed unmerged; PR #96 is the newest active implementation PR; #67, #70, #71 and draft #76 remain open legacy work.
+- Verified capability evidence: production Dana CFO route rendered the correct identity, accepted a prompt and returned a role-specific response on 2026-09-02. Other Beta 1 gates remain UNVERIFIED until tested separately.
+- CI finding: PR #96 verification is green, but its GitHub preview-deploy workflow skipped the actual deploy step while reporting overall success. Preview capability remains UNVERIFIED until a real URL is tested.
+- Guardrail: no new feature category may enter Beta 1 without a Founder amendment to this checkpoint.
+- First next action: implement and prove the four-executive-to-Library-to-Client-Vault vertical slice and White Boardroom persistence on PR #96, then run mobile Safari verification before merge.
+
 
 This trail is append-only. The Current Working Checkpoint may be rewritten to show the latest resume state, but completed history entries must not be silently edited or deleted. Corrections are added as new entries referencing the corrected entry.
 
@@ -326,6 +358,8 @@ Scope and evidence:
 - No historical title, body, green check or READY deployment may be promoted to runtime proof without the corresponding capability test.
 
 ### Amendment History
+
+- 2026-09-02: Locked Beta 1 to four executives, White Boardroom, connected Library, Client Vault and the minimum access/persistence/mobile/approval frame; froze all other feature expansion until beta completion.
 
 - 2026-09-02: Made the blueprint the living build authority on `main`.
 - 2026-09-02: Established General user memory plus isolated foreground-client context.
