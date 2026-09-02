@@ -100,6 +100,18 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - Client Vault with safe client separation and explicit foreground-client context
 - Beta access/login, mobile Safari usability, persistent sessions, clear failures and human-controlled saving/export
 
+### Client Vault contract for Beta 1
+
+- The MAYA user registers each client; registration assigns exactly one separated encrypted Client Vault to that client.
+- Each Client Vault has its own user-created password. It must not reuse or inherit the user's MAYA login password or another vault's password.
+- Unlocking one vault does not unlock any other vault.
+- The Pocket Desk may show multiple registered clients, but only the explicitly foregrounded, unlocked vault supplies client context to MAYA.
+- Every session, Library item, White Boardroom artifact and approved work product created while a client vault is foregrounded is scoped to that vault.
+- Closing or signing out of a client vault checkpoints and files all in-scope MAYA work to that client's encrypted vault before removing its context from MAYA.
+- Closing MAYA checkpoints and files work for every open client vault, then locks them.
+- RAIN infrastructure may store ciphertext and operational metadata but must never receive vault passwords, derived keys or client plaintext.
+- A failed save or closeout must be shown clearly; MAYA must not claim the vault is safely closed until filing is verified.
+
 ### Beta 1 exclusions
 
 All other executives, Titans Council, Adobe production workflows, Maya Live, Campaigns expansion, gallery expansion, new external connectors and other menu tools are frozen for post-beta work. Existing routes may remain visible, but they are not Beta 1 completion gates and receive no new feature work unless required to prevent a Beta 1 regression.
@@ -800,3 +812,12 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - PowerPoint generation reached the in-app `PowerPoint downloaded` success state with no export error. The cloud browser did not expose the Blob download as a capturable file event, so opening the generated file in Microsoft PowerPoint remains **UNVERIFIED**.
 - The previously observed React hydration error `#418` was historical in the browser log; a clean reload of the current preview produced no new occurrence.
 - Adobe Cloud remains present and unchanged. Adobe licensed-font activation still requires the existing project credential and is not represented as connected when absent.
+
+
+### 2026-09-02 — Founder correction: per-client vault registration, password and closeout
+
+- Corrects any wording that implied a client vault could auto-open from the MAYA login or that General-mode continuity alone satisfied Client Vault.
+- Active contract: the user registers each client; MAYA assigns a separate encrypted vault; the user creates a different password for each vault; unlocking is independent per vault.
+- Filing contract: all MAYA work created with that client foregrounded is scoped to the assigned vault and must be saved there when the vault closes.
+- Security boundary: vault passwords and plaintext remain unavailable to RAIN; a close operation is not successful until encrypted filing/checkpoint verification succeeds.
+- Implementation impact: the current disabled Client Workspaces shell remains incomplete and must not be represented as the finished Beta Client Vault.
