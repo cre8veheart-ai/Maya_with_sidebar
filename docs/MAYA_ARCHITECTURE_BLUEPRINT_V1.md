@@ -39,6 +39,7 @@ The Pocket Office client-vault and context model:
 - PR #64 was verified stale and safely closed without merge.
 - PR #88 is the active design record for zero-access encrypted Pocket Office vaults and menu behavior.
 - PR #88's existing server-readable Supabase implementation is explicitly blocked from merge because it does not satisfy zero-access encryption.
+- The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
 - The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
 - The blueprint and repository instructions on `main` now govern future work.
 
@@ -113,6 +114,109 @@ Failure-record rules:
 - Result: Product architecture recorded; safe implementation remains incomplete.
 - Stop reason: PR #88 is stale/non-mergeable and its storage design conflicts with the zero-access blueprint.
 - First next action: Reconcile PR #88 with current `main`, replace server-readable storage with a ciphertext-only design, then implement and verify the Client menu/Pocket Desk contract.
+
+### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
+
+Scope and evidence:
+- VERIFIED source: GitHub pull-request metadata retrieved from the canonical repository on 2026-09-02 UTC.
+- A PR title records the stated change or intent only; it is not proof that the capability worked at runtime.
+- `MERGED` verifies GitHub merge state. `CLOSED UNMERGED` verifies the work was not merged through that PR. `OPEN` verifies unresolved branch/PR state.
+- Head SHAs identify the inspected PR revisions. They do not prove production deployment or runtime behavior.
+- Checks, comments, failure logs, deployments and runtime tests were not uniformly recoverable for every historical PR in this pass. Those details remain UNKNOWN unless separately recorded below or in a later correction entry.
+- Missing PR numbers from #9–#95: #10, #13, #26, #33, #34, #35, #36, #37, #38, #39, #40, #41, #69, #89, #91, #92, #93, #94. GitHub returned no pull-request record for those numbers; they may be issues, deleted/unavailable records, or unused numbers, and are not reconstructed.
+- This is the best authoritative backfill available from the PR ledger. Later evidence must be appended as a correction/enrichment and must not silently rewrite this ledger.
+
+| PR | Created (UTC) | Verified disposition | Stated intent/title (not runtime proof) | Inspected head |
+|---|---|---|---|---|
+| [#9](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/9) | 2026-07-23 | MERGED | Working on Maya functionality | `34f36164c9` |
+| [#11](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/11) | 2026-08-06 | MERGED | Add GitHub Actions workflows for Vercel production and preview deployments | `333cce1007` |
+| [#12](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/12) | 2026-08-07 | CLOSED UNMERGED DRAFT | Skip Vercel deploy steps when VERCEL_TOKEN secret is not configured | `53982e77e8` |
+| [#14](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/14) | 2026-08-07 | MERGED | Implementing Anthropocene API for texting | `caac0d2531` |
+| [#15](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/15) | 2026-08-08 | CLOSED UNMERGED DRAFT | Fix selectedPostId desync on filter change and add provider validation | `5083852717` |
+| [#16](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/16) | 2026-08-09 | CLOSED UNMERGED | Secure private beta access | `14ded297e4` |
+| [#17](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/17) | 2026-08-10 | CLOSED UNMERGED DRAFT | Security: stop leaking BETA_INVITE_CODES secrets from beta-validate endpoint | `f147fd3ffa` |
+| [#18](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/18) | 2026-08-11 | MERGED | Copilot/connect chat gpt to maya | `326c847ec1` |
+| [#19](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/19) | 2026-08-11 | CLOSED UNMERGED DRAFT | feat: add layered CEO intelligence and role memory | `643a5a5f54` |
+| [#20](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/20) | 2026-08-12 | CLOSED UNMERGED DRAFT | Fix CEO mobile chat layout and Vercel HTML leakage | `06aed383bc` |
+| [#21](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/21) | 2026-08-13 | CLOSED UNMERGED DRAFT | feat: add Gemini as hidden executive intelligence layer | `f8e01c55b9` |
+| [#22](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/22) | 2026-08-13 | CLOSED UNMERGED DRAFT | fix: restore executive-first CEO chat interface | `e9f84c6f3d` |
+| [#23](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/23) | 2026-08-15 | MERGED | feat: consolidate and harden MAYA private beta foundation | `8bbb8d550b` |
+| [#24](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/24) | 2026-08-16 | MERGED | Removing invite-code gate component from the app | `6116a8b9ed` |
+| [#25](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/25) | 2026-08-16 | CLOSED UNMERGED DRAFT | Guard Vercel preview deployment when PR secrets are unavailable | `a39d49d1e2` |
+| [#27](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/27) | 2026-08-17 | MERGED | Integration: land PRs #23, #24, #16–#17, #19–#22 onto main | `6b2166113a` |
+| [#28](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/28) | 2026-08-19 | CLOSED UNMERGED DRAFT | feat: GitHub OAuth integration — connect, read, and write repos from Maya | `c696419430` |
+| [#29](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/29) | 2026-08-19 | CLOSED UNMERGED DRAFT | [WIP] Fix missing UI buttons after PR #27 merge | `2ff5bc11c4` |
+| [#30](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/30) | 2026-08-21 | MERGED | fix: remove stale beta proxy redirect | `a89717df30` |
+| [#31](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/31) | 2026-08-21 | MERGED | feat: simplify CEO page to centered chat | `4fc2a60b1f` |
+| [#32](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/32) | 2026-08-21 | MERGED | CTO foundation: secure backend + resilient CEO frontend | `40083e0826` |
+| [#42](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/42) | 2026-08-21 | CLOSED UNMERGED | CI: require automated tests before build | `0a8e492744` |
+| [#43](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/43) | 2026-08-21 | MERGED | Add founder continuity activation gate | `4acc1904b4` |
+| [#44](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/44) | 2026-08-22 | MERGED | Make Strategy Room run real executive adjudication | `282f812f61` |
+| [#45](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/45) | 2026-08-22 | CLOSED UNMERGED DRAFT | feat: executive role fidelity + ThinkTank foundation | `ed51018501` |
+| [#46](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/46) | 2026-08-23 | MERGED | Security hardening: disable in-app GitHub authority | `25c167e579` |
+| [#47](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/47) | 2026-08-23 | MERGED | feat: executive role fidelity on secured baseline | `f92dba88ef` |
+| [#48](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/48) | 2026-08-23 | CLOSED UNMERGED | Add automated production test gate | `6c515f6969` |
+| [#49](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/49) | 2026-08-24 | MERGED | Add Maya Architecture Blueprint v1 | `729d9b12ca` |
+| [#50](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/50) | 2026-08-24 | MERGED | Add standalone CEO executive chassis | `5706884501` |
+| [#51](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/51) | 2026-08-24 | MERGED | Add CEO adversarial pushback evaluations | `277bb97034` |
+| [#52](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/52) | 2026-08-24 | MERGED | Add standalone CTO executive chassis | `3be8c40296` |
+| [#53](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/53) | 2026-08-24 | CLOSED UNMERGED | Add standalone CTO executive chassis | `d2b1fbb879` |
+| [#54](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/54) | 2026-08-24 | MERGED | Add CEO↔CTO Maya adjudication contract | `4ca36d8bb2` |
+| [#55](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/55) | 2026-08-24 | MERGED | Add executable CEO↔CTO conflict fixtures | `5db7447ec6` |
+| [#56](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/56) | 2026-08-24 | CLOSED UNMERGED | Add branch and repository sprawl detector | `6545f6588b` |
+| [#57](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/57) | 2026-08-24 | MERGED | security: establish MAYA repository guardrails | `655f84d800` |
+| [#58](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/58) | 2026-08-24 | MERGED | security: enforce branch lifecycle in production | `60a7a6ec7c` |
+| [#59](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/59) | 2026-08-24 | MERGED | security: purge legacy Copilot branch sprawl | `156407494f` |
+| [#60](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/60) | 2026-08-24 | CLOSED UNMERGED | Build Dana CFO and Ari CTO executive chassis | `32f4a6cedc` |
+| [#61](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/61) | 2026-08-25 | CLOSED UNMERGED DRAFT | DIH Event Mode: governed incident workspace | `49716a8bef` |
+| [#62](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/62) | 2026-08-25 | MERGED | Build Maya executive core and specialist staff | `1339cc5d1a` |
+| [#63](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/63) | 2026-08-25 | MERGED | Deepen Maya executive operating profiles | `2a195a0c43` |
+| [#64](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/64) | 2026-08-25 | CLOSED UNMERGED | Integrate governed MAYA executives, DIH, and beta access | `dc14fb8ebd` |
+| [#65](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/65) | 2026-08-26 | CLOSED UNMERGED | Wire Sam and Admin Secretary operating layer | `498bcf42e5` |
+| [#66](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/66) | 2026-08-27 | MERGED | Govern Admin Secretary operating contract | `245cefef32` |
+| [#67](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/67) | 2026-08-27 | OPEN | Wire persistent memory, saved sessions, and menu-surface context | `9e35162330` |
+| [#68](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/68) | 2026-08-27 | MERGED | MAYA persistent memory foundation — Supabase integration | `25bdeb48f4` |
+| [#70](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/70) | 2026-08-28 | OPEN | MAYA workspace persistence boundary and session reads | `9fb800c5ad` |
+| [#71](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/71) | 2026-08-28 | OPEN | Build White Boardroom connector foundation | `377d4c9ef4` |
+| [#72](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/72) | 2026-08-28 | MERGED | Add Adobe Creative Studio production hub | `ea3db8d7c3` |
+| [#73](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/73) | 2026-08-28 | MERGED | Fix mobile executive workspace and add session files | `a1d61c60bb` |
+| [#74](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/74) | 2026-08-28 | MERGED | Fix Sessions mobile overflow | `53dfd79974` |
+| [#75](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/75) | 2026-08-28 | MERGED | Bind Notion connections to Client Vaults | `bb991ef4f0` |
+| [#76](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/76) | 2026-08-29 | OPEN DRAFT | Complete standalone executive backbone and build gates | `8ac48982a2` |
+| [#77](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/77) | 2026-08-30 | MERGED | Build MAYA White Boardroom | `c31cd0233c` |
+| [#78](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/78) | 2026-08-30 | MERGED | Finish Erica as MAYA's standalone CMO executive | `64976dfc5f` |
+| [#79](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/79) | 2026-08-30 | MERGED | Finish Dana as MAYA's standalone CFO executive | `739b0a6c3b` |
+| [#80](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/80) | 2026-08-30 | MERGED | Build Ari as MAYA's standalone CTO operating clone | `0d2703f4ea` |
+| [#81](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/81) | 2026-08-31 | CLOSED UNMERGED | Add Ari's gated CTO delivery command center | `e4a44be718` |
+| [#82](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/82) | 2026-08-31 | MERGED | Restore executive boundaries and enforce full verification | `0609268a82` |
+| [#83](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/83) | 2026-08-31 | MERGED | Add Ari's gated CTO delivery command center | `37f7d4e524` |
+| [#84](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/84) | 2026-08-31 | MERGED | Restore protected chat API boundary | `4992d0112c` |
+| [#85](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/85) | 2026-08-31 | MERGED | Wire Codex coding workspace into DIH continuity | `5d33f2dd03` |
+| [#86](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/86) | 2026-08-31 | MERGED | Build authenticated persistent workspace foundation | `5bdac22404` |
+| [#87](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/87) | 2026-08-31 | MERGED | Restore no-friction MAYA chat access | `4336939dd2` |
+| [#88](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/88) | 2026-08-31 | OPEN | Design zero-access encrypted Pocket Office vaults | `fde4227dfb` |
+| [#90](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/90) | 2026-08-31 | MERGED | Add Adobe Fonts library to White Boardroom | `2756aac1b7` |
+| [#95](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/95) | 2026-08-31 | MERGED | Make MAYA own automatic session closeouts | `3530a4a60d` |
+
+#### Historical phase reading (evidence-bounded)
+
+- PRs #9–#31: early functionality, provider/chat integration, beta-access changes, CI/Vercel workflow work and CEO interface iteration. Several proposed fixes/features were closed unmerged; PR #27 explicitly stated an integration purpose, but that title alone does not prove every referenced capability survived intact.
+- PRs #32–#49: secure-backend, continuity, Strategy Room, executive-role, repository-security and blueprint foundations. PR #46's stated removal of in-app GitHub authority superseded PR #28's unmerged OAuth proposal at the PR-intent level; runtime enforcement remains UNVERIFIED by this ledger alone.
+- PRs #50–#66: standalone executive chassis work, adjudication fixtures, branch/security guardrails, executive core/profile work, DIH work and Admin Secretary governance. PR #53 duplicated the CTO title and closed unmerged; PR #52 is the verified merged CTO PR in that pair.
+- PRs #67–#76: persistent memory/session boundaries, Supabase, White Boardroom, Adobe, mobile/session fixes and Client Vault/Notion work. PRs #67, #70, #71 and #76 remain open; therefore none may be assumed canonical over current `main`.
+- PRs #77–#95: White Boardroom, standalone CMO/CFO/CTO work, protected chat, Codex/DIH continuity, authenticated persistence, no-friction access, client vaults, Adobe Fonts and automatic session closeouts. PR #88 remains open and its earlier server-readable vault path is explicitly blocked by the zero-access amendment.
+- Verified reversal/fix signals from disposition and titles: #24 removed the invite-code gate after earlier beta-access work; #30 removed a stale beta proxy redirect; #46 disabled in-app GitHub authority after the unmerged #28 proposal; #82 stated restoration of executive boundaries; #84 stated restoration of the protected chat boundary; #87 restored no-friction access after #86 introduced authenticated persistence. These are verified historical change claims and merge states, not complete runtime proofs.
+- Known unresolved legacy branches at backfill time: #67, #70, #71, #76 and #88. They require reconciliation or closure; their descriptions cannot override this blueprint.
+- Known verified disposition already investigated in depth: PR #64 was stale/dirty and closed without merge on 2026-09-02. PR #88's server-readable design was contradicted by the founder-approved zero-access requirement and marked do-not-merge.
+
+#### Backfill failures, limitations and next enrichment gate
+
+- Failed attempt: the first all-PR API retrieval produced output too large for a reliable working capture.
+- Fix: repeated the same authoritative GitHub collection request and reduced it to compact metadata fields before writing the ledger.
+- Verification after fix: 65 PR records from #9 through #95 were parsed; each ledger row includes number, creation date, disposition, title and head SHA.
+- Remaining UNKNOWN: exact code delta, CI result, preview/production deployment, runtime result, regression, failure log and corrective commit for many individual PRs.
+- Next enrichment gate: when a historical PR becomes relevant to active work, fetch its diff, comments, checks and linked deployment, then append a dated correction/enrichment entry using VERIFIED / CONTRADICTED / UNVERIFIED / UNKNOWN.
+- No historical title, body, green check or READY deployment may be promoted to runtime proof without the corresponding capability test.
 
 ### Amendment History
 
