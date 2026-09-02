@@ -79,6 +79,22 @@ Each substantive MAYA work session must append:
 - Stop reason or remaining blocker
 - Exact first next action
 - Relevant PR, branch, commit and deployment links or identifiers
+- Failures, exact error evidence and affected boundary
+- Every attempted fix, including unsuccessful attempts
+- The fix that resolved the failure, or why it remains unresolved
+- Verification performed after each fix
+- Regressions introduced or discovered
+- Rollbacks, reversals, removals and superseded approaches
+- Follow-up debt, owner and next verification gate
+
+Failure-record rules:
+- Never rewrite a failed attempt as if it succeeded.
+- Never delete a failure because a later fix worked.
+- Link each fix to the failure it addresses and each verification to the exact fix tested.
+- Distinguish VERIFIED, CONTRADICTED, UNVERIFIED and UNKNOWN claims.
+- Builds, green checks, comments and status summaries are not proof of runtime behavior without the required capability test.
+- If a fix fails, append the result and next attempt; do not overwrite the prior entry.
+- Security, data-isolation, persistence and deployment failures remain visible permanently, including their containment and final resolution.
 
 ### 2026-09-02 — PR #64 disposition
 
