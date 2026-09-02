@@ -13,6 +13,7 @@ Blueprint governance:
 - Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
 - The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
 - When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
+- No new tool, provider, plug-in, connector, framework or material architecture replacement may be introduced into MAYA until its need, permissions, data boundary, operational dependency, exit path and tradeoffs are presented to the Founder, approved, and recorded in this blueprint first.
 
 ## Current Working Checkpoint
 
@@ -63,6 +64,7 @@ When **DIH EVENT MAYA** is invoked:
 - Superseded requirements are removed from the active design so agents cannot follow stale instructions.
 - Material deletions or replacements are summarized in the Amendment History below.
 - PR descriptions, code comments and implementation documents are then synchronized to the amended blueprint.
+- Tooling proposals remain proposals until Founder approval is recorded here. Each approved tooling change must state what it replaces or adds, why it is needed, what data it can access, sign-in/permission impact, failure modes, rollback/removal path and verification gate.
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
@@ -114,6 +116,16 @@ Failure-record rules:
 - Result: Product architecture recorded; safe implementation remains incomplete.
 - Stop reason: PR #88 is stale/non-mergeable and its storage design conflicts with the zero-access blueprint.
 - First next action: Reconcile PR #88 with current `main`, replace server-readable storage with a ciphertext-only design, then implement and verify the Client menu/Pocket Desk contract.
+
+### 2026-09-02 — Founder-first tooling and change-control rule
+
+- Trigger: Founder required that potentially better build tools or necessary architecture changes be brought forward before use and written into the blueprint so later errors can be traced.
+- Blueprint sections amended: Blueprint governance; Amendment protocol.
+- Change: Prohibited unapproved introduction or replacement of tools, providers, plug-ins, connectors, frameworks and material architecture dependencies.
+- Required decision record: purpose, alternatives/tradeoffs, permissions and data access, sign-in impact, failure modes, rollback/removal path, and capability verification.
+- Result: APPROVED process rule is active. Research and recommendations are allowed; adoption or connection waits for Founder approval and blueprint entry.
+- Failure-trace rule: all implementation errors, failed fixes, regressions and reversals must reference the approving blueprint entry and affected PR/commit/deployment.
+- First next action: apply this gate before changing PR #88's encryption/storage approach or adding any supporting dependency.
 
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
 
@@ -225,6 +237,7 @@ Scope and evidence:
 - 2026-09-02: Established multiple active Pocket Desk clients with zero background context contribution.
 - 2026-09-02: Rejected server-readable client-vault plaintext; required client-side encryption and ciphertext-only storage.
 - 2026-09-02: Established client menu activation, closeout, off-site transfer, portability and erasure rules.
+- 2026-09-02: Required Founder approval and a prior blueprint decision record before adopting or replacing build tools and material dependencies.
 
 ## 1. Platform Rule
 
