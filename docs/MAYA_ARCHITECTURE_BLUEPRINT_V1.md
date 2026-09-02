@@ -64,6 +64,40 @@ When **DIH EVENT MAYA** is invoked:
 - PR descriptions, code comments and implementation documents are then synchronized to the amended blueprint.
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
+## Work History Trail
+
+This trail is append-only. The Current Working Checkpoint may be rewritten to show the latest resume state, but completed history entries must not be silently edited or deleted. Corrections are added as new entries referencing the corrected entry.
+
+Each substantive MAYA work session must append:
+
+- UTC date/time
+- Trigger or task
+- Blueprint sections used or amended
+- Live evidence checked
+- Changes made
+- Verified result
+- Stop reason or remaining blocker
+- Exact first next action
+- Relevant PR, branch, commit and deployment links or identifiers
+
+### 2026-09-02 — PR #64 disposition
+
+- Trigger: DIH EVENT MAYA / finish the PR #64 blocker.
+- Evidence: GitHub reported PR #64 open but `mergeable_state: dirty`; current `main` had advanced 33 commits; canonical Vercel production for PR #95 commit `dd86a3f` was READY.
+- Change: Added an evidence comment and closed PR #64 without merging.
+- Result: Obsolete integration branch safely retired; no conflict merge performed.
+- Next: Continue from current mainline rather than PR #64.
+
+### 2026-09-02 — Pocket Office client-vault architecture
+
+- Trigger: Founder clarified MAYA access, client registration, vault isolation, Pocket Desk behavior and menu configuration.
+- Blueprint sections amended: Shared Services / Client Vaults; Current Working Checkpoint.
+- Evidence: PR #88 used a server-owned Supabase service-role path capable of plaintext access.
+- Changes: Blocked that implementation from merge; specified zero-access client-side encryption, ciphertext-only storage, General/user memory, isolated selected-client context, multiple active clients, greyed-out menu names, complete MAYA availability after one client sign-in, closeout, off-site transfer, portability and erasure.
+- Result: Product architecture recorded; safe implementation remains incomplete.
+- Stop reason: PR #88 is stale/non-mergeable and its storage design conflicts with the zero-access blueprint.
+- First next action: Reconcile PR #88 with current `main`, replace server-readable storage with a ciphertext-only design, then implement and verify the Client menu/Pocket Desk contract.
+
 ### Amendment History
 
 - 2026-09-02: Made the blueprint the living build authority on `main`.
