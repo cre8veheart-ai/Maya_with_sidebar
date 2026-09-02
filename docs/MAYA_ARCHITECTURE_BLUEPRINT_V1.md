@@ -230,7 +230,7 @@ Failure-record rules:
 - Change: Closed PR #88 without merge and labelled it a blocked design record. Created `maya-pocket-desk-context-v1` from current `main` and opened PR #96.
 - PR #96 implementation: added a visible `Workspace: General` Pocket Desk control above all tools, an explicit no-client-context state and a Client Workspaces page.
 - Security containment: Add/Register remains disabled; no password, key, client record, local fake vault, database table or storage path was introduced.
-- Result: UNVERIFIED pending CI/browser checks. GitHub initially reported Vercel pending, `npm run verify` queued, preview queued and Vercel Preview Comments successful.
+- Result: PARTIALLY VERIFIED. GitHub `npm run verify`, preview workflow and Vercel Preview Comments all completed successfully for head `124d9847`; browser/mobile capability verification remains pending.
 - Failure/reversal record: PR #88 could not be safely reconciled as implementation because it was dirty and architecturally contradicted; replacement-from-main was chosen rather than preserving the unsafe path.
 - Rollback: close PR #96 without merge; no production or client data is affected.
 - Exact next action: verify PR #96 CI, preview and mobile/desktop browser behavior; fix any failure in the same PR; then design/test zero-access client-side cryptography before enabling registration.
