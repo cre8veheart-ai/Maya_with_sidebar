@@ -112,6 +112,17 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - RAIN infrastructure may store ciphertext and operational metadata but must never receive vault passwords, derived keys or client plaintext.
 - A failed save or closeout must be shown clearly; MAYA must not claim the vault is safely closed until filing is verified.
 
+### Beta Library contract
+
+- The Library may launch with no user publications or saved executive sessions.
+- The only built-in Library document is the **MAYA Operating Manual**.
+- Seeded/demo briefs, reports, sessions and publications must not be presented as the beta user’s real content.
+- A beta user may register links to publication subscriptions for convenient access; MAYA never stores publisher passwords, payment details or session credentials and never bypasses publisher access controls.
+- A beta user may deliberately import publications they have downloaded and are authorized to retain.
+- Publications added in General mode file to the user’s General Library. Publications added while a client vault is foregrounded file only to that encrypted client vault.
+- Import, filing, download/export and deletion remain explicit human-controlled actions with clear success or failure states.
+- Supported Beta publication formats are PDF and EPUB; other formats are deferred unless already supported safely by the existing stack.
+
 ### Beta 1 exclusions
 
 All other executives, Titans Council, Adobe production workflows, Maya Live, Campaigns expansion, gallery expansion, new external connectors and other menu tools are frozen for post-beta work. Existing routes may remain visible, but they are not Beta 1 completion gates and receive no new feature work unless required to prevent a Beta 1 regression.
@@ -821,3 +832,13 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Filing contract: all MAYA work created with that client foregrounded is scoped to the assigned vault and must be saved there when the vault closes.
 - Security boundary: vault passwords and plaintext remain unavailable to RAIN; a close operation is not successful until encrypted filing/checkpoint verification succeeds.
 - Implementation impact: the current disabled Client Workspaces shell remains incomplete and must not be represented as the finished Beta Client Vault.
+
+
+### 2026-09-03 — Beta Library narrowed to manual and user publications
+
+- Founder clarified that the Beta Library may otherwise be empty.
+- Required built-in content: MAYA Operating Manual.
+- Required user capability: access user-owned publication subscriptions through external publisher authentication and store publications deliberately downloaded/imported by the beta user.
+- Removed product authority for fake seeded Library content. Subscription passwords, payment data and publisher sessions must not be stored by MAYA or used to bypass access controls.
+- Filing rule: General imports remain in the user Library; imports under a foreground client belong only to that client’s encrypted vault.
+- Current implementation status: CONTRADICTED. The Saved Files screen still shows demo seed documents and a non-functional upload affordance; it must be replaced before Beta completion.
