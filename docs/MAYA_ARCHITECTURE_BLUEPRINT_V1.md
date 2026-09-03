@@ -106,8 +106,11 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - Each Client Vault has its own user-created password. It must not reuse or inherit the user's MAYA login password or another vault's password.
 - Unlocking one vault does not unlock any other vault.
 - The Pocket Desk may show multiple registered clients, but only the explicitly foregrounded, unlocked vault supplies client context to MAYA.
-- Every session, Library item, White Boardroom artifact and approved work product created while a client vault is foregrounded is scoped to that vault.
-- Closing or signing out of a client vault checkpoints and files all in-scope MAYA work to that client's encrypted vault before removing its context from MAYA.
+- Every Client Vault contains a dedicated **Saved Work Sessions** folder. Each saved session record includes its client-vault ID, executive/room, date, title, transcript, decisions, recommendations, attachments and resumable checkpoint metadata inside that vault's encrypted boundary.
+- Every session created while a client vault is foregrounded is saved only to that client's **Saved Work Sessions** folder; it must never appear in General memory, the General Library or another client's vault unless the user explicitly exports or promotes an approved item.
+- Every Library item, White Boardroom artifact and approved work product created while a client vault is foregrounded is scoped to that vault.
+- Closing or signing out of a client vault checkpoints and files all in-scope MAYA work, including the active session, to that client's encrypted **Saved Work Sessions** folder before removing its context from MAYA.
+- Registration must remain disabled until save, close, reopen, resume and cross-client isolation tests prove the Saved Work Sessions folder behaves correctly.
 - Closing MAYA checkpoints and files work for every open client vault, then locks them.
 - RAIN infrastructure may store ciphertext and operational metadata but must never receive vault passwords, derived keys or client plaintext.
 - A failed save or closeout must be shown clearly; MAYA must not claim the vault is safely closed until filing is verified.
@@ -863,3 +866,11 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Verification state carried forward from `main`: PARTIALLY VERIFIED — GitHub verification and preview checks completed for the original Pocket Desk foundation; browser/mobile capability and zero-access cryptography remain separate gates.
 - Result: blueprint histories reconciled semantically on the active PR. This does not claim the encrypted Client Vault itself is implemented.
 - Exact next action: prove the zero-access client-side encryption and recovery design in PR #96 before enabling Add/Register.
+
+### 2026-09-03 — Client Vault Saved Work Sessions folder required
+
+- Trigger: Founder required a file location for saved work sessions inside each Client Vault.
+- Decision: every registered Client Vault must contain its own encrypted **Saved Work Sessions** folder with resumable, client-scoped session records.
+- Isolation rule: a client session may not enter General memory, the General Library or another client vault without an explicit user-directed export or promotion.
+- Completion gate: registration stays disabled until save, close, reopen, resume and cross-client leakage tests pass.
+- Implementation status: REQUIRED, NOT YET IMPLEMENTED. This amendment authorizes the requirement but does not claim the folder or encryption exists.
