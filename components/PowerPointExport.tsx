@@ -21,13 +21,23 @@ const DECK_DRAFT_KEY = "maya_white_boardroom_deck_v1";
 const initialSlides: DeckSlide[] = [
   {
     id: 1,
-    title: "Decision",
-    body: "State the decision, recommendation, or campaign idea.",
+    title: "The opportunity",
+    body: "Define the audience need, market opening, or client challenge.",
   },
   {
     id: 2,
-    title: "Evidence",
-    body: "Add the facts, financial signals, market evidence, and executive findings.",
+    title: "Our recommendation",
+    body: "Present the solution, strategic idea, or proposed direction.",
+  },
+  {
+    id: 3,
+    title: "Why it will work",
+    body: "Add evidence, differentiation, financial logic, and executive findings.",
+  },
+  {
+    id: 4,
+    title: "The next move",
+    body: "State the decision, commitment, or action requested from the audience.",
   },
 ];
 
@@ -37,7 +47,7 @@ function safeFileName(value: string) {
 }
 
 export default function PowerPointExport() {
-  const [deckTitle, setDeckTitle] = useState("MAYA White Boardroom");
+  const [deckTitle, setDeckTitle] = useState("MAYA Pitch Deck");
   const [slides, setSlides] = useState<DeckSlide[]>(initialSlides);
   const [status, setStatus] = useState<"idle" | "saved" | "exporting" | "complete" | "error">("idle");
   const [sessions, setSessions] = useState<MayaSessionRecord[]>([]);
@@ -113,7 +123,7 @@ export default function PowerPointExport() {
   const saveDraft = () => {
     try {
       const draft: DeckDraft = {
-        title: deckTitle.trim() || "MAYA White Boardroom",
+        title: deckTitle.trim() || "MAYA Pitch Deck",
         slides,
         updatedAt: new Date().toISOString(),
       };
@@ -135,7 +145,7 @@ export default function PowerPointExport() {
       pptx.layout = "LAYOUT_WIDE";
       pptx.author = "MAYA";
       pptx.company = "RAIN";
-      pptx.subject = "White Boardroom export";
+      pptx.subject = "MAYA White Boardroom pitch deck";
       pptx.title = deckTitle.trim();
       pptx.theme = {
         headFontFace: "Aptos Display",
@@ -240,9 +250,9 @@ export default function PowerPointExport() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-black/40">
             Native presentation tool
           </p>
-          <h2 className="mt-1 text-xl font-semibold">PowerPoint Deck Builder</h2>
+          <h2 className="mt-1 text-xl font-semibold">Pitch Deck Builder</h2>
           <p className="mt-1 max-w-2xl text-sm text-black/55">
-            Turn selected White Boardroom notes into a PowerPoint file without leaving MAYA.
+            Shape MAYA executive intelligence, evidence, visuals, and recommendations into a persuasive PowerPoint pitch.
           </p>
         </div>
         <button
