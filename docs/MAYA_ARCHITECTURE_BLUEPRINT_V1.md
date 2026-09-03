@@ -853,3 +853,13 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Purchased content enters MAYA only through an explicit user import after the publisher authorizes and supplies the download.
 - Filing remains context-scoped: General Library when no client is foregrounded; encrypted client vault when a client is foregrounded.
 - A native MAYA marketplace/checkout is post-beta.
+
+### 2026-09-03 — PR #96 branch/main reconciliation
+
+- Trigger: Founder directed Ari to rectify the blocked PR #88 vault path.
+- Evidence: PR #88 remains closed and unmerged; PR #96 is the single active implementation lane. GitHub reported PR #96 diverged from `main` only in this living blueprint, while the unsafe server-readable Supabase files from PR #88 are absent.
+- Governance resolution: retain PR #88 only as a historical design record; preserve PR #96's newer Beta 1 checkpoint as active authority; preserve `main`'s verification record without reviving the obsolete checkpoint language.
+- Security boundary: Add/Register remains deliberately disabled. No client password, derived key, plaintext, vault record or administrative recovery path is introduced by this reconciliation.
+- Verification state carried forward from `main`: PARTIALLY VERIFIED — GitHub verification and preview checks completed for the original Pocket Desk foundation; browser/mobile capability and zero-access cryptography remain separate gates.
+- Result: blueprint histories reconciled semantically on the active PR. This does not claim the encrypted Client Vault itself is implemented.
+- Exact next action: prove the zero-access client-side encryption and recovery design in PR #96 before enabling Add/Register.
