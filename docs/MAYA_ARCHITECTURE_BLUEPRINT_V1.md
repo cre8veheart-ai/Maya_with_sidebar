@@ -107,6 +107,8 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - Unlocking one vault does not unlock any other vault.
 - The Pocket Desk may show multiple registered clients, but only the explicitly foregrounded, unlocked vault supplies client context to MAYA.
 - Every Client Vault contains a dedicated **Saved Work Sessions** folder. Each saved session record includes its client-vault ID, executive/room, date, title, transcript, decisions, recommendations, attachments and resumable checkpoint metadata inside that vault's encrypted boundary.
+- Every Client Vault also contains a dedicated encrypted **Agent Training** area for user-approved client-specific instructions, terminology, brand voice, examples, corrections, workflows, evaluation cases and feedback. MAYA may retrieve this material only while that vault is unlocked and foreground-selected.
+- Client Agent Training is retrieval-based client memory and configuration; it must not fine-tune or train a shared/foundation model, enter global MAYA behavior, or influence another client's agents. Adding, changing, promoting, exporting or deleting training material requires explicit user control and an audit record.
 - Every session created while a client vault is foregrounded is saved only to that client's **Saved Work Sessions** folder; it must never appear in General memory, the General Library or another client's vault unless the user explicitly exports or promotes an approved item.
 - Every Library item, White Boardroom artifact and approved work product created while a client vault is foregrounded is scoped to that vault.
 - Closing or signing out of a client vault checkpoints and files all in-scope MAYA work, including the active session, to that client's encrypted **Saved Work Sessions** folder before removing its context from MAYA.
@@ -874,3 +876,11 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Isolation rule: a client session may not enter General memory, the General Library or another client vault without an explicit user-directed export or promotion.
 - Completion gate: registration stays disabled until save, close, reopen, resume and cross-client leakage tests pass.
 - Implementation status: REQUIRED, NOT YET IMPLEMENTED. This amendment authorizes the requirement but does not claim the folder or encryption exists.
+
+### 2026-09-03 — Client-scoped Agent Training clarified
+
+- Trigger: Founder clarified that the vault must hold agent training, not event training.
+- Decision: each Client Vault requires an encrypted **Agent Training** area for approved client-specific instructions, examples, corrections, terminology, workflows, evaluation cases and feedback.
+- Boundary: retrieval/configuration only for the unlocked foreground client; no shared-model training, cross-client influence or silent promotion to General memory.
+- Human control: training additions, edits, exports, promotions and deletions require explicit user action and audit history.
+- Implementation status: REQUIRED, NOT YET IMPLEMENTED. Registration remains blocked until storage, retrieval, isolation and deletion tests pass.
