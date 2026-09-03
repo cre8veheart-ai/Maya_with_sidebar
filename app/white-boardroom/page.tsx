@@ -2,6 +2,7 @@ import Link from "next/link";
 import AdobeFontLibrary from "@/components/AdobeFontLibrary";
 import PageLayoutStudio from "@/components/PageLayoutStudio";
 import PowerPointExport from "@/components/PowerPointExport";
+import VisualWorkflowBar from "@/components/VisualWorkflowBar";
 
 const adobeTools = ["Photoshop", "Illustrator", "InDesign", "Acrobat Pro", "Premiere Pro", "After Effects"];
 const roomTools = [
@@ -17,6 +18,7 @@ export default function WhiteBoardroom() {
 
   return (
     <main className="min-h-screen bg-[#f7f7f4] text-[#171717]">
+      <VisualWorkflowBar workspaceLabel="General" />
       {adobeFontsProjectId && (
         <link
           rel="stylesheet"
@@ -47,7 +49,7 @@ export default function WhiteBoardroom() {
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-black/10 bg-[#171717] p-5 text-white">
+          <aside id="present" className="scroll-mt-24 rounded-2xl border border-black/10 bg-[#171717] p-5 text-white">
             <p className="text-xs uppercase tracking-[0.18em] text-white/45">Room controls</p>
             <div className="mt-4 grid gap-2">
               <a href="https://teams.microsoft.com/" target="_blank" rel="noreferrer" className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-black">Microsoft Teams · Meet ↗</a>
@@ -61,11 +63,11 @@ export default function WhiteBoardroom() {
           </aside>
         </section>
 
-        <section className="mt-4">
+        <section id="pitch-deck" className="mt-4 scroll-mt-24">
           <PowerPointExport />
         </section>
 
-        <section className="mt-4">
+        <section id="page-layout" className="mt-4 scroll-mt-24">
           <PageLayoutStudio />
         </section>
 
@@ -81,7 +83,7 @@ export default function WhiteBoardroom() {
           ))}
         </section>
 
-        <section className="mt-4 rounded-2xl border border-black/10 bg-white p-5">
+        <section id="visual-assets" className="mt-4 scroll-mt-24 rounded-2xl border border-black/10 bg-white p-5">
           <div className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-black/40">Adobe production lane</p><h2 className="mt-1 text-lg font-semibold">Creative Cloud tools</h2></div><Link href="/adobe" className="text-sm font-semibold">Open Adobe Studio →</Link></div>
           <div className="mt-4 flex flex-wrap gap-2">{adobeTools.map((tool) => <span key={tool} className="rounded-full border border-black/10 bg-[#f7f7f4] px-3 py-2 text-sm">{tool}</span>)}</div>
           <p className="mt-4 text-xs text-black/50">Adobe Express embedded editing and authenticated Adobe APIs require Adobe developer credentials/approval. The room is structured for that integration without storing credentials in the client page.</p>
