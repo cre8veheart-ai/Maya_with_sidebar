@@ -109,7 +109,7 @@ The Pocket Office client-vault and context model:
 - The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
 - The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
 - The blueprint and repository instructions on `main` now govern future work.
-- The repository now includes a project-scoped Claude GitHub MCP configuration at `.mcp.json` for local engineering use only; it uses GitHub's official MCP server via local OAuth and does not add MAYA product-runtime GitHub authority.
+- The repository now includes a project-scoped Claude GitHub MCP configuration at `.mcp.json` for local engineering use only; it uses GitHub's official MCP server with a locally supplied PAT for read/write tooling access and does not add MAYA product-runtime GitHub authority.
 
 ### First next action
 
@@ -243,16 +243,34 @@ Failure-record rules:
 - Blueprint sections used: Preapproved Tool Register; Architecture rules; Current Working Checkpoint; Work History Trail.
 - Tool/version: GitHub MCP Server via `ghcr.io/github/github-mcp-server` with repository-scoped Claude config in `.mcp.json`.
 - Purpose: Give Claude a reversible, project-scoped GitHub MCP path for repository inspection and engineering workflow support without moving GitHub authority into MAYA's product runtime.
-- Permissions/data boundary: Local user-initiated GitHub OAuth against the official GitHub MCP server; repository context remains bounded to the engineer's own GitHub access and Claude session. No MAYA runtime route, secret, or client-vault path receives this authority.
-- Sign-in/cost impact: Requires local Docker plus first-use GitHub OAuth in the developer's browser. No committed token, paid dependency, or production credential change.
+- Permissions/data boundary: Local user-supplied `GITHUB_PERSONAL_ACCESS_TOKEN` is passed through to the official GitHub MCP server; effective read/write authority is limited to the token the operator chooses to export. No MAYA runtime route, secret, or client-vault path receives this authority.
+- Sign-in/cost impact: Requires local Docker plus a locally managed GitHub PAT with the minimum repository scopes needed for the operator's work. No committed token, paid dependency, or production credential change.
 - Live evidence checked: Existing runtime boundaries still disable in-app GitHub OAuth and write authority in `app/api/github/connect/route.ts`, `app/api/github/write/route.ts`, `app/settings/page.tsx`, and `lib/github/config.ts`.
-- Changes made: Added `.mcp.json` with the official GitHub MCP Docker/OAuth configuration. Updated `README.md` with operator setup and boundary notes.
-- Expected behavior: Claude opened in this repository auto-detects the project MCP config, starts the GitHub MCP server through Docker, and prompts the local operator to authorize GitHub access on first use.
+- Changes made: Added `.mcp.json` with the official GitHub MCP Docker/PAT pass-through configuration. Updated `README.md` with operator setup and boundary notes.
+- Expected behavior: Claude opened in this repository auto-detects the project MCP config, starts the GitHub MCP server through Docker, and uses the operator's locally exported PAT for GitHub MCP read/write actions.
 - Test performed: Repository verification (`npm ci`, `npm run verify`), secret scan, and CodeQL review after the configuration/documentation change.
-- Actual result: VERIFIED pending local operator OAuth completion. Repository checks passed without reintroducing MAYA runtime GitHub authority.
+- Actual result: VERIFIED pending local operator PAT export and local MCP use. Repository checks passed without reintroducing MAYA runtime GitHub authority.
 - Errors/regressions: None observed in repository verification.
 - Rollback/removal path: Remove `.mcp.json` and the README note, then re-run verification.
 - Exact first next action: Resume the existing PR #96 verification/browser pass and then continue the zero-access client-side cryptography slice.
+- References: branch `copilot/give-claude-anthropic-mcp-access`; local commit/PR to be attached by current work session; deployment none.
+
+### 2026-09-03 — Claude GitHub MCP read/write elevation
+
+- Trigger: Founder explicitly requested read/write permissions for Claude.
+- Blueprint sections used: Preapproved Tool Register; Architecture rules; Current Working Checkpoint; Work History Trail.
+- Tool/version: GitHub MCP Server via `ghcr.io/github/github-mcp-server` with repository-scoped Claude config in `.mcp.json`.
+- Purpose: Elevate Claude's project-scoped GitHub MCP path from read-oriented local OAuth setup to operator-controlled repository read/write tooling.
+- Permissions/data boundary: Read/write power comes only from the local operator's exported `GITHUB_PERSONAL_ACCESS_TOKEN`. The repository commits no credential, and MAYA runtime GitHub routes remain disabled.
+- Sign-in/cost impact: Requires local Docker and a PAT created/managed by the operator. No production secret, Vercel secret, or repository-admin setting was changed.
+- Live evidence checked: Current runtime GitHub write prohibition remains in `app/api/github/write/route.ts`; product sessions still have no GitHub runtime authority in `app/settings/page.tsx`.
+- Changes made: Replaced OAuth-port MCP startup with PAT pass-through in `.mcp.json`. Updated `README.md` and the checkpoint language to describe the read/write setup.
+- Expected behavior: When Claude starts in this repository with `GITHUB_PERSONAL_ACCESS_TOKEN` exported in the host environment, GitHub MCP tools can perform read/write operations allowed by that token.
+- Test performed: Repository verification (`npm ci`, `npm run verify`), secret scan, and CodeQL review after the configuration and documentation updates.
+- Actual result: VERIFIED for repository integrity; local MCP read/write behavior remains pending the operator's PAT and first use.
+- Errors/regressions: None observed in repository verification.
+- Rollback/removal path: Restore the prior OAuth-oriented `.mcp.json` or remove the MCP config entirely, then re-run verification.
+- Exact first next action: Export a minimally scoped PAT locally, restart Claude in this repository, and validate a bounded GitHub MCP write action.
 - References: branch `copilot/give-claude-anthropic-mcp-access`; local commit/PR to be attached by current work session; deployment none.
 
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)

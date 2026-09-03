@@ -53,16 +53,24 @@ npm run lint
 This repository now includes a project-scoped Claude MCP configuration in `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/.mcp.json`.
 
 - It uses the official `ghcr.io/github/github-mcp-server` Docker image.
-- It uses local OAuth on port `8085`, so no GitHub token is committed to the repository.
+- It passes through a locally exported `GITHUB_PERSONAL_ACCESS_TOKEN`, so Claude can use GitHub read/write MCP tools without committing a token to the repository.
 - It affects Claude engineering tooling only; MAYA product runtime GitHub authority remains disabled.
 
 To use it:
 
 1. Install Docker and make sure it is running.
-2. Open Claude in this repository.
-3. Restart Claude so it loads the project MCP servers.
-4. Trigger the GitHub MCP server and complete the browser OAuth flow on first use.
-5. Run `claude mcp list` if you want to confirm the server is available.
+2. Create a GitHub token with the minimum repository permissions Claude needs for your work. For repository write tasks, that usually means repository contents read/write and pull requests read/write for this repository.
+3. Export the token before launching Claude:
+
+   ```bash
+   export GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PAT
+   ```
+
+4. Open Claude in this repository.
+5. Restart Claude so it loads the project MCP servers.
+6. Run `claude mcp list` if you want to confirm the server is available.
+
+The token stays local to your machine. It is not stored in the repository or exposed to MAYA's product runtime.
 
 ## Current beta limitations
 
