@@ -22,7 +22,7 @@ export default function VisualWorkflowBar({
       aria-label="Vault visual workflow"
     >
       {open ? (
-        <nav className="w-64 overflow-hidden rounded-2xl border border-black/15 bg-[#171717] text-white shadow-2xl">
+        <nav id="vault-visual-workflow" className="w-64 overflow-hidden rounded-2xl border border-black/15 bg-[#171717] text-white shadow-2xl">
           <div className="border-b border-white/10 px-4 py-3">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">
               Vault visual workflow
