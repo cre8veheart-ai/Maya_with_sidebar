@@ -884,3 +884,15 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Boundary: retrieval/configuration only for the unlocked foreground client; no shared-model training, cross-client influence or silent promotion to General memory.
 - Human control: training additions, edits, exports, promotions and deletions require explicit user action and audit history.
 - Implementation status: REQUIRED, NOT YET IMPLEMENTED. Registration remains blocked until storage, retrieval, isolation and deletion tests pass.
+
+### 2026-09-03 — Sidebar breadth-before-polish amendment
+
+- Trigger: Founder directed the build toward making every visible MAYA menu item work at a basic level so the live sidebar experience can be evaluated before deeper behavioral tuning.
+- Scope amendment: supersedes the Beta 1 rule that froze all non-core menu work. Existing menu items may now receive the smallest honest functional slice needed for experience testing; this does not authorize new paid services, credentials, client-data exposure or weakened vault boundaries.
+- Minimum functional rule: a menu item is not “working” merely because its route renders. It must accept, retrieve, create, transform, organize or clearly route real user-controlled information and display truthful success, empty and failure states.
+- Sequence: audit visible sidebar items; repair decorative or misleading shells one at a time in PR #96; verify each in the live preview on desktop and mobile; then refine behavior from observed use.
+- First slice: replaced the decorative Search page with local search across non-seed saved sessions, vault clips and work items. Client-vault search remains blocked until encrypted foreground-vault retrieval is implemented.
+- Security and truthfulness: demo/seed sessions are excluded from Search; no client plaintext, key or password path was introduced.
+- Implementation commit: `9adbae0b08a13bbe9ea19c14953865dce5d84880`.
+- Verification status: CODED, LIVE PREVIEW PENDING. A successful build alone will not establish usable search behavior.
+- Exact next action: open the PR #96 preview, exercise the sidebar and Search on desktop/mobile, record findings, then repair the next smallest nonfunctional menu item.
