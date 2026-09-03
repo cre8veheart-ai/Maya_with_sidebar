@@ -49,7 +49,7 @@ function safeFileName(value: string) {
 export default function PowerPointExport() {
   const [deckTitle, setDeckTitle] = useState("MAYA Pitch Deck");
   const [slides, setSlides] = useState<DeckSlide[]>(initialSlides);
-  const [status, setStatus] = useState<"idle" | "saved" | "exporting" | "complete" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "saved" | "copied" | "pasted" | "printing" | "exporting" | "complete" | "error">("idle");
   const [sessions, setSessions] = useState<MayaSessionRecord[]>([]);
 
   useEffect(() => {
@@ -98,6 +98,54 @@ export default function PowerPointExport() {
 
   const removeSlide = (id: number) => {
     setSlides((current) => (current.length === 1 ? current : current.filter((slide) => slide.id !== id)));
+  };
+
+  const duplicateSlide = (id: number) => {
+    setSlides((current) => {
+      const source = current.find((slide) => slide.id === id);
+      if (!source) return current;
+      const nextId = Math.max(0, ...current.map((slide) => slide.id)) + 1;
+      const sourceIndex = current.findIndex((slide) => slide.id === id);
+      const next = [...current];
+      next.splice(sourceIndex + 1, 0, { ...source, id: nextId });
+      return next;
+    });
+    setStatus("idle");
+  };
+
+  const copySlide = async (slide: DeckSlide) => {
+    try {
+      await navigator.clipboard.writeText(`${slide.title}\n\n${slide.body}`.trim());
+      setStatus("copied");
+    } catch (error) {
+      console.error("Slide copy failed", error);
+      setStatus("error");
+    }
+  };
+
+  const pasteAsSlide = async () => {
+    try {
+      const pasted = (await navigator.clipboard.readText()).trim();
+      if (!pasted) return;
+      const [firstLine, ...remaining] = pasted.split(/\r?\n/);
+      setSlides((current) => [
+        ...current,
+        {
+          id: Math.max(0, ...current.map((slide) => slide.id)) + 1,
+          title: firstLine.slice(0, 120) || `Slide ${current.length + 1}`,
+          body: remaining.join("\n").trim(),
+        },
+      ]);
+      setStatus("pasted");
+    } catch (error) {
+      console.error("Slide paste failed", error);
+      setStatus("error");
+    }
+  };
+
+  const printDeck = () => {
+    setStatus("printing");
+    window.print();
   };
 
   const addSessionToDeck = (session: MayaSessionRecord) => {
@@ -255,14 +303,30 @@ export default function PowerPointExport() {
             Shape MAYA executive intelligence, evidence, visuals, and recommendations into a persuasive PowerPoint pitch.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={exportDeck}
-          disabled={!hasContent || status === "exporting"}
-          className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {status === "exporting" ? "Building PowerPoint…" : "Download .pptx"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={pasteAsSlide}
+            className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm font-semibold"
+          >
+            Paste as slide
+          </button>
+          <button
+            type="button"
+            onClick={printDeck}
+            className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm font-semibold"
+          >
+            Print / Save PDF
+          </button>
+          <button
+            type="button"
+            onClick={exportDeck}
+            disabled={!hasContent || status === "exporting"}
+            className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {status === "exporting" ? "Building PowerPoint…" : "Download .pptx"}
+          </button>
+        </div>
       </div>
 
       <section className="mt-5 rounded-xl border border-black/10 bg-[#f7f7f4] p-4">
@@ -324,14 +388,30 @@ export default function PowerPointExport() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/40">
                 Slide {index + 1}
               </span>
-              <button
-                type="button"
-                onClick={() => removeSlide(slide.id)}
-                disabled={slides.length === 1}
-                className="text-xs font-medium text-black/50 disabled:opacity-30"
-              >
-                Remove
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => copySlide(slide)}
+                  className="text-xs font-medium text-black/50"
+                >
+                  Copy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => duplicateSlide(slide.id)}
+                  className="text-xs font-medium text-black/50"
+                >
+                  Duplicate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeSlide(slide.id)}
+                  disabled={slides.length === 1}
+                  className="text-xs font-medium text-black/50 disabled:opacity-30"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
             <input
               value={slide.title}
@@ -368,6 +448,9 @@ export default function PowerPointExport() {
         <p className="text-xs text-black/50" role="status">
           {status === "complete" && "PowerPoint downloaded."}
           {status === "saved" && "Deck draft saved in this General workspace browser."}
+          {status === "copied" && "Slide text copied."}
+          {status === "pasted" && "Clipboard text added as a new slide."}
+          {status === "printing" && "Print dialog opened; choose Save as PDF for a PDF copy."}
           {status === "error" && "PowerPoint could not be generated. Your board content is unchanged."}
           {status === "idle" && "Exports locally in your browser; no Microsoft sign-in required."}
         </p>
