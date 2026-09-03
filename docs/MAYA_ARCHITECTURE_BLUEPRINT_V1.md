@@ -117,8 +117,9 @@ A finishable MAYA Beta 1 with exactly these product capabilities:
 - The Library may launch with no user publications or saved executive sessions.
 - The only built-in Library document is the **MAYA Operating Manual**.
 - Seeded/demo briefs, reports, sessions and publications must not be presented as the beta user’s real content.
-- A beta user may register links to publication subscriptions for convenient access; MAYA never stores publisher passwords, payment details or session credentials and never bypasses publisher access controls.
-- A beta user may deliberately import publications they have downloaded and are authorized to retain.
+- The Library includes a publication-purchase entry point. Selecting **Buy** sends the user to the publisher’s hosted checkout; MAYA does not act as merchant of record in Beta 1.
+- After publisher checkout, the beta user deliberately imports the purchased PDF or EPUB they are authorized to retain.
+- MAYA never stores publisher passwords, payment-card details or publisher session credentials and never bypasses publisher access controls.
 - Publications added in General mode file to the user’s General Library. Publications added while a client vault is foregrounded file only to that encrypted client vault.
 - Import, filing, download/export and deletion remain explicit human-controlled actions with clear success or failure states.
 - Supported Beta publication formats are PDF and EPUB; other formats are deferred unless already supported safely by the existing stack.
@@ -842,3 +843,13 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Removed product authority for fake seeded Library content. Subscription passwords, payment data and publisher sessions must not be stored by MAYA or used to bypass access controls.
 - Filing rule: General imports remain in the user Library; imports under a foreground client belong only to that client’s encrypted vault.
 - Current implementation status: CONTRADICTED. The Saved Files screen still shows demo seed documents and a non-functional upload affordance; it must be replaced before Beta completion.
+
+
+### 2026-09-03 — Publication purchase model clarified
+
+- Corrects the earlier Beta Library wording that described only subscription access.
+- Founder selected **Publisher checkout** for Beta 1.
+- MAYA may present publication discovery/purchase entry points inside the Library, but **Buy** transfers the user to the publisher-hosted checkout. MAYA is not merchant of record and does not process payment, tax, refunds or publisher credentials.
+- Purchased content enters MAYA only through an explicit user import after the publisher authorizes and supplies the download.
+- Filing remains context-scoped: General Library when no client is foregrounded; encrypted client vault when a client is foregrounded.
+- A native MAYA marketplace/checkout is post-beta.
