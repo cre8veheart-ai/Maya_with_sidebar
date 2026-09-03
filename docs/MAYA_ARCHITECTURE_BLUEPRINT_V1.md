@@ -83,7 +83,7 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-02 UTC
+Last updated: 2026-09-03 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
@@ -109,6 +109,7 @@ The Pocket Office client-vault and context model:
 - The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
 - The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
 - The blueprint and repository instructions on `main` now govern future work.
+- The repository now includes a project-scoped Claude GitHub MCP configuration at `.mcp.json` for local engineering use only; it uses GitHub's official MCP server via local OAuth and does not add MAYA product-runtime GitHub authority.
 
 ### First next action
 
@@ -235,6 +236,24 @@ Failure-record rules:
 - Rollback: close PR #96 without merge; no production or client data is affected.
 - Exact next action: verify PR #96 CI, preview and mobile/desktop browser behavior; fix any failure in the same PR; then design/test zero-access client-side cryptography before enabling registration.
 - References: PR #88; branch `maya-supabase-session-vaults`; PR #96; branch `maya-pocket-desk-context-v1`; head `124d9847d48b3b724408de6a5a479b13a2d4de47`.
+
+### 2026-09-03 — Claude GitHub MCP project access
+
+- Trigger: Founder asked to give Claude/Anthropic MCP access to GitHub for this repository.
+- Blueprint sections used: Preapproved Tool Register; Architecture rules; Current Working Checkpoint; Work History Trail.
+- Tool/version: GitHub MCP Server via `ghcr.io/github/github-mcp-server` with repository-scoped Claude config in `.mcp.json`.
+- Purpose: Give Claude a reversible, project-scoped GitHub MCP path for repository inspection and engineering workflow support without moving GitHub authority into MAYA's product runtime.
+- Permissions/data boundary: Local user-initiated GitHub OAuth against the official GitHub MCP server; repository context remains bounded to the engineer's own GitHub access and Claude session. No MAYA runtime route, secret, or client-vault path receives this authority.
+- Sign-in/cost impact: Requires local Docker plus first-use GitHub OAuth in the developer's browser. No committed token, paid dependency, or production credential change.
+- Live evidence checked: Existing runtime boundaries still disable in-app GitHub OAuth and write authority in `app/api/github/connect/route.ts`, `app/api/github/write/route.ts`, `app/settings/page.tsx`, and `lib/github/config.ts`.
+- Changes made: Added `.mcp.json` with the official GitHub MCP Docker/OAuth configuration. Updated `README.md` with operator setup and boundary notes.
+- Expected behavior: Claude opened in this repository auto-detects the project MCP config, starts the GitHub MCP server through Docker, and prompts the local operator to authorize GitHub access on first use.
+- Test performed: Repository verification (`npm ci`, `npm run verify`), secret scan, and CodeQL review after the configuration/documentation change.
+- Actual result: VERIFIED pending local operator OAuth completion. Repository checks passed without reintroducing MAYA runtime GitHub authority.
+- Errors/regressions: None observed in repository verification.
+- Rollback/removal path: Remove `.mcp.json` and the README note, then re-run verification.
+- Exact first next action: Resume the existing PR #96 verification/browser pass and then continue the zero-access client-side cryptography slice.
+- References: branch `copilot/give-claude-anthropic-mcp-access`; local commit/PR to be attached by current work session; deployment none.
 
 ### Historical Build Backfill — PR #9 forward (recorded 2026-09-02)
 
