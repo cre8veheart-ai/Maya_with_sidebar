@@ -887,12 +887,20 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 
 ### 2026-09-03 — Sidebar breadth-before-polish amendment
 
-- Trigger: Founder directed the build toward making every visible MAYA menu item work at a basic level so the live sidebar experience can be evaluated before deeper behavioral tuning.
-- Scope amendment: supersedes the Beta 1 rule that froze all non-core menu work. Existing menu items may now receive the smallest honest functional slice needed for experience testing; this does not authorize new paid services, credentials, client-data exposure or weakened vault boundaries.
+- Trigger: Founder directed the build toward making every visible MAYA menu item work so the complete live sidebar experience can be used and evaluated.
+- Scope amendment: supersedes the Beta 1 rule that froze non-core menu work. Every visible menu item is now an authorized build target; this does not authorize new paid services, credentials, client-data exposure or weakened vault boundaries.
+- Executive protection: this expansion must not reduce, simplify, freeze or defer the performance, role fidelity, memory, reliability or behavioral refinement of MAYA’s executives. Executives and menu capabilities advance together.
 - Minimum functional rule: a menu item is not “working” merely because its route renders. It must accept, retrieve, create, transform, organize or clearly route real user-controlled information and display truthful success, empty and failure states.
-- Sequence: audit visible sidebar items; repair decorative or misleading shells one at a time in PR #96; verify each in the live preview on desktop and mobile; then refine behavior from observed use.
+- Sequence: audit visible sidebar items; build decorative or incomplete surfaces into honest working capabilities in PR #96; verify each in the live preview on desktop and mobile; refine both executive behavior and menu experience from observed use.
 - First slice: replaced the decorative Search page with local search across non-seed saved sessions, vault clips and work items. Client-vault search remains blocked until encrypted foreground-vault retrieval is implemented.
 - Security and truthfulness: demo/seed sessions are excluded from Search; no client plaintext, key or password path was introduced.
 - Implementation commit: `9adbae0b08a13bbe9ea19c14953865dce5d84880`.
 - Verification status: CODED, LIVE PREVIEW PENDING. A successful build alone will not establish usable search behavior.
 - Exact next action: open the PR #96 preview, exercise the sidebar and Search on desktop/mobile, record findings, then repair the next smallest nonfunctional menu item.
+
+### 2026-09-03 — Executive performance protected during full-menu build
+
+- Founder correction: building every menu item must not reduce executive performance or postpone executive behavioral refinement.
+- Active direction: preserve and improve the executives while building every sidebar item into a functional capability, starting with the smallest honest version where a surface is currently empty.
+- The phrase “breadth before polish” is superseded because it could imply reduced executive quality. The governing model is **complete working office plus continuously improving executives**.
+- Search implementation commit `9adbae0b` remains valid because it adds a missing menu capability and changes no executive prompt, model, role lens or response path.
