@@ -29,10 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
-      id-token: write
       actions: read
     steps:
       - name: Checkout MAYA
@@ -44,6 +43,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           claude_args: |
             --max-turns 25
-            --system-prompt "Read AGENTS.md, continuity/LESLIE_ARI_CONTEXT.md, CLAUDE.md, and docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md before acting. Work only on a feature or fix branch and open or update a pull request. Never push directly to main, merge, deploy production, change repository settings, expose secrets, or weaken tests. Run npm ci and npm run verify before reporting completion. Do not use Copilot branches or copied substitute implementations as architectural authority."
+            --system-prompt "Read AGENTS.md, continuity/LESLIE_ARI_CONTEXT.md, CLAUDE.md, and docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md before acting. This initial activation is review-only: inspect and comment, but do not modify repository files or create commits. Never push, merge, deploy production, change repository settings, expose secrets, or weaken tests. Run npm ci and npm run verify before reporting completion. Do not use Copilot branches or copied substitute implementations as architectural authority."
