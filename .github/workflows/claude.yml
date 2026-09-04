@@ -1,0 +1,49 @@
+name: MAYA Governed Claude
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  issues:
+    types: [opened, assigned]
+
+concurrency:
+  group: maya-claude-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    name: Governed Claude worker
+    if: |
+      github.actor == 'cre8veheart-ai' &&
+      github.actor != 'claude[bot]' &&
+      (
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout MAYA
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude under MAYA governance
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 25
+            --system-prompt "Read AGENTS.md, continuity/LESLIE_ARI_CONTEXT.md, CLAUDE.md, and docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md before acting. Work only on a feature or fix branch and open or update a pull request. Never push directly to main, merge, deploy production, change repository settings, expose secrets, or weaken tests. Run npm ci and npm run verify before reporting completion. Do not use Copilot branches or copied substitute implementations as architectural authority."
