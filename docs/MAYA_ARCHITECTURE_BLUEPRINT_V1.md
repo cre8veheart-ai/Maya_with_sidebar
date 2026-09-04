@@ -726,3 +726,26 @@ At each gate: present viable options, consequences, recommendation, then choose 
 Stable Core -> Modular Capabilities -> Shared Services -> Controlled Connections -> One Source of Truth
 
 Maya should feel like one seamless Pocket Office while remaining modular, testable, secure and replaceable under the hood.
+
+## 14. Governed External Coding Assistance
+
+Founder decision — 2026-09-04:
+
+- Codex/Ari remains MAYA's primary repository-control and architectural orchestration path.
+- Claude may provide additional engineering help through the existing secured MCP service or the official Anthropic GitHub Action.
+- Claude work is branch-and-pull-request only. Claude may not push to `main`, merge, change repository or Vercel permissions, handle production secrets, or promote production deployments.
+- Claude-triggered repository work is limited to the Founder GitHub identity and must load `AGENTS.md`, founder continuity, `CLAUDE.md`, and this blueprint before substantive work.
+- Claude changes must extend canonical MAYA components, objects, adapters, and services. Parallel Claude-specific implementations and substitute copies are prohibited.
+- Copilot is not an implementation dependency or architectural authority. Unauthorized `copilot/*` branches remain subject to the existing branch-lifecycle rejection rule.
+- Vercel preview deployments may be created from Claude pull-request branches through MAYA's existing canonical Vercel project. Production remains `main` only and requires human approval plus required verification.
+- The deployed Claude MCP service is preserved. It must remain separately authenticated and may be rebuilt only if verification proves the current service unsafe or nonfunctional.
+
+### Work History Trail — 2026-09-04 governed Claude access
+
+- Evidence: current `main` at `8493459c5e09287859b06703a08769502989f529` has an unprotected branch, an existing full-verification workflow, Vercel preview/production workflows, and a branch-lifecycle rule rejecting `copilot/*` branches.
+- Change: created `feature/governed-claude-access`; added `.github/workflows/claude.yml` and `CLAUDE.md`.
+- Result: VERIFIED that both files coexist on branch commit `bc7c5247a6dac12625b683ecab11fa2c5e002834`. Runtime Claude invocation remains UNVERIFIED until the workflow is merged to the default branch and a Founder-authored `@claude` test is executed.
+- Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
+- Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
+- Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
+
