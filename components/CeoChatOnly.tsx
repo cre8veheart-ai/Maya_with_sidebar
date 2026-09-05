@@ -177,7 +177,7 @@ export default function CeoChatOnly() {
     <main className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8" aria-labelledby="ceo-title">
       <section className="w-full max-w-2xl -translate-y-[8vh]">
         <div className="mb-5 text-center">
-          <h1 id="ceo-title" className="text-3xl font-semibold text-[#cdd6f4]">CEO</h1>
+          <h1 id="ceo-title" className="text-3xl font-semibold text-[#cdd6f4]">Max · CEO</h1>
           <p className="mt-1 text-sm text-[#7f849c]">Executive decision workspace</p>
         </div>
 
@@ -193,7 +193,7 @@ export default function CeoChatOnly() {
         )}
 
         <form onSubmit={send} className="flex gap-2 items-end" aria-busy={streaming}>
-          <label className="sr-only" htmlFor="ceo-prompt">Message your CEO</label>
+          <label className="sr-only" htmlFor="ceo-prompt">Message Max · CEO</label>
           <textarea
             id="ceo-prompt"
             value={input}
@@ -201,7 +201,7 @@ export default function CeoChatOnly() {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) send(e);
             }}
-            placeholder="Talk to your CEO…"
+            placeholder="Talk to Max · CEO…"
             rows={3}
             disabled={streaming}
             className="flex-1 min-h-[88px] max-h-44 resize-none rounded-xl border border-[#45475a] bg-[#313244] px-4 py-3 text-[15px] text-[#cdd6f4] placeholder-[#6c7086] focus:outline-none focus:border-[#89b4fa] disabled:opacity-50"
