@@ -185,6 +185,20 @@ When **DIH EVENT MAYA** is invoked:
 ## Work History Trail
 
 
+### 2026-09-02 — PR #88 retired; PR #96 Pocket Desk foundation opened
+
+- Trigger: Founder directed the MAYA build to proceed.
+- Blueprint sections used: Current Working Checkpoint; Client Vaults; Core Menu; Permission Rules; Preapproved Tool Register.
+- Live evidence: PR #88 was open, `mergeable: false`, `mergeable_state: dirty`, based on stale main, and contained the contradicted server-readable Supabase path.
+- Change: Closed PR #88 without merge and labelled it a blocked design record. Created `maya-pocket-desk-context-v1` from current `main` and opened PR #96.
+- PR #96 implementation: added a visible `Workspace: General` Pocket Desk control above all tools, an explicit no-client-context state and a Client Workspaces page.
+- Security containment: Add/Register remains disabled; no password, key, client record, local fake vault, database table or storage path was introduced.
+- Result: PARTIALLY VERIFIED. GitHub `npm run verify`, preview workflow and Vercel Preview Comments all completed successfully for head `124d9847`; browser/mobile capability verification remains pending.
+- Failure/reversal record: PR #88 could not be safely reconciled as implementation because it was dirty and architecturally contradicted; replacement-from-main was chosen rather than preserving the unsafe path.
+- Rollback: close PR #96 without merge; no production or client data is affected.
+- Exact next action: verify PR #96 CI, preview and mobile/desktop browser behavior; fix any failure in the same PR; then design/test zero-access client-side cryptography before enabling registration.
+- References: PR #88; branch `maya-supabase-session-vaults`; PR #96; branch `maya-pocket-desk-context-v1`; head `124d9847d48b3b724408de6a5a479b13a2d4de47`.
+
 ### 2026-09-02 — PowerPoint export implementation attempt and recovery
 
 - Tool adopted: `pptxgenjs@4.0.1`, a reversible open-source browser-side generator.
@@ -904,3 +918,13 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 - Active direction: preserve and improve the executives while building every sidebar item into a functional capability, starting with the smallest honest version where a surface is currently empty.
 - The phrase “breadth before polish” is superseded because it could imply reduced executive quality. The governing model is **complete working office plus continuously improving executives**.
 - Search implementation commit `9adbae0b` remains valid because it adds a missing menu capability and changes no executive prompt, model, role lens or response path.
+
+### 2026-09-05 — PR #96 reconciled with current main
+
+- Trigger: Founder directed Ari to continue the MAYA build without Claude.
+- Live evidence: PR #96 was 31 commits ahead and two commits behind `main`; GitHub reported it unmergeable. The only overlapping file was this living blueprint.
+- Resolution: preserved the newer Beta 1 checkpoint and all PR #96 product decisions, restored the missing PR #88 retirement history from `main`, and reconciled `main` through an explicit two-parent merge commit.
+- Containment: PR #96 remains Draft. No production deployment, merge to `main`, secret, permission, client registration, vault storage, or plaintext path is introduced.
+- Verification gate: GitHub must report the PR mergeable, CI/build checks must pass, and the live preview must be exercised on desktop and mobile before the PR can leave Draft.
+- Exact next action: run repository checks for the reconciled head, inspect failures, then test the PR preview’s sidebar, Search, executives and White Boardroom.
+
