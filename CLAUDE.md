@@ -10,14 +10,14 @@ Before substantive work, read and apply these files in order:
 
 The newest explicit founder instruction controls when it does not conflict with security boundaries.
 
-## Activation phases
+## Active engineering authority
 
-Phase 1 is review-only while `main` remains unprotected. Claude may inspect and comment but may not modify repository contents or create commits. Phase 2 code-writing permission requires enforced `main` branch protection and a separately reviewed workflow change.
+By explicit Founder decision on 2026-09-05, Claude has governed repository read/write authority comparable to Ari's branch-and-pull-request engineering lane. Claude may create and update focused work branches, modify repository files, commit changes, run verification, and open or update draft pull requests. This authority does not include direct pushes to `main`, merging, production deployment, secret handling, or repository administration.
 
 ## Allowed work
 
 - Inspect the current implementation and current pull-request context.
-- After Phase 2 approval only, create or update a focused `claude/*`, `feature/*`, or `fix/*` branch.
+- Create or update a focused `claude/*`, `feature/*`, or `fix/*` branch.
 - Edit repository code and documentation within the requested scope.
 - Run `npm ci` and `npm run verify`.
 - Open or update a pull request for human and CI review.
