@@ -727,18 +727,24 @@ Stable Core -> Modular Capabilities -> Shared Services -> Controlled Connections
 
 Maya should feel like one seamless Pocket Office while remaining modular, testable, secure and replaceable under the hood.
 
-## 14. Governed External Coding Assistance
+## 14. Claude Engineering Access
 
-Founder decision — 2026-09-04:
+Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude policy):
 
-- Codex/Ari remains MAYA's primary repository-control and architectural orchestration path.
-- Claude may provide additional engineering help through the existing secured MCP service or the official Anthropic GitHub Action.
-- Claude work is branch-and-pull-request only. Claude may not push to `main`, merge, change repository or Vercel permissions, handle production secrets, or promote production deployments.
-- Claude-triggered repository work is limited to the Founder GitHub identity and must load `AGENTS.md`, founder continuity, `CLAUDE.md`, and this blueprint before substantive work.
-- Claude changes must extend canonical MAYA components, objects, adapters, and services. Parallel Claude-specific implementations and substitute copies are prohibited.
-- Copilot is not an implementation dependency or architectural authority. Unauthorized `copilot/*` branches remain subject to the existing branch-lifecycle rejection rule.
-- Vercel preview deployments may be created from Claude pull-request branches through MAYA's existing canonical Vercel project. Production remains `main` only and requires human approval plus required verification.
-- The deployed Claude MCP service is preserved. It must remain separately authenticated and may be rebuilt only if verification proves the current service unsafe or nonfunctional.
+- Claude uses Anthropic's standard Claude Code GitHub Action behavior and normal working tools.
+- Claude has repository contents, issues and pull-request read/write authority through the installed GitHub integration and may inspect code, edit files, run commands and tests, create commits and branches, open or update pull requests, and inspect CI.
+- No repository instruction may silently reduce Claude to review-only mode or substitute a custom restricted tool profile for Anthropic defaults.
+- The official Vercel MCP connection is available to Claude project sessions. Each Claude environment must complete Vercel OAuth when first prompted; credentials are never committed to the repository.
+- Claude-created branches and pull requests may trigger preview builds through the canonical GitHub-to-Vercel integration.
+- Granted technical permission and authorization to use it are separate: Claude may merge, promote production, change settings or manage permissions when the Founder explicitly directs that action.
+- Standard engineering safeguards remain: do not expose secrets, do not copy client-vault plaintext into engineering context, report failures accurately, and preserve one canonical repository and deployment path.
+
+### Work History Trail — 2026-09-05 Claude access restoration
+
+- Founder authorization: remove the Claude-specific restrictions and restore Anthropic-default working capabilities across MAYA sessions and builds.
+- Changes: replaced the review-only Claude workflow with Anthropic's standard write-enabled workflow; removed the restrictive `CLAUDE.md`; restored GitHub OAuth repository/workflow scopes and the runtime write endpoint; added the official Vercel MCP project connection.
+- Verification target: full repository verification, Claude `@claude` branch/PR test, and a Vercel preview build from that branch.
+- Remaining external step: a Claude environment may require a one-time Vercel OAuth approval before direct Vercel MCP tools appear. This is an external account authorization, not a repository restriction.
 
 ### Work History Trail — 2026-09-04 governed Claude access
 
