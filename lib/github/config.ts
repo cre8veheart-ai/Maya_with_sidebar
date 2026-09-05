@@ -3,10 +3,9 @@ import type { GitHubPermissions, GitHubRepoConfig } from "./types";
 export const GITHUB_SESSION_COOKIE = "maya_github_session";
 export const GITHUB_OAUTH_STATE_COOKIE = "maya_github_oauth_state";
 
-// MAYA app-level GitHub OAuth is intentionally read-minimal. Repository writes
-// are performed only through externally governed engineering tooling, never by
-// the running product.
-export const DEFAULT_GITHUB_SCOPES = ["read:user", "user:email"];
+// Standard GitHub OAuth access for MAYA engineering work. Runtime operations
+// remain limited to repositories in GITHUB_ALLOWED_REPOS.
+export const DEFAULT_GITHUB_SCOPES = ["read:user", "user:email", "repo", "workflow"];
 
 function clean(raw: unknown, maxLen: number, pattern: RegExp): string {
   if (typeof raw !== "string") return "";
@@ -51,17 +50,20 @@ export function sanitizeRepoConfig(raw: unknown): GitHubRepoConfig | null {
 export function getRequestedScopes(): string[] {
   const raw = process.env.GITHUB_OAUTH_SCOPES?.trim();
   if (!raw) return DEFAULT_GITHUB_SCOPES;
-  const requested = raw.split(/[,\s]+/).map((scope) => scope.trim()).filter(Boolean);
-  // Product OAuth must never request repository or workflow write-capable scopes.
-  return requested.filter((scope) => !["repo", "public_repo", "workflow"].includes(scope));
+  return raw.split(/[,\s]+/).map((scope) => scope.trim()).filter(Boolean);
 }
 
 export function getGitHubPermissions(scopes: string[]): GitHubPermissions {
   const normalized = new Set(scopes.map((scope) => scope.trim()).filter(Boolean));
+  const repositoryAccess = normalized.has("repo") || normalized.has("public_repo");
   return {
-    read: normalized.has("read:user") || normalized.has("user:email") || normalized.has("read:org"),
-    write: false,
-    workflow: false,
+    read:
+      repositoryAccess ||
+      normalized.has("read:user") ||
+      normalized.has("user:email") ||
+      normalized.has("read:org"),
+    write: repositoryAccess,
+    workflow: normalized.has("workflow"),
   };
 }
 
