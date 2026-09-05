@@ -349,6 +349,7 @@ Scope and evidence:
 - 2026-09-02: Initially required Founder approval before tooling changes; superseded later the same day.
 - 2026-09-02: Authorized autonomous reversible tooling changes within existing authority, with mandatory blueprint traceability and Founder approval retained for credentials, costs, client-data exposure, destructive action and material product-direction changes.
 - 2026-09-02: Created the initial preapproved-tool register and mandatory per-tool trace template.
+- 2026-09-05: Founder restored Claude to Anthropic's official Claude Code Action defaults and removed the custom Claude-specific governance layer.
 
 ## 1. Platform Rule
 
@@ -732,10 +733,10 @@ Maya should feel like one seamless Pocket Office while remaining modular, testab
 Founder decision — 2026-09-04:
 
 - Codex/Ari remains MAYA's primary repository-control and architectural orchestration path.
-- Claude may provide additional engineering help through the existing secured MCP service or the official Anthropic GitHub Action.
-- Claude work is branch-and-pull-request only. Claude may not push to `main`, merge, change repository or Vercel permissions, handle production secrets, or promote production deployments.
-- Claude-triggered repository work is limited to the Founder GitHub identity and must load `AGENTS.md`, founder continuity, `CLAUDE.md`, and this blueprint before substantive work.
-- Claude changes must extend canonical MAYA components, objects, adapters, and services. Parallel Claude-specific implementations and substitute copies are prohibited.
+- Claude may provide engineering help through the existing MCP service or the official Anthropic GitHub Action.
+- The GitHub workflow uses Anthropic's published default Claude Code Action configuration without a custom system prompt, tool allowlist, founder-only trigger filter, or repository-specific `CLAUDE.md` restriction layer.
+- Claude therefore receives Anthropic's normal code-reading, editing, command, commit, pull-request, and CI-reading behavior as permitted by the workflow's GitHub token and the repository's actual GitHub protections.
+- Claude changes remain ordinary repository changes subject to GitHub permissions, review, CI, and Founder authorization; the workflow itself does not manufacture protections that are absent from GitHub.
 - Copilot is not an implementation dependency or architectural authority. Unauthorized `copilot/*` branches remain subject to the existing branch-lifecycle rejection rule.
 - Vercel preview deployments may be created from Claude pull-request branches through MAYA's existing canonical Vercel project. Production remains `main` only and requires human approval plus required verification.
 - The deployed Claude MCP service is preserved. It must remain separately authenticated and may be rebuilt only if verification proves the current service unsafe or nonfunctional.
@@ -748,4 +749,12 @@ Founder decision — 2026-09-04:
 - Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
+
+### Work History Trail — 2026-09-05 Anthropic defaults restoration
+
+- Founder direction: restore Claude to Anthropic defaults and personally audit the result.
+- Change: replaced the custom governed workflow with Anthropic's published `examples/claude.yml` configuration and removed the repository-specific `CLAUDE.md`.
+- Result: VERIFIED at the proposed-branch source level; runtime behavior remains UNVERIFIED until the PR is reviewed, merged, and a Founder-observed `@claude` invocation completes.
+- Preserved reality boundary: actual GitHub token permissions and repository settings govern access. No custom prompt is represented as a security control.
+- Exact next action: Founder audits the pull-request diff before deciding whether to merge.
 
