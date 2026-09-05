@@ -14,10 +14,10 @@ Security quarantine ledger for suspicious, excessive, obsolete, or insufficientl
 | ID | Status | Finding | Location | Why jailed | Disposition |
 |---|---|---|---|---|---|
 | MJ-001 | CONVICTED | Preview workflow pull-request write permission | `.github/workflows/vercel-preview.yml` | Deployment preview did not need repository write authority | Commenting write path removed; workflow reduced to read-only |
-| MJ-002 | CONVICTED | In-app GitHub write endpoint | `app/api/github/write/route.ts` | Runtime app exposed branch/file/PR/workflow mutation capability | Endpoint disabled; returns 403 |
-| MJ-003 | CONVICTED | Broad GitHub OAuth write/workflow scopes | `lib/github/config.ts` | Product connection could request authority beyond MAYA's current need | Write-capable scopes filtered; write/workflow authority denied |
+| MJ-002 | RELEASED — FOUNDER OVERRIDE | In-app GitHub write endpoint | `app/api/github/write/route.ts` | Earlier restriction superseded by the Founder on 2026-09-05 | Authenticated branch/file/PR/workflow actions restored; repository allowlist remains |
+| MJ-003 | RELEASED — FOUNDER OVERRIDE | GitHub OAuth repository/workflow scopes | `lib/github/config.ts` | Earlier restriction superseded by the Founder on 2026-09-05 | Standard repository and workflow scopes restored; repository allowlist remains |
 | MJ-004 | CONVICTED | Empty repo allowlist treated as broad access | GitHub integration configuration | Missing allowlist could become access to every repo visible to connected account | Changed to fail closed |
-| MJ-005 | DETAINED | Legacy GitHub write-control UI remains in source | `components/GitHubControls.tsx` | UI still advertises and constructs write/workflow operations even though server write path is disabled | Remove or rebuild as read-only control surface before promotion |
+| MJ-005 | CLEARED | GitHub write-control UI | `components/GitHubControls.tsx` | Server write authority is restored by Founder authorization | Write controls may use the authenticated server endpoint |
 | MJ-006 | CONVICTED | Long-lived GitHub product session cookie | `lib/github/session.ts` | Thirty-day bearer-session lifetime unnecessarily enlarges theft/replay window | Reduced to 8-hour session lifetime |
 | MJ-007 | CONVICTED | OAuth authorization allowed account signup | `app/api/github/connect/route.ts` | Unneeded behavior in a constrained internal integration flow | Signup disabled in authorization request |
 | MJ-008 | CONVICTED | OAuth state remained reusable on invalid callback | `app/api/github/callback/route.ts` | Failed callback did not consume state, leaving unnecessary replay surface | Invalid state now clears OAuth state cookie |
