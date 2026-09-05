@@ -1,70 +1,21 @@
-name: MAYA Branch Lifecycle
+name: MAYA Branch Lifecycle Audit
 
 on:
-  create:
-  pull_request:
-    types: [closed]
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 jobs:
-  reject-copilot-branches:
-    if: github.event_name == 'create' && github.event.ref_type == 'branch' && startsWith(github.event.ref, 'copilot/')
+  inventory:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete unauthorized copilot branch
+      - name: Report branches without deleting them
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          BRANCH: ${{ github.event.ref }}
-        run: |
-          echo "Rejecting unauthorized branch: ${BRANCH}"
-          gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}"
-
-  delete-closed-head:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref != 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete closed pull request branch
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
-        run: gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}" || true
-
-  cleanup-inactive-branches:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove every inactive branch
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        shell: bash
         run: |
           set -euo pipefail
-
-          mapfile -t OPEN_HEADS < <(gh api --paginate "repos/${REPO}/pulls?state=open&per_page=100" --jq '.[].head.ref')
-          mapfile -t BRANCHES < <(gh api --paginate "repos/${REPO}/branches?per_page=100" --jq '.[].name')
-
-          is_open() {
-            local candidate="$1"
-            for b in "${OPEN_HEADS[@]:-}"; do
-              [[ "$b" == "$candidate" ]] && return 0
-            done
-            return 1
-          }
-
-          for branch in "${BRANCHES[@]}"; do
-            [[ "$branch" == "main" ]] && continue
-            is_open "$branch" && continue
-
-            echo "Deleting inactive branch: $branch"
-            gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" || true
-          done
-
-          echo "Cleanup complete. Main and open-PR branches were preserved."
+          echo "Branch lifecycle is review-only. No branch is deleted automatically."
+          gh api --paginate "repos/${REPO}/branches?per_page=100" --jq '.[].name'
