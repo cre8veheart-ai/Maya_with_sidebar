@@ -766,3 +766,15 @@ Founder decision — 2026-09-04:
 - Verification status: UNVERIFIED until GitHub checks pass and a Founder-authored `@claude` bounded branch-and-draft-PR proof task succeeds.
 - Production boundary: Claude still cannot push directly to `main`, merge, deploy production, change permissions, or handle secrets.
 - Exact next action: run repository checks on this PR, merge only with Founder approval, then execute the bounded `@claude` proof task.
+
+
+### Amendment — 2026-09-05 Founder-final build authority
+
+- Founder decision: while MAYA is being built, blanket build prohibitions must not prevent a specifically authorized action or the addition of another AI collaborator.
+- Default workflow remains branch -> pull request -> verification -> Founder decision.
+- Founder override: an explicit instruction identifying a merge, deployment, direct update, tool, permission change, or AI collaborator authorizes the assigned agent to perform that named action and report evidence.
+- No AI may invent or infer Founder authorization. Vague discussion is not production approval.
+- Non-overridable protections: never expose or repurpose credentials, leak Client Vault plaintext, falsify evidence, deceptively weaken verification, or destructively rewrite history.
+- Automatic deletion of Copilot branches and inactive branches is removed. Branch review and deletion require an explicit decision.
+- Static audit findings about build authority become review signals rather than automatic vetoes; embedded credentials, client-exposed tokens, force rewrites, and comparable evidence-destruction risks may still fail verification.
+- This amendment supersedes language in PR #98 and the earlier 2026-09-05 Claude amendment that categorically prohibited an agent from carrying out a Founder-authorized merge, deployment, direct update, or administration change.
