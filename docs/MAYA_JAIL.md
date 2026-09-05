@@ -49,3 +49,16 @@ Verification:
 
 ## Governing principle
 **MAYA does not hide dangerous capability in convenience architecture. Privilege must continuously justify its existence.**
+
+
+## Founder authority correction — 2026-09-05
+
+This ledger records historical containment decisions; it does not outrank a newer explicit Founder instruction.
+
+| ID | Status | Finding | Disposition |
+|---|---|---|---|
+| MJ-010 | RELEASED | Governed AI repository write authority | Claude, Ari, and explicitly approved AI collaborators may build through branches, commits, tests, and PRs. |
+| MJ-011 | RELEASED | Founder-authorized merge, deployment, direct update, or administration action | An agent may execute the exact named action after explicit Founder authorization; it may not infer or enlarge that authority. |
+| MJ-012 | CONVICTED | Automatic deletion of Copilot and inactive branches | Destructive branch-lifecycle automation removed; deletion now requires an explicit decision. |
+
+Active safety boundaries protect the Founder rather than overrule her: no credential exposure or repurposing, no Client Vault plaintext leakage, no falsified evidence, no deceptive test weakening, and no destructive history rewrite.
