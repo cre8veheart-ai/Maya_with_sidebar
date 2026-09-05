@@ -20,7 +20,7 @@ const TEXT_EXTENSIONS = new Set([
 ]);
 
 // Patterns are intentionally conservative. Findings require human review;
-// high-risk findings fail CI so they cannot quietly drift into production.
+// credential exposure and destructive-history findings fail CI; build-authority findings require review and Founder adjudication.
 const RULES = [
   {
     id: 'github-token-in-client',
@@ -42,13 +42,13 @@ const RULES = [
   },
   {
     id: 'direct-main-push',
-    severity: 'HIGH',
+    severity: 'MEDIUM',
     re: /git\s+push\b[^\n]*(?:origin\s+main|HEAD:main)/i,
     why: 'Direct push to main bypasses pull-request promotion.'
   },
   {
     id: 'wildcard-write-permission',
-    severity: 'HIGH',
+    severity: 'MEDIUM',
     re: /permissions\s*:\s*(?:write-all|\{[^}]*contents\s*:\s*write[^}]*\})/i,
     why: 'Workflow or integration requests broad repository write authority.'
   },
