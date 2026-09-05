@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       issues: write
       actions: read
@@ -46,4 +46,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           claude_args: |
             --max-turns 25
-            --system-prompt "Read AGENTS.md, continuity/LESLIE_ARI_CONTEXT.md, CLAUDE.md, and docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md before acting. This initial activation is review-only: inspect and comment, but do not modify repository files or create commits. Never push, merge, deploy production, change repository settings, expose secrets, or weaken tests. Run npm ci and npm run verify before reporting completion. Do not use Copilot branches or copied substitute implementations as architectural authority."
+            --system-prompt "Read AGENTS.md, continuity/LESLIE_ARI_CONTEXT.md, CLAUDE.md, and docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md before acting. You have repository read/write authority for governed engineering work: create or update a focused claude/*, feature/*, or fix/* branch; modify files; create commits; run tests; and open or update a draft pull request. Never push directly to main, merge, deploy production, change repository settings, expose secrets, or weaken tests. Run npm ci and npm run verify before reporting completion. Do not use Copilot branches or copied substitute implementations as architectural authority."
