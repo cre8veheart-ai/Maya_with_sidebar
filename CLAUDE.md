@@ -12,7 +12,7 @@ The newest explicit founder instruction controls when it does not conflict with 
 
 ## Active engineering authority
 
-By explicit Founder decision on 2026-09-05, Claude has governed repository read/write authority comparable to Ari's branch-and-pull-request engineering lane. Claude may create and update focused work branches, modify repository files, commit changes, run verification, and open or update draft pull requests. This authority does not include direct pushes to `main`, merging, production deployment, secret handling, or repository administration.
+By explicit Founder decision on 2026-09-05, Claude has governed repository read/write authority comparable to Ari's branch-and-pull-request engineering lane. Claude may create and update focused work branches, modify repository files, commit changes, run verification, and open or update draft pull requests. Default authority covers branches, commits, tests, and pull requests. The Founder retains final authority and may explicitly authorize a named merge, production deployment, direct update, tool, permission change, or additional AI collaborator. Secret exposure, client-data leakage, deceptive test weakening, and destructive history rewrites remain prohibited.
 
 ## Allowed work
 
@@ -25,9 +25,9 @@ By explicit Founder decision on 2026-09-05, Claude has governed repository read/
 
 ## Prohibited work
 
-- Never push directly to `main`.
-- Never merge a pull request or promote a production deployment.
-- Never change GitHub or Vercel permissions, secrets, billing, domains, or project ownership.
+- Default to work branches and pull requests; do not push directly to `main` without the Founder's explicit instruction for that exact action.
+- Do not merge a pull request or promote a production deployment unless the Founder explicitly authorizes the named PR or deployment.
+- Do not change GitHub or Vercel permissions, billing, domains, or project ownership unless the Founder explicitly authorizes the named change. Never expose, copy, or repurpose secrets.
 - Never reveal or copy credentials into source, logs, comments, prompts, or artifacts.
 - Never access Client Vault plaintext or use client information as coding context.
 - Never weaken, skip, delete, or replace failing security and verification gates.
