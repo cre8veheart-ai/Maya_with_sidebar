@@ -749,3 +749,20 @@ Founder decision — 2026-09-04:
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
 
+
+
+### Amendment — 2026-09-05 Claude read/write restoration
+
+- Founder decision: restore Claude from review-only access to governed repository read/write authority comparable to Ari's branch-and-pull-request engineering lane.
+- Allowed: inspect, create or update focused `claude/*`, `feature/*`, or `fix/*` branches, edit files, commit, run verification, and open or update draft pull requests.
+- Prohibited: direct push to `main`, self-merge, production deployment, repository or Vercel administration, secret handling, test weakening, and access to Client Vault plaintext.
+- This amendment supersedes the review-only activation phase recorded by PR #98. Branch protection remains recommended but is not a condition of Claude's branch-writing authority.
+- Rollback: restore workflow `contents: read` and the review-only system prompt through a reviewed pull request.
+
+### Work History Trail — 2026-09-05 Claude read/write restoration
+
+- Trigger: Founder explicitly instructed, “I want Claude's workflow restored to read write like yours.”
+- Change: workflow repository contents permission changed from read to write; review-only prompt removed; CLAUDE.md activated governed branch/commit/PR work.
+- Verification status: UNVERIFIED until GitHub checks pass and a Founder-authored `@claude` bounded branch-and-draft-PR proof task succeeds.
+- Production boundary: Claude still cannot push directly to `main`, merge, deploy production, change permissions, or handle secrets.
+- Exact next action: run repository checks on this PR, merge only with Founder approval, then execute the bounded `@claude` proof task.
