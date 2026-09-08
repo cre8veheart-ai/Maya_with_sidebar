@@ -24,6 +24,33 @@ export function requireProductionBase(base) {
   return base;
 }
 
+export function requireReleaseReady(pull, checkRuns, combinedStatus) {
+  if (pull?.mergeable !== true) {
+    throw new Error("Pull request must be conflict-free and mergeable.");
+  }
+
+  const runs = checkRuns?.check_runs;
+  if (!Array.isArray(runs) || runs.length === 0) {
+    throw new Error("At least one completed check run is required before merge.");
+  }
+
+  const incomplete = runs.find((run) => run?.status !== "completed");
+  if (incomplete) {
+    throw new Error(`Check run "${incomplete.name || "unknown"}" is not complete.`);
+  }
+
+  const acceptable = new Set(["success", "neutral", "skipped"]);
+  const failed = runs.find((run) => !acceptable.has(run?.conclusion));
+  if (failed) {
+    throw new Error(`Check run "${failed.name || "unknown"}" did not pass.`);
+  }
+
+  if (combinedStatus?.state !== "success") {
+    throw new Error("Commit deployment/status checks must be successful before merge.");
+  }
+  return true;
+}
+
 export function requireFounderMergeApproval(comments, headCommittedAt, approverLogin = "cre8veheart-ai") {
   const headTime = Date.parse(headCommittedAt);
   if (!Number.isFinite(headTime)) throw new Error("Unable to verify the pull request head timestamp.");
