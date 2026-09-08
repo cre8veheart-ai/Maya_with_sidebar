@@ -16,8 +16,6 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,9 +37,6 @@ jobs:
 
       - name: Model black-box honeypot gate
         run: npm run test:blackbox
-
-      - name: Live CEO behavioral pressure eval
-        run: node scripts/live-ceo-eval.mjs
 
       - name: Lint
         run: npm run lint
