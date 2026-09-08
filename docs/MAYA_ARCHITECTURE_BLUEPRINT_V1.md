@@ -94,8 +94,9 @@ Resume phrase: **DIH EVENT MAYA**
 
 - PR #111 is the active branch/merge-authority change.
 - VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
-- UNVERIFIED until CI and preview complete: repository verification, end-to-end Claude branch/PR behavior and production merge behavior.
-- Exact first next action: complete PR #111 checks and preview verification. After the final commit, Leslie may authorize merge with `@ari merge` or `@claude merge` according to the acting agent.
+- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
+- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
+- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
 
 ### What we were building
 
@@ -760,8 +761,9 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Founder authorization: Claude and Ari may perform normal engineering work and create pull requests; either may merge to the Vercel production path only with Leslie's permission for the exact final PR state.
 - Change: PR #111 adds a fresh post-commit `@claude merge` gate, limits the `@claude` workflow caller to `cre8veheart-ai`, removes unused OIDC permission, pins the Anthropic action, and records the equivalent `@ari merge` operating rule in `AGENTS.md`.
 - Data and permission boundary: no credential is added; work remains confined to approved feature/fix branches, and client-vault plaintext remains prohibited.
-- Status: UNVERIFIED until PR #111 completes repository checks and preview verification. It must not merge until Leslie authorizes the final commit.
-- Exact next action: complete PR #111 verification, resolve any failure, then obtain Leslie's fresh merge authorization after the final commit.
+- Verification: VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063` — GitHub Actions run `34276400392` passed full verification and the Claude MCP security job; both Vercel previews reported successful deployment.
+- Remaining live proof: Claude's first branch/PR creation and the first Founder-approved production merge remain UNVERIFIED until exercised.
+- Exact next action: verify the final documentation-only commit, mark PR #111 ready, then obtain Leslie's fresh merge authorization.
 
 ### Work History Trail — 2026-09-05 Claude access restoration
 
