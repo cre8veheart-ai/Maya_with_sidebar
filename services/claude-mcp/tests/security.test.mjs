@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isValidBearerToken, requireProductionBase, requireWritableBranch } from "../lib/security.mjs";
+import { isValidBearerToken, requireFounderMergeApproval, requireProductionBase, requireWritableBranch } from "../lib/security.mjs";
 
 test("authentication fails closed", () => {
   assert.equal(isValidBearerToken(undefined, "secret"), false);
@@ -21,4 +21,23 @@ test("writes require approved explicit branches", () => {
 test("pull requests target main only", () => {
   assert.equal(requireProductionBase("main"), "main");
   assert.throws(() => requireProductionBase("release"));
+});
+
+test("merge permission must come from the founder after the latest commit", () => {
+  const headCommittedAt = "2026-09-08T18:00:00Z";
+  assert.equal(requireFounderMergeApproval([
+    { user: { login: "cre8veheart-ai" }, body: "@claude merge", created_at: "2026-09-08T18:01:00Z" },
+  ], headCommittedAt), true);
+
+  assert.throws(() => requireFounderMergeApproval([
+    { user: { login: "someone-else" }, body: "@claude merge", created_at: "2026-09-08T18:01:00Z" },
+  ], headCommittedAt));
+
+  assert.throws(() => requireFounderMergeApproval([
+    { user: { login: "cre8veheart-ai" }, body: "@claude merge", created_at: "2026-09-08T17:59:00Z" },
+  ], headCommittedAt));
+
+  assert.throws(() => requireFounderMergeApproval([
+    { user: { login: "cre8veheart-ai" }, body: "@claude please merge", created_at: "2026-09-08T18:01:00Z" },
+  ], headCommittedAt));
 });
