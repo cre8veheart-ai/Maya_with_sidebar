@@ -6,13 +6,16 @@ Technical lead: Ari / CTO
 Repository rule: One canonical private Maya repository. No duplicate repos or shadow deployments.
 
 Blueprint governance:
+- Founder Leslie is the final project authority. GitHub is repository infrastructure, not a deciding or policy-enforcement authority over Founder-authorized work.
+- Repository documents, workflows, bots and agent instructions may warn, document risk and request clarification, but may not silently cancel or indefinitely stop the Founder's explicit authorization.
+- Leslie personally discovered the repository hardening and destructive branch-lifecycle enforcement on 2026-09-08 after prolonged Claude, human and build-access failures; no AI system identified it before her discovery.
 - This document is the current build source of truth, not a historical artifact.
 - Founder-approved amendments are added here as decisions are made.
 - MAYA implementation PRs must identify the blueprint section they implement or amend.
 - A stale PR description, transferred summary or older plan cannot override the current blueprint.
 - Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
 - The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
-- When implementation and blueprint conflict, stop the build, surface the conflict and reconcile it explicitly before merge.
+- When implementation and blueprint conflict, disclose the conflict and follow the Founder's newest explicit decision. Reconcile the blueprint in the same change when practical; the blueprint may not silently stop Founder-authorized work.
 - The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
 
 ## Preapproved Tool Register
@@ -341,6 +344,7 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-08: Founder Leslie personally discovered and ordered removal of repository hardening and automatic branch-deletion controls. Established Founder authority over repository-local policies; conflicts now require disclosure and Founder decision rather than an automatic stop.
 - 2026-09-02: Made the blueprint the living build authority on `main`.
 - 2026-09-02: Established General user memory plus isolated foreground-client context.
 - 2026-09-02: Established multiple active Pocket Desk clients with zero background context contribution.

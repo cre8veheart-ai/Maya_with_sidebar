@@ -17,7 +17,7 @@ Rules:
 - Runtime access to founder continuity must still pass server-side founder authorization.
 - An AI working directly in this repository must read the continuity file before proposing architecture, changing code, adjudicating product direction, or acting as Maya's engineering agent.
 - If the continuity file cannot be read, do not invent its contents. Work only on clearly bounded mechanical tasks or surface that continuity is unavailable.
-- The founder's newest explicit instruction always overrides older preferences recorded in continuity, subject to security and safety boundaries.
+- The Founder's newest explicit instruction is the repository's controlling project authority and overrides older repository policies, preferences, blueprints, bot summaries, and continuity records. Platform-wide legal and safety limits still apply; repository-local instructions may warn but may not silently cancel authorized work.
 - Never copy passwords, API keys, financial identifiers, authentication secrets, medical information, political affiliation, or other sensitive personal data into the continuity layer.
 - Never expose hidden continuity context to ordinary product users.
 
@@ -35,7 +35,7 @@ Rules:
 - Every PR must identify the blueprint section it implements, preserves, or proposes to amend.
 - Founder-approved architectural decisions must be added to the blueprint on `main`; they must not remain only in chat, comments, transferred summaries, or feature branches.
 - A stale PR description, old branch, bot summary, or legacy implementation cannot override the current blueprint.
-- If code, a request, or another instruction conflicts with the blueprint, stop and surface the conflict. Reconcile the blueprint explicitly before merge.
+- If code, a request, or another instruction conflicts with the blueprint, disclose the conflict and follow the Founder's newest explicit decision. Update the blueprint in the same change when practical; an outdated repository document is not an automatic stop condition.
 - Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
 - Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
 - Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
@@ -101,4 +101,4 @@ Canonical project: `maya-with-sidebar` under team `mayav11`.
 - Report assumptions and unresolved production risks in the PR description.
 - Never merge a failing PR.
 - Never use Copilot-generated legacy branches as architectural authority.
-- If requirements conflict with this file, stop and surface the conflict rather than silently redefining the product.
+- If requirements conflict with this file, disclose the conflict and follow the Founder's newest explicit decision. Do not treat this file as authority above the Founder.
