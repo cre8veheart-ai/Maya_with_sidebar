@@ -2,7 +2,7 @@ import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import type { AuthInfo } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { github, encodePath } from "../../../lib/github.mjs";
-import { isValidBearerToken, requireProductionBase, requireWritableBranch } from "../../../lib/security.mjs";
+import { isValidBearerToken, requireFounderMergeApproval, requireProductionBase, requireWritableBranch } from "../../../lib/security.mjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -115,6 +115,44 @@ const handler = createMcpHandler(
         requireProductionBase(base);
         const result = await github("/pulls", { method: "POST", body: JSON.stringify({ title, head, base, body, draft: true }) });
         return text({ number: result.number, url: result.html_url, draft: result.draft });
+      },
+    );
+
+    server.registerTool(
+      "github_merge_approved_pull_request",
+      {
+        title: "Merge founder-approved MAYA pull request",
+        description: "Merge a MAYA work-branch pull request only after the Founder posts an exact @claude merge comment after its latest commit. Merging to main triggers the existing Vercel production deployment.",
+        inputSchema: z.object({ pullNumber: z.number().int().positive() }),
+      },
+      async ({ pullNumber }) => {
+        const pull = await github(`/pulls/${pullNumber}`);
+        if (pull.state !== "open") throw new Error("Pull request is not open.");
+        if (pull.draft) throw new Error("Pull request must be marked ready for review.");
+        requireProductionBase(pull.base.ref);
+        requireWritableBranch(pull.head.ref);
+
+        const commit = await github(`/commits/${pull.head.sha}`);
+        const headCommittedAt = commit?.commit?.committer?.date || commit?.commit?.author?.date;
+        const comments = await github(`/issues/${pullNumber}/comments?per_page=100`);
+        requireFounderMergeApproval(
+          comments,
+          headCommittedAt,
+          process.env.GITHUB_APPROVER_LOGIN || "cre8veheart-ai",
+        );
+
+        const result = await github(`/pulls/${pullNumber}/merge`, {
+          method: "PUT",
+          body: JSON.stringify({ sha: pull.head.sha, merge_method: "squash" }),
+        });
+        if (!result.merged) throw new Error(result.message || "GitHub did not merge the pull request.");
+        return text({
+          pullNumber,
+          merged: true,
+          sha: result.sha,
+          message: result.message,
+          deployment: "The merge to main triggers the existing Vercel production workflow.",
+        });
       },
     );
 
