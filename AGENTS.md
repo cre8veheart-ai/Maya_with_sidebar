@@ -55,6 +55,18 @@ Rules:
 - Use a focused feature/fix branch and a pull request for every engineering change.
 - Do not deploy a non-`main` branch to production.
 
+## Founder-authorized production rule — REQUIRED
+
+This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
+
+- Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
+- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes that exact current PR state after its latest commit.
+- For Claude MCP merges, authorization is the exact pull-request comment `@claude merge` posted by GitHub user `cre8veheart-ai` after the PR's latest commit.
+- For Ari/Codex merges, authorization is the exact pull-request comment `@ari merge` posted by GitHub user `cre8veheart-ai` after the PR's latest commit, or an explicit current-turn instruction from Leslie that names the exact PR and directs its merge.
+- Any commit added after authorization invalidates the earlier authorization. Obtain fresh authorization for the new final commit.
+- Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
+- Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
+
 ## Required validation
 
 Before a pull request is considered mergeable, run:
