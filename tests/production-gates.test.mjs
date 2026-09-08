@@ -23,14 +23,11 @@ async function withBetaSecret(value, fn) {
   }
 }
 
-test("health is ready only when every required dependency is configured", () => {
+test("health is ready when active runtime dependencies are configured", () => {
   const now = new Date("2026-08-23T20:00:00.000Z");
   const result = evaluateHealth(
     {
       ANTHROPIC_API_KEY: "configured",
-      BETA_SESSION_SECRET: TEST_SECRET,
-      KV_REST_API_URL: "https://example.invalid",
-      KV_REST_API_TOKEN: "configured",
     },
     now,
   );
@@ -41,20 +38,26 @@ test("health is ready only when every required dependency is configured", () => 
   assert.deepEqual(result.payload.checks, {
     app: true,
     anthropicConfigured: true,
-    betaSessionSecretConfigured: true,
-    redisConfigured: true,
   });
 });
 
-test("health degrades when a required dependency is absent", () => {
-  const result = evaluateHealth({
-    ANTHROPIC_API_KEY: "configured",
-    BETA_SESSION_SECRET: TEST_SECRET,
-  });
+test("health degrades when the active Anthropic dependency is absent", () => {
+  const result = evaluateHealth({});
 
   assert.equal(result.statusCode, 503);
   assert.equal(result.payload.status, "degraded");
-  assert.equal(result.payload.checks.redisConfigured, false);
+  assert.equal(result.payload.checks.anthropicConfigured, false);
+});
+
+test("retired beta and Redis variables do not block runtime health", () => {
+  const result = evaluateHealth({
+    ANTHROPIC_API_KEY: "configured",
+  });
+
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.status, "ready");
+  assert.equal("betaSessionSecretConfigured" in result.payload.checks, false);
+  assert.equal("redisConfigured" in result.payload.checks, false);
 });
 
 test("beta session tokens validate and reject tampering", async () => {
