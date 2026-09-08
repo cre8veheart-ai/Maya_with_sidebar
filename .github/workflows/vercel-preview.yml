@@ -13,7 +13,6 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     env:
-      HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
     steps:
@@ -52,7 +51,6 @@ jobs:
 
       - name: Deploy Preview to Vercel
         id: vercel-deploy
-        if: ${{ env.HAS_VERCEL_CREDS == 'true' }}
         uses: amondnet/vercel-action@16e87c0a08142b0d0d33b76aeaf20823c381b9b9
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
