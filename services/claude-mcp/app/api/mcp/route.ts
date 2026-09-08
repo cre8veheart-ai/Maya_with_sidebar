@@ -2,7 +2,7 @@ import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import type { AuthInfo } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { github, encodePath } from "../../../lib/github.mjs";
-import { isValidBearerToken, requireFounderMergeApproval, requireProductionBase, requireWritableBranch } from "../../../lib/security.mjs";
+import { isValidBearerToken, requireFounderMergeApproval, requireProductionBase, requireReleaseReady, requireWritableBranch } from "../../../lib/security.mjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -131,6 +131,12 @@ const handler = createMcpHandler(
         if (pull.draft) throw new Error("Pull request must be marked ready for review.");
         requireProductionBase(pull.base.ref);
         requireWritableBranch(pull.head.ref);
+
+        const [checkRuns, combinedStatus] = await Promise.all([
+          github(`/commits/${pull.head.sha}/check-runs?per_page=100`),
+          github(`/commits/${pull.head.sha}/status`),
+        ]);
+        requireReleaseReady(pull, checkRuns, combinedStatus);
 
         const commit = await github(`/commits/${pull.head.sha}`);
         const headCommittedAt = commit?.commit?.committer?.date || commit?.commit?.author?.date;
