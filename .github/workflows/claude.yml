@@ -45,6 +45,8 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: |
+            --model claude-opus-4-1-20250805
 
   claude-smoke:
     if: github.event_name == 'workflow_dispatch'
@@ -78,6 +80,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ inputs.smoke_prompt }}
           claude_args: |
+            --model claude-opus-4-1-20250805
             --max-turns 3
             --allowedTools Read
 
