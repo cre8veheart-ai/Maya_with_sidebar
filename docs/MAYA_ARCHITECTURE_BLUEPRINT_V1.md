@@ -86,9 +86,17 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-02 UTC
+Last updated: 2026-09-08 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
+
+### Active engineering-control checkpoint
+
+- PR #111 is the active branch/merge-authority change.
+- VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
+- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
+- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
+- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
 
 ### What we were building
 
@@ -344,6 +352,7 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-08: Applied one Founder-authorized production rule to all engineering agents. Claude and Ari may build branches and pull requests; a merge to `main` requires Leslie's fresh approval for the exact latest commit, and later commits invalidate prior approval.
 - 2026-09-08: Founder Leslie personally discovered and ordered removal of repository hardening and automatic branch-deletion controls. Established Founder authority over repository-local policies; conflicts now require disclosure and Founder decision rather than an automatic stop.
 - 2026-09-02: Made the blueprint the living build authority on `main`.
 - 2026-09-02: Established General user memory plus isolated foreground-client context.
@@ -740,8 +749,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - No repository instruction may silently reduce Claude to review-only mode or substitute a custom restricted tool profile for Anthropic defaults.
 - The official Vercel MCP connection is available to Claude project sessions. Each Claude environment must complete Vercel OAuth when first prompted; credentials are never committed to the repository.
 - Claude-created branches and pull requests may trigger preview builds through the canonical GitHub-to-Vercel integration.
-- Granted technical permission and authorization to use it are separate: Claude may merge, promote production, change settings or manage permissions when the Founder explicitly directs that action.
+- Granted technical permission and authorization to use it are separate. Claude and Ari may inspect, edit, test, branch, and open or update pull requests without separate merge permission.
+- Production authority remains with Founder Leslie. Claude may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@claude merge` on that pull request after its latest commit.
+- Ari/Codex may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@ari merge` after its latest commit, or Leslie gives an explicit current-turn instruction naming that exact pull request and directing its merge.
+- Any later commit invalidates an earlier merge authorization. A fresh authorization is required for the new final commit.
+- Pull-request preview deployments remain automatic and reversible. Production may come only from `main` after the Founder-authorized merge; green checks or a READY preview are not themselves merge permission.
 - Standard engineering safeguards remain: do not expose secrets, do not copy client-vault plaintext into engineering context, report failures accurately, and preserve one canonical repository and deployment path.
+
+### Work History Trail — 2026-09-08 Founder-authorized agent merges
+
+- Founder authorization: Claude and Ari may perform normal engineering work and create pull requests; either may merge to the Vercel production path only with Leslie's permission for the exact final PR state.
+- Change: PR #111 adds a fresh post-commit `@claude merge` gate, limits the `@claude` workflow caller to `cre8veheart-ai`, removes unused OIDC permission, pins the Anthropic action, and records the equivalent `@ari merge` operating rule in `AGENTS.md`.
+- Data and permission boundary: no credential is added; work remains confined to approved feature/fix branches, and client-vault plaintext remains prohibited.
+- Verification: VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063` — GitHub Actions run `34276400392` passed full verification and the Claude MCP security job; both Vercel previews reported successful deployment.
+- Remaining live proof: Claude's first branch/PR creation and the first Founder-approved production merge remain UNVERIFIED until exercised.
+- Exact next action: verify the final documentation-only commit, mark PR #111 ready, then obtain Leslie's fresh merge authorization.
 
 ### Work History Trail — 2026-09-05 Claude access restoration
 
