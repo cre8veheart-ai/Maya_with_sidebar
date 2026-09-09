@@ -17,7 +17,7 @@ Rules:
 - Runtime access to founder continuity must still pass server-side founder authorization.
 - An AI working directly in this repository must read the continuity file before proposing architecture, changing code, adjudicating product direction, or acting as Maya's engineering agent.
 - If the continuity file cannot be read, do not invent its contents. Work only on clearly bounded mechanical tasks or surface that continuity is unavailable.
-- The founder's newest explicit instruction always overrides older preferences recorded in continuity, subject to security and safety boundaries.
+- The Founder's newest explicit instruction is the repository's controlling project authority and overrides older repository policies, preferences, blueprints, bot summaries, and continuity records. Platform-wide legal and safety limits still apply; repository-local instructions may warn but may not silently cancel authorized work.
 - Never copy passwords, API keys, financial identifiers, authentication secrets, medical information, political affiliation, or other sensitive personal data into the continuity layer.
 - Never expose hidden continuity context to ordinary product users.
 
@@ -35,7 +35,7 @@ Rules:
 - Every PR must identify the blueprint section it implements, preserves, or proposes to amend.
 - Founder-approved architectural decisions must be added to the blueprint on `main`; they must not remain only in chat, comments, transferred summaries, or feature branches.
 - A stale PR description, old branch, bot summary, or legacy implementation cannot override the current blueprint.
-- If code, a request, or another instruction conflicts with the blueprint, stop and surface the conflict. Reconcile the blueprint explicitly before merge.
+- If code, a request, or another instruction conflicts with the blueprint, disclose the conflict and follow the Founder's newest explicit decision. Update the blueprint in the same change when practical; an outdated repository document is not an automatic stop condition.
 - Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
 - Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
 - Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
@@ -54,6 +54,18 @@ Rules:
 - Do not commit directly to `main` unless explicitly instructed by the acting CTO/founder workflow.
 - Use a focused feature/fix branch and a pull request for every engineering change.
 - Do not deploy a non-`main` branch to production.
+
+## Founder-authorized production rule — REQUIRED
+
+This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
+
+- Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
+- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes that exact current PR state after its latest commit.
+- For Claude MCP merges, authorization is the exact pull-request comment `@claude merge` posted by GitHub user `cre8veheart-ai` after the PR's latest commit.
+- For Ari/Codex merges, authorization is the exact pull-request comment `@ari merge` posted by GitHub user `cre8veheart-ai` after the PR's latest commit, or an explicit current-turn instruction from Leslie that names the exact PR and directs its merge.
+- Any commit added after authorization invalidates the earlier authorization. Obtain fresh authorization for the new final commit.
+- Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
+- Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
 
 ## Required validation
 
@@ -101,4 +113,4 @@ Canonical project: `maya-with-sidebar` under team `mayav11`.
 - Report assumptions and unresolved production risks in the PR description.
 - Never merge a failing PR.
 - Never use Copilot-generated legacy branches as architectural authority.
-- If requirements conflict with this file, stop and surface the conflict rather than silently redefining the product.
+- If requirements conflict with this file, disclose the conflict and follow the Founder's newest explicit decision. Do not treat this file as authority above the Founder.
