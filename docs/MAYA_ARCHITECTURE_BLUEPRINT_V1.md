@@ -86,17 +86,17 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-09 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #111 is the active branch/merge-authority change.
-- VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
-- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
-- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
-- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
+- PR #117 is the active Claude workflow trigger fix.
+- CONTRADICTED in live use on GitHub Actions run `34399180836` / job `102626482995`: the `issues.opened` path launched the Claude action for issue #116, Claude returned `is_error:true`, and the post-run branch comparison failed with `404 Not Found` for unpushed branch `claude/issue-116-20260909-2008`.
+- VERIFIED on branch `copilot/fix-failing-github-actions-job`: removing `issues` triggers from `.github/workflows/claude.yml`, adding `tests/claude-workflow.test.mjs`, running `node --test tests/claude-workflow.test.mjs`, then completing `npm ci` and `npm run verify`.
+- Remaining UNVERIFIED until live use: a Founder-authored `@claude` issue comment on the updated workflow path.
+- Exact first next action: let PR #117 checks complete, then run a Founder-authored `@claude` comment smoke test on an issue or pull request review surface supported by the updated workflow.
 
 ### What we were building
 
@@ -765,6 +765,19 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining live proof: Claude's first branch/PR creation and the first Founder-approved production merge remain UNVERIFIED until exercised.
 - Exact next action: verify the final documentation-only commit, mark PR #111 ready, then obtain Leslie's fresh merge authorization.
 
+### Work History Trail — 2026-09-09 Claude issue-trigger smoke-test fix
+
+- Trigger: fix failing GitHub Actions job from Claude run `34399180836`, job `102626482995`, started by issue #116 (`Claude connection smoke test — read-only`).
+- Blueprint sections used: Current Working Checkpoint; Work History Trail; §14 Claude Engineering Access; Preapproved Tool Register / Local build, lint and test tooling.
+- Live evidence checked: GitHub workflow run metadata; full job log for job `102626482995`; local `.github/workflows/claude.yml`; current repository validation commands.
+- Failure evidence: CONTRADICTED the intended smoke-test path. On `issues.opened`, the Anthropic action created local branch `claude/issue-116-20260909-2008`, Claude returned `is_error:true`, and the action then failed a compare request against the nonexistent remote branch with `HttpError: Not Found` on `GET /compare/main...claude%2Fissue-116-20260909-2008`.
+- Changes made: removed `issues` (`opened`, `assigned`) from `.github/workflows/claude.yml`; removed the `github.event_name == 'issues'` trigger clause; added `tests/claude-workflow.test.mjs` to lock the workflow to explicit comment/review triggers.
+- Verification performed: VERIFIED `node --test tests/claude-workflow.test.mjs`; VERIFIED `npm ci`; VERIFIED `npm run verify`.
+- Result: the repository now avoids the contradicted issue-body trigger path while preserving explicit `@claude` comment/review invocation surfaces.
+- Stop reason / remaining blocker: pending live confirmation that a Founder-authored `@claude` comment succeeds on the updated workflow.
+- Exact first next action: after PR #117 checks finish, run one Founder-authored `@claude` comment on a supported issue or PR review surface and record the result.
+- Relevant identifiers: PR #117; branch `copilot/fix-failing-github-actions-job`; failing run `34399180836`; failing job `102626482995`.
+
 ### Work History Trail — 2026-09-05 Claude access restoration
 
 - Founder authorization: remove the Claude-specific restrictions and restore Anthropic-default working capabilities across MAYA sessions and builds.
@@ -780,4 +793,3 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
-
