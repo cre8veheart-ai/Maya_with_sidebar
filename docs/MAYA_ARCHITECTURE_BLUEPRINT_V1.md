@@ -86,17 +86,17 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-09 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #111 is the active branch/merge-authority change.
-- VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
-- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
-- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
-- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
+- CONTRADICTED in GitHub Actions run `34399180836`, job `102626482995`: the Claude workflow still reacted to `issues.opened` when an issue body contained `@claude`, despite the intended explicit-comment/review trigger boundary.
+- VERIFIED root cause: the Anthropic action created a local issue branch for the read-only smoke-test issue, then failed when it later compared `main...claude/issue-116-20260909-2008` and no remote branch existed.
+- VERIFIED fix on PR #121 branch `copilot/fix-github-actions-job-failure`: remove `issues` triggers and issue body/title predicates so Claude runs only from explicit comments/reviews or manual `workflow_dispatch`.
+- Remaining UNVERIFIED until live use: rerun the smoke test through an explicit `@claude` comment/review or manual dispatch after this fix merges.
+- Exact first next action: merge PR #121 after required verification, then rerun the governed Claude smoke test through an explicit comment/review path or `workflow_dispatch`.
 
 ### What we were building
 
@@ -120,10 +120,12 @@ The Pocket Office client-vault and context model:
 - The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
 - The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
 - The blueprint and repository instructions on `main` now govern future work.
+- GitHub Actions run `34399180836` exposed that `.github/workflows/claude.yml` still listened to issue-open events and failed a read-only smoke-test issue after attempting a branch/compare flow.
+- PR #121 removes the issue-open trigger path and adds a workflow regression test so the governed Claude entrypoints stay limited to explicit comments/reviews and manual dispatch.
 
 ### First next action
 
-Verify PR #96's build and browser behavior, then implement the client-side cryptography/key-recovery design as a separate reviewed slice before enabling Add/Register. Do not introduce storage or client authentication until the zero-access gates are proven.
+Merge PR #121 after required verification, rerun the governed Claude smoke test through an explicit comment/review or `workflow_dispatch`, then return to PR #96's build/browser verification and the client-side cryptography/key-recovery slice. Do not introduce storage or client authentication until the zero-access gates are proven.
 
 ### Resume protocol
 
@@ -349,6 +351,19 @@ Scope and evidence:
 - Remaining UNKNOWN: exact code delta, CI result, preview/production deployment, runtime result, regression, failure log and corrective commit for many individual PRs.
 - Next enrichment gate: when a historical PR becomes relevant to active work, fetch its diff, comments, checks and linked deployment, then append a dated correction/enrichment entry using VERIFIED / CONTRADICTED / UNVERIFIED / UNKNOWN.
 - No historical title, body, green check or READY deployment may be promoted to runtime proof without the corresponding capability test.
+
+### 2026-09-09 — Claude issue-open trigger fix
+
+- Trigger: GitHub Actions job failure investigation for run `34399180836`, job `102626482995`.
+- Blueprint sections used: Current Working Checkpoint; Work History Trail; Maya Core — deployment gates and CI verification; Claude Engineering Access.
+- Live evidence: the failing Claude Code job auto-detected `mode: tag` for the `issues` event, created local branch `claude/issue-116-20260909-2008`, then raised `HttpError: Not Found` while comparing `main...claude/issue-116-20260909-2008` because the read-only smoke-test issue never produced a remote branch.
+- Root cause: `.github/workflows/claude.yml` still subscribed to `issues: [opened, assigned]` and treated issue titles/bodies containing `@claude` as valid action triggers, which contradicted the governed explicit-comment/review entrypoints.
+- Changes: removed the `issues` workflow trigger and corresponding `github.event_name == 'issues'` predicate; added `tests/claude-workflow.test.mjs` to lock the allowed Claude trigger surface to issue comments, review comments, review submissions and manual dispatch smoke tests.
+- Verification after fix: `node --test tests/claude-workflow.test.mjs`; `npm ci`; `npm run verify`.
+- Result: VERIFIED locally on PR #121 branch `copilot/fix-github-actions-job-failure`; the workflow file and targeted regression test now reject issue-open trigger regressions while the repository verification suite and production build pass.
+- Remaining blocker: GitHub-hosted proof of the fixed workflow remains UNVERIFIED until the updated workflow runs on GitHub after merge or on a fresh PR sync.
+- Exact first next action: let PR #121 CI complete, merge after Founder authorization, then rerun the Claude smoke test via an explicit `@claude` comment/review or `workflow_dispatch`.
+- References: PR #121; branch `copilot/fix-github-actions-job-failure`; failing run `34399180836`; failing job `102626482995`.
 
 ### Amendment History
 
@@ -780,4 +795,3 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
-
