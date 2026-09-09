@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { fetchGitHubViewer } from "@/lib/github/api";
 import {
+  canUserAuthorizeMainPush,
   getAllowedRepos,
   getDefaultRepoConfig,
   getGitHubPermissions,
+  getMainPushAuthMaxAgeSeconds,
+  getMainPushAllowedUsers,
   getRequestedScopes,
 } from "@/lib/github/config";
 import { clearGitHubSessionCookie, getCurrentGitHubSession } from "@/lib/github/session";
@@ -22,6 +25,12 @@ export async function GET() {
       allowedRepos: getAllowedRepos(),
       repoConfig: getDefaultRepoConfig(),
       permissions: getGitHubPermissions([]),
+      mainPush: {
+        enabled: false,
+        canAuthorize: false,
+        authMaxAgeSeconds: getMainPushAuthMaxAgeSeconds(),
+        allowedUsers: getMainPushAllowedUsers(),
+      },
       audit: [],
     });
   }
@@ -39,6 +48,12 @@ export async function GET() {
       allowedRepos: getAllowedRepos(),
       repoConfig: session.repoConfig,
       permissions: getGitHubPermissions(session.scope),
+      mainPush: {
+        enabled: true,
+        canAuthorize: canUserAuthorizeMainPush(user.login),
+        authMaxAgeSeconds: getMainPushAuthMaxAgeSeconds(),
+        allowedUsers: getMainPushAllowedUsers(),
+      },
       user,
       audit: await listGitHubAudit(session.id),
       scopes: session.scope,
@@ -52,6 +67,12 @@ export async function GET() {
       allowedRepos: getAllowedRepos(),
       repoConfig: getDefaultRepoConfig(),
       permissions: getGitHubPermissions([]),
+      mainPush: {
+        enabled: false,
+        canAuthorize: false,
+        authMaxAgeSeconds: getMainPushAuthMaxAgeSeconds(),
+        allowedUsers: getMainPushAllowedUsers(),
+      },
       audit: [],
       connectionError:
         error instanceof Error ? error.message : "GitHub connection expired",

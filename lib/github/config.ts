@@ -53,6 +53,38 @@ export function getRequestedScopes(): string[] {
   return raw.split(/[,\s]+/).map((scope) => scope.trim()).filter(Boolean);
 }
 
+function parseLoginList(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export function getGitHubAuthAllowedUsers(): string[] {
+  return parseLoginList(process.env.GITHUB_AUTH_ALLOWED_USERS);
+}
+
+export function isGitHubAuthUserAllowed(login: string): boolean {
+  const allowed = getGitHubAuthAllowedUsers();
+  if (allowed.length === 0) return true;
+  return allowed.includes(login.trim().toLowerCase());
+}
+
+export function getMainPushAllowedUsers(): string[] {
+  const configured = parseLoginList(process.env.GITHUB_MAIN_PUSH_ALLOWED_USERS);
+  return configured.length > 0 ? configured : ["cre8veheart-ai"];
+}
+
+export function canUserAuthorizeMainPush(login: string): boolean {
+  return getMainPushAllowedUsers().includes(login.trim().toLowerCase());
+}
+
+export function getMainPushAuthMaxAgeSeconds(): number {
+  const raw = Number(process.env.GITHUB_MAIN_PUSH_AUTH_MAX_AGE_SECONDS ?? "1800");
+  if (!Number.isFinite(raw)) return 1800;
+  return Math.min(Math.max(Math.floor(raw), 60), 86_400);
+}
+
 export function getGitHubPermissions(scopes: string[]): GitHubPermissions {
   const normalized = new Set(scopes.map((scope) => scope.trim()).filter(Boolean));
   const repositoryAccess = normalized.has("repo") || normalized.has("public_repo");

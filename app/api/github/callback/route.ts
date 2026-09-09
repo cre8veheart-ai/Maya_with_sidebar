@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchGitHubViewer } from "@/lib/github/api";
-import { getGitHubCallbackUrl } from "@/lib/github/config";
+import { getGitHubCallbackUrl, isGitHubAuthUserAllowed } from "@/lib/github/config";
 import {
   clearOAuthState,
   getOAuthState,
@@ -63,6 +63,9 @@ export async function GET(req: NextRequest) {
       .map((scope) => scope.trim())
       .filter(Boolean);
     const user = await fetchGitHubViewer(payload.access_token);
+    if (!isGitHubAuthUserAllowed(user.login)) {
+      throw new Error("github-user-not-authorized");
+    }
     const session = await createGitHubSession({
       accessToken: payload.access_token,
       scope: scopes,
