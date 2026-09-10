@@ -94,10 +94,10 @@ Resume phrase: **DIH EVENT MAYA**
 
 - PR #123 is the active removal of the custom Claude MCP control plane and provider-specific repository restrictions.
 - VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
-- VERIFIED on the initial PR head: MAYA Full Verification passed and both Vercel project previews reported READY. A leftover infiltration step in the preview and production workflows was then replaced with a credential-leak audit; final post-change verification is pending.
+- VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: complete PR #123 checks, verify no custom control remnants remain, then obtain Leslie's approval for the final PR state before merge.
+- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
 
 ### What we were building
 
@@ -794,3 +794,15 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
 
+
+
+### Work History Trail — 2026-09-10 third-party connection and root-config sweep
+
+- Founder direction: preserve legitimate third-party services as optional MAYA tools; remove only obsolete control planes, duplicate deployment paths, permission interference and misleading configuration.
+- Connection inventory: Anthropic, OpenAI, Gemini and OpenClaw remain optional provider capabilities; GitHub, canonical Vercel and Google Drive remain connected tools. Zapier, Adobe and Notion are approved future options but were not verified as installed ChatGPT connections during this sweep.
+- Root cleanup: removed stale `services/claude-mcp/**` exclusions from `eslint.config.mjs` and `tsconfig.json` after the service deletion.
+- Deployment cleanup: removed `.github/workflows/vercel-preview.yml` and `.github/workflows/vercel-deploy.yml`. Both used the third-party `amondnet/vercel-action@v25`; the preview deployment step was silently skipped when secrets were missing, while the native Vercel Git integration separately deployed the same commit. The canonical native Git integration remains.
+- Documentation correction: replaced the stale README claim that MAYA currently fails closed behind an invite-code gate; documented actual provider, persistence, access and beta limitations without representing staged connectors as active.
+- External removal still pending: Vercel project `maya-claude-mcp` remains linked to the repository and must be deleted through a Vercel management surface that supports project deletion.
+- Recovery: restore either removed workflow or root-config entry from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; revert this PR commit to restore the previous README as a unit.
+- Verification gate: full GitHub verification plus one canonical Vercel preview on the resulting commit. PR remains unmerged pending Leslie's approval of its exact final head.
