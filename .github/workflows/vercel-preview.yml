@@ -29,8 +29,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Permission infiltration audit
-        run: npm run test:permissions
+      - name: Credential leak audit
+        run: npm run test:credentials
 
       - name: Executive security gauntlet
         run: npm run test:security
