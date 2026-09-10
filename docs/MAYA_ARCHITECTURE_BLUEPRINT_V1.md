@@ -92,11 +92,12 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #111 is the active branch/merge-authority change.
-- VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
-- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
-- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
-- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
+- PR #123 is the active removal of the custom Claude MCP control plane and provider-specific repository restrictions.
+- VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
+- VERIFIED on the initial PR head: MAYA Full Verification passed and both Vercel project previews reported READY. A leftover infiltration step in the preview and production workflows was then replaced with a credential-leak audit; final post-change verification is pending.
+- GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
+- External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
+- Exact first next action: complete PR #123 checks, verify no custom control remnants remain, then obtain Leslie's approval for the final PR state before merge.
 
 ### What we were building
 
@@ -351,6 +352,8 @@ Scope and evidence:
 - No historical title, body, green check or READY deployment may be promoted to runtime proof without the corresponding capability test.
 
 ### Amendment History
+
+- 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
 
 - 2026-09-08: Applied one Founder-authorized production rule to all engineering agents. Claude and Ari may build branches and pull requests; a merge to `main` requires Leslie's fresh approval for the exact latest commit, and later commits invalidate prior approval.
 - 2026-09-08: Founder Leslie personally discovered and ordered removal of repository hardening and automatic branch-deletion controls. Established Founder authority over repository-local policies; conflicts now require disclosure and Founder decision rather than an automatic stop.
@@ -750,11 +753,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - The official Vercel MCP connection is available to Claude project sessions. Each Claude environment must complete Vercel OAuth when first prompted; credentials are never committed to the repository.
 - Claude-created branches and pull requests may trigger preview builds through the canonical GitHub-to-Vercel integration.
 - Granted technical permission and authorization to use it are separate. Claude and Ari may inspect, edit, test, branch, and open or update pull requests without separate merge permission.
-- Production authority remains with Founder Leslie. Claude may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@claude merge` on that pull request after its latest commit.
-- Ari/Codex may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@ari merge` after its latest commit, or Leslie gives an explicit current-turn instruction naming that exact pull request and directing its merge.
-- Any later commit invalidates an earlier merge authorization. A fresh authorization is required for the new final commit.
+- Production authority remains with Founder Leslie. Claude, Ari/Codex, Copilot, and later collaborators may merge an eligible pull request only after Leslie explicitly approves the current pull request.
+- Approval may be given in the current working conversation or through GitHub's ordinary approval controls. No provider-specific phrase, exact-comment syntax, custom MCP gate, or special bot workflow is required.
+- If a materially different commit is added after approval, disclose the change and obtain renewed approval before production.
 - Pull-request preview deployments remain automatic and reversible. Production may come only from `main` after the Founder-authorized merge; green checks or a READY preview are not themselves merge permission.
 - Standard engineering safeguards remain: do not expose secrets, do not copy client-vault plaintext into engineering context, report failures accurately, and preserve one canonical repository and deployment path.
+
+### Work History Trail — 2026-09-10 custom Claude control-plane removal
+
+- Founder authorization: remove Claude-specific control-plane remnants from the repository and live GitHub/Vercel configuration while preserving ordinary collaborator access, required MAYA verification, secrets protection, client-vault boundaries, and Founder production authority.
+- PR/branch: PR #123, `ari/restore-ai-team-collaboration`.
+- Repository removals: `.github/workflows/claude.yml`; `services/claude-mcp/**`; `scripts/audit-read-write-infiltrates.mjs`; the `verify-claude-mcp` job; provider-specific branch allowlists, exact-comment merge gates, and MCP verification requirements.
+- Replacements: `scripts/audit-credential-leaks.mjs`; `test:credentials`; credential-leak steps in preview, production, and full verification workflows; provider-neutral Founder approval language.
+- External sweep: GitHub repository rulesets returned `[]`. Branch-protection details remain UNKNOWN because the installed integration returned 403 without administration read access. Vercel confirmed the separate project `maya-claude-mcp` (`prj_uQg0guOVAMsAbIkmOPMZorN85Pzc`) still exists and is linked to this repository; deletion remains pending.
+- Verification: initial PR head passed MAYA Full Verification and both Vercel status contexts. A second sweep found and corrected two leftover workflow calls plus stale policy text; final checks are pending on the newest commit.
+- Recovery: revert PR #123 or restore individual deleted files from pre-PR `main` commit `13224fd45c30df1cb4e3303f695126c92593d3f7`. Recreate the Vercel project only if a future approved architecture again requires a dedicated MCP service.
 
 ### Work History Trail — 2026-09-08 Founder-authorized agent merges
 
