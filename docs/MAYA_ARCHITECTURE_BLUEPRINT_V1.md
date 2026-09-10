@@ -806,3 +806,13 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - External removal still pending: Vercel project `maya-claude-mcp` remains linked to the repository and must be deleted through a Vercel management surface that supports project deletion.
 - Recovery: restore either removed workflow or root-config entry from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; revert this PR commit to restore the previous README as a unit.
 - Verification gate: full GitHub verification plus one canonical Vercel preview on the resulting commit. PR remains unmerged pending Leslie's approval of its exact final head.
+
+
+### Work History Trail — 2026-09-10 obsolete control-plane PR closure
+
+- Founder direction: continue disassembling technical blocks while preserving legitimate third-party tools as optional capabilities.
+- Closed without merge: PR #97 (custom Claude Anthropic MCP access), PR #117 and PR #121 (Claude-specific trigger workflow revisions), PR #120 (model pin used only by the removed Claude workflow), and PR #122 (second in-app main-push control plane and OAuth allowlists).
+- Reason: each PR would restore, modify or depend on the superseded control-plane architecture removed by PR #123.
+- Preservation: each PR received an explanatory closure comment; branches, commits, diffs and conversation history remain recoverable. No branch or commit history was deleted.
+- Unaffected: MAYA's Anthropic runtime provider, official optional tools/connectors, canonical GitHub integration, canonical native Vercel integration and unrelated feature PRs.
+- Verification before closure: every target was confirmed open and its current title/body inspected. GitHub returned each target as closed and unmerged afterward.
