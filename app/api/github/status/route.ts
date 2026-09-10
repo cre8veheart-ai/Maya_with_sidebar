@@ -45,7 +45,7 @@ export async function GET() {
     });
   } catch (error) {
     const credentialRejected =
-      error instanceof GitHubApiError && (error.status === 401 || error.status === 403);
+      error instanceof GitHubApiError && error.status === 401;
 
     if (credentialRejected) {
       await deleteGitHubSession(session.id);
