@@ -816,3 +816,15 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Preservation: each PR received an explanatory closure comment; branches, commits, diffs and conversation history remain recoverable. No branch or commit history was deleted.
 - Unaffected: MAYA's Anthropic runtime provider, official optional tools/connectors, canonical GitHub integration, canonical native Vercel integration and unrelated feature PRs.
 - Verification before closure: every target was confirmed open and its current title/body inspected. GitHub returned each target as closed and unmerged afterward.
+
+
+### Work History Trail — 2026-09-10 layered authorization-remnant sweep
+
+- Historical layers traced: repository policy documents, agent instructions, verification scripts, runtime OAuth/session code, GitHub workflows and external project connections.
+- Confirmed already removed: `.github/MAYA_SECURITY_GUARDRAILS.md` and `.github/workflows/branch-lifecycle.yml`, including automatic deletion of `copilot/*`, merged and closed-PR branches.
+- Removed in this sweep: `docs/MAYA_JAIL.md`. It was non-executable but instructed future operators to treat capabilities as detained/convicted, fail unknown authority closed and revoke externally connected authority not justified by the jail ledger.
+- Restored: GitHub product session cookie duration from the hardening-imposed 8 hours to the prior 30 days in `lib/github/session.ts`. Session invalidation on true authentication failure remains.
+- Preserved intentionally: founder continuity code and verification because it carries Leslie's requested DIH continuity and does not grant repository authority.
+- Migration blocker exposed, not removed: legacy beta-session authentication remains used by profile, role-lens, saved-session and Strategy Room APIs. Chat itself no longer uses that gate. Removing these checks before one unified MAYA sign-in replaces them would either break persistence or expose user data.
+- Recovery: restore `docs/MAYA_JAIL.md` from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; change `getCookieOptions(60 * 60 * 24 * 30)` back to `getCookieOptions(60 * 60 * 8)` to restore the shortened connector session.
+- Verification gate: full repository verification on the final PR head; one unified sign-in migration must be a separately tested implementation slice.
