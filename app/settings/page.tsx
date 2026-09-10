@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import ProviderControls from "@/components/ProviderControls";
 import { loadProviderSettings, saveProviderSettings } from "@/lib/maya/providerStorage";
 import type { ProviderSettings } from "@/lib/maya/types";
@@ -21,6 +22,7 @@ type GitHubStatus = {
 };
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [providerSettings, setProviderSettings] = useState<ProviderSettings>({
     provider: "anthropic",
     anthropicModel: "",
@@ -54,7 +56,7 @@ export default function SettingsPage() {
   }
 
   function authorizeGitHub() {
-    window.location.href = "/api/github/connect";
+    router.push("/api/github/connect");
   }
 
   async function disconnectGitHub() {

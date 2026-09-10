@@ -86,17 +86,17 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-09 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #111 is the active branch/merge-authority change.
-- VERIFIED in source: Claude retains branch, edit, test and draft-PR capability; the proposed merge operation requires a fresh Founder comment after the latest commit.
-- VERIFIED on code commit `bc45e5a4cb37c81bc36be7b0968891187a58a063`: full repository verification and the Claude MCP security job passed in GitHub Actions run `34276400392`; both canonical Vercel previews completed successfully.
-- Remaining UNVERIFIED until live use: a Claude-created branch/PR invocation and the first Founder-approved production merge.
-- Exact first next action: allow this documentation-only commit to verify, mark PR #111 ready, then obtain Leslie's fresh authorization for the final commit before merge.
+- Active branch: `copilot/freebird-gallery`.
+- Focus slice: governed in-app GitHub authorization controls with owner/allowlist-gated main-merge button and PR fallback when required checks are not green.
+- VERIFIED locally on commit `c4aa447`: `npm ci` completed and `npm run verify` passed (lint, tests, continuity/security gates, build).
+- Remaining UNVERIFIED until live use: end-to-end OAuth callback with `GITHUB_AUTH_ALLOWED_USERS`, and a successful authorized branch merge through `/api/github/main-push` in a connected deployment.
+- Exact first next action: run the connected OAuth flow in preview, then validate one success path (green checks -> merge) and one fallback path (checks not green -> PR link/creation).
 
 ### What we were building
 
@@ -123,7 +123,7 @@ The Pocket Office client-vault and context model:
 
 ### First next action
 
-Verify PR #96's build and browser behavior, then implement the client-side cryptography/key-recovery design as a separate reviewed slice before enabling Add/Register. Do not introduce storage or client authentication until the zero-access gates are proven.
+Run live preview verification for the new GitHub settings controls and then proceed with the next Pocket Office client-vault slice after this governance flow is proven.
 
 ### Resume protocol
 
@@ -765,6 +765,18 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining live proof: Claude's first branch/PR creation and the first Founder-approved production merge remain UNVERIFIED until exercised.
 - Exact next action: verify the final documentation-only commit, mark PR #111 ready, then obtain Leslie's fresh merge authorization.
 
+### Work History Trail — 2026-09-09 authorized main-push workflow
+
+- Trigger/task: implement owner-authorized “Authorize + Push to Main” flow with fresh re-auth, required-check gating, explicit confirmation and PR fallback.
+- Blueprint sections used: §10 Permission Rules, §14 Claude Engineering Access, Current Working Checkpoint/Work History governance.
+- Live evidence checked: existing GitHub OAuth/status/write routes, repository validation gates (`npm ci`, `npm run verify`), and current settings runtime state.
+- Changes made: added `/api/github/main-push` guarded merge route; added GitHub auth/user allowlist and main-push allowlist config helpers; enforced optional OAuth login allowlist in callback; exposed main-push capability via status route; added in-app settings controls for authorize/disconnect and main-push confirmation; documented new env variables in `.env.example`.
+- Verified result: VERIFIED locally on branch `copilot/freebird-gallery` at commit `c4aa447` with passing `npm run verify`; build includes `/api/github/main-push` route.
+- Stop reason or remaining blocker: live OAuth and merge behavior remain UNVERIFIED until exercised in a connected preview/production-like environment with real GitHub app credentials.
+- Exact first next action: run one connected success path and one fallback path to confirm audit logging, stale-auth rejection and PR fallback behavior.
+- Relevant branch/commit/deployment identifiers: branch `copilot/freebird-gallery`, commit `c4aa447`; no deployment executed in this session.
+- Failures and fixes: lint surfaced one navigation warning for `window.location.href` in settings; fixed by switching to `useRouter().push`; post-fix verification passed.
+
 ### Work History Trail — 2026-09-05 Claude access restoration
 
 - Founder authorization: remove the Claude-specific restrictions and restore Anthropic-default working capabilities across MAYA sessions and builds.
@@ -780,4 +792,3 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
-
