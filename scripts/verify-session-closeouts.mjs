@@ -28,11 +28,8 @@ for (const field of [
 if (!client.includes('send(snapshot, "close")')) {
   throw new Error("Automatic closeout timer is not wired");
 }
-if (!route.includes("resolveWorkspaceSession")) {
-  throw new Error("Session API does not enforce workspace isolation");
-}
-if (/requireBetaSession|AUTH_REQUIRED/.test(route)) {
-  throw new Error("Session API restores the retired beta-session gate");
+if (!route.includes("requireBetaSession")) {
+  throw new Error("Session API does not enforce authentication");
 }
 if (!route.includes("closeStale")) {
   throw new Error("Server-side stale session recovery is missing");

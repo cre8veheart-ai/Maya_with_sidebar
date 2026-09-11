@@ -1,10 +1,6 @@
 import { NextRequest } from "next/server";
 import type { ExecRole, RoleLens } from "@/lib/maya/types";
-import {
-  attachWorkspaceSession,
-  resolveWorkspaceSession,
-  type WorkspaceSession,
-} from "@/lib/server/workspace-session";
+import { isResponseError, requireBetaSession } from "@/lib/server/auth";
 import { getRoleLens, saveRoleLens } from "@/lib/storage/userVault";
 
 export const dynamic = "force-dynamic";
@@ -13,11 +9,20 @@ const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
 
-function noStore(session: WorkspaceSession, payload: unknown, status = 200) {
-  return attachWorkspaceSession(Response.json(payload, {
+function noStore(payload: unknown, status = 200) {
+  return Response.json(payload, {
     status,
     headers: { "Cache-Control": "no-store" },
-  }), session);
+  });
+}
+
+function authorize(req: NextRequest): string | Response {
+  try {
+    return requireBetaSession(req).sessionId;
+  } catch (error) {
+    if (isResponseError(error)) return error;
+    return noStore({ error: "Authorization failed", code: "AUTH_ERROR" }, 500);
+  }
 }
 
 function parseRole(raw: unknown): ExecRole | null {
@@ -56,43 +61,43 @@ function parseLens(raw: unknown): RoleLens | null {
 }
 
 export async function GET(req: NextRequest) {
-  const session = resolveWorkspaceSession(req);
-  const workspaceId = session.sessionId;
+  const workspaceId = authorize(req);
+  if (workspaceId instanceof Response) return workspaceId;
 
   const role = parseRole(req.nextUrl.searchParams.get("role"));
   if (!role) {
-    return noStore(session, { error: "Valid role required", code: "INVALID_ROLE" }, 400);
+    return noStore({ error: "Valid role required", code: "INVALID_ROLE" }, 400);
   }
 
   try {
-    return noStore(session, { lens: await getRoleLens(workspaceId, role) });
+    return noStore({ lens: await getRoleLens(workspaceId, role) });
   } catch (error) {
     console.error("MAYA lens read failed", error);
-    return noStore(session, { error: "Lens storage unavailable", code: "STORAGE_ERROR" }, 503);
+    return noStore({ error: "Lens storage unavailable", code: "STORAGE_ERROR" }, 503);
   }
 }
 
 export async function POST(req: NextRequest) {
-  const session = resolveWorkspaceSession(req);
-  const workspaceId = session.sessionId;
+  const workspaceId = authorize(req);
+  if (workspaceId instanceof Response) return workspaceId;
 
   let body: Record<string, unknown>;
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return noStore(session, { error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
+    return noStore({ error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
   }
 
   const lens = parseLens(body.lens);
   if (!lens) {
-    return noStore(session, { error: "Valid lens required", code: "INVALID_LENS" }, 400);
+    return noStore({ error: "Valid lens required", code: "INVALID_LENS" }, 400);
   }
 
   try {
     await saveRoleLens(workspaceId, lens);
-    return noStore(session, { lens });
+    return noStore({ lens });
   } catch (error) {
     console.error("MAYA lens write failed", error);
-    return noStore(session, { error: "Lens storage unavailable", code: "STORAGE_ERROR" }, 503);
+    return noStore({ error: "Lens storage unavailable", code: "STORAGE_ERROR" }, 503);
   }
 }
