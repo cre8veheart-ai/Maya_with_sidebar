@@ -147,19 +147,25 @@ export default function CeoChatOnly() {
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
 
   return (
-    <main className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8" aria-labelledby="ceo-title">
+    <main className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-white px-4 py-8" aria-labelledby="ceo-title">
       <section className="w-full max-w-2xl -translate-y-[8vh]">
         <div className="mb-5 text-center">
-          <h1 id="ceo-title" className="text-3xl font-semibold text-[#cdd6f4]">CEO</h1>
-          <p className="mt-1 text-sm text-[#7f849c]">Executive decision workspace</p>
+          <h1
+            id="ceo-title"
+            className="text-4xl font-black text-[#16223b] font-serif"
+            style={{ textShadow: "0 1px 0 #ffffff, 0 2px 0 rgba(15, 23, 42, 0.14)" }}
+          >
+            <span className="mr-1 align-top text-5xl leading-none">C</span>EO
+          </h1>
+          <p className="mt-1 text-sm text-[#475569]">Executive decision workspace</p>
         </div>
 
         {restartPoint && (
-          <div className="mb-4 rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa]">
+          <div className="mb-4 rounded-xl border border-[#93c5fd] bg-[#eff6ff] px-4 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#1d4ed8]">
               MAYA restart point
             </p>
-            <p className="mt-1 text-[12px] leading-relaxed text-[#cdd6f4]">
+            <p className="mt-1 text-[12px] leading-relaxed text-[#1e3a8a]">
               {restartPoint}
             </p>
           </div>
@@ -177,13 +183,13 @@ export default function CeoChatOnly() {
             placeholder="Talk to your CEO…"
             rows={3}
             disabled={streaming}
-            className="flex-1 min-h-[88px] max-h-44 resize-none rounded-xl border border-[#45475a] bg-[#313244] px-4 py-3 text-[15px] text-[#cdd6f4] placeholder-[#6c7086] focus:outline-none focus:border-[#89b4fa] disabled:opacity-50"
+            className="flex-1 min-h-[88px] max-h-44 resize-none rounded-xl border border-black/15 bg-white px-4 py-3 text-[15px] text-[#1f2937] placeholder-[#94a3b8] focus:outline-none focus:border-[#1d4ed8] disabled:opacity-50"
           />
           {streaming ? (
             <button
               type="button"
               onClick={stop}
-              className="shrink-0 rounded-xl border border-[#585b70] px-5 py-3 text-[13px] font-semibold text-[#cdd6f4] transition-colors hover:bg-[#313244]"
+              className="shrink-0 rounded-xl border border-black/15 px-5 py-3 text-[13px] font-semibold text-[#1f2937] transition-colors hover:bg-[#f8fafc]"
             >
               Stop
             </button>
@@ -191,7 +197,7 @@ export default function CeoChatOnly() {
             <button
               type="submit"
               disabled={!input.trim()}
-              className="shrink-0 rounded-xl bg-[#89b4fa] px-5 py-3 text-[13px] font-semibold text-[#1e1e2e] transition-colors hover:bg-[#b4d0fb] disabled:cursor-not-allowed disabled:opacity-40"
+              className="shrink-0 rounded-xl bg-[#1d4ed8] px-5 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#1e40af] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Send
             </button>
@@ -199,7 +205,7 @@ export default function CeoChatOnly() {
         </form>
 
         {error && (
-          <div role="alert" className="mt-4 rounded-xl border border-[#f38ba8]/40 bg-[#f38ba8]/10 p-4 text-sm text-[#f5c2e7]">
+          <div role="alert" className="mt-4 rounded-xl border border-[#fca5a5] bg-[#fef2f2] p-4 text-sm text-[#b91c1c]">
             {error.message}
           </div>
         )}
@@ -207,10 +213,10 @@ export default function CeoChatOnly() {
         {lastAssistant && (
           <div
             aria-live="polite"
-            className="mt-5 rounded-xl border border-[#313244] bg-[#181825] p-5 text-[14px] leading-relaxed text-[#cdd6f4] whitespace-pre-wrap"
+            className="mt-5 rounded-xl border border-black/10 bg-[#f8fafc] p-5 text-[14px] leading-relaxed text-[#1f2937] whitespace-pre-wrap"
           >
             {lastAssistant.content}
-            {streaming && <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#89b4fa] align-text-bottom" />}
+            {streaming && <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#1d4ed8] align-text-bottom" />}
           </div>
         )}
       </section>

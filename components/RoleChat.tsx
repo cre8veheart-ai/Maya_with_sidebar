@@ -349,20 +349,20 @@ export default function RoleChat({
     !streaming;
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden">
-      <div className="px-4 py-2.5 border-b border-[#313244] shrink-0 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#a6e3a1]" />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
+    <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden bg-white text-[#1f2937]">
+      <div className="px-4 py-2.5 border-b border-black/10 shrink-0 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
+        <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#475569]">
           Talk to your {role.toUpperCase()} · MAYA executive workspace
         </span>
       </div>
 
       {restartPoint && (
-        <div className="mx-4 mt-3 rounded-xl border border-[#89b4fa]/40 bg-[#89b4fa]/10 px-4 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#89b4fa]">
+        <div className="mx-4 mt-3 rounded-xl border border-[#93c5fd] bg-[#eff6ff] px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[#1d4ed8]">
             MAYA restart point
           </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-[#cdd6f4]">
+          <p className="mt-1 text-[12px] leading-relaxed text-[#1e3a8a]">
             {restartPoint}
           </p>
         </div>
@@ -371,7 +371,7 @@ export default function RoleChat({
       <div className="flex-1 min-h-0 min-w-0 w-full max-w-full overflow-x-hidden overflow-y-auto px-4 py-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-[13px] text-[#585b70] text-center leading-relaxed">
+            <p className="text-[13px] text-[#64748b] text-center leading-relaxed">
               {role.toUpperCase()} lens active.
               <br />
               Ask anything.
@@ -387,8 +387,8 @@ export default function RoleChat({
             <div
               className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] ${
                 message.role === "user"
-                  ? "bg-[#89b4fa] text-[#1e1e2e] font-medium"
-                  : "bg-[#1e1e2e] border border-[#313244] text-[#cdd6f4]"
+                 ? "bg-[#e2e8f0] text-[#0f172a] font-medium"
+                 : "bg-[#ffffff] border border-black/10 text-[#1f2937]"
               }`}
             >
               {message.content || (
@@ -398,7 +398,7 @@ export default function RoleChat({
                 streaming &&
                 index === messages.length - 1 &&
                 message.content && (
-                  <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#89b4fa] animate-pulse rounded-sm align-middle" />
+                  <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#2563eb] animate-pulse rounded-sm align-middle" />
                 )}
             </div>
           </div>
@@ -413,7 +413,7 @@ export default function RoleChat({
                     key={type}
                     type="button"
                     onClick={() => proposeAction(type)}
-                    className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#313244] text-[#a6adc8] hover:bg-[#45475a] hover:text-[#cdd6f4] transition-colors"
+                    className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#f8fafc] text-[#334155] border border-black/10 hover:bg-[#f1f5f9] transition-colors"
                   >
                     + {label}
                   </button>
@@ -421,19 +421,19 @@ export default function RoleChat({
               )}
             </div>
 
-            <div className="rounded-xl border border-[#313244] bg-[#1e1e2e] p-4">
+            <div className="rounded-xl border border-black/10 bg-[#f8fafc] p-4">
               <div className="flex items-center justify-between gap-3 mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#6c7086]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#475569]">
                   Save Working Clip
                 </p>
-                <span className="text-[11px] text-[#89b4fa]">Full session auto-saved</span>
+                <span className="text-[11px] text-[#1d4ed8]">Full session auto-saved</span>
               </div>
 
               <textarea
                 value={clipDraft}
                 onChange={(e) => setClipDraft(e.target.value)}
                 rows={4}
-                className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8] transition-colors"
               />
 
               <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -446,7 +446,7 @@ export default function RoleChat({
                     onChange={(e) => setClipComment(e.target.value)}
                     rows={3}
                     placeholder="Why this was clipped, what to do next, or context for the receiving exec."
-                    className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                    className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8] transition-colors"
                   />
                 </label>
                 <div className="grid gap-3">
@@ -458,7 +458,7 @@ export default function RoleChat({
                       value={clipVendorName}
                       onChange={(e) => setClipVendorName(e.target.value)}
                       placeholder="Optional vendor or partner"
-                      className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8] transition-colors"
                     />
                   </label>
                   <label className="block">
@@ -469,7 +469,7 @@ export default function RoleChat({
                       value={clipVendorUrl}
                       onChange={(e) => setClipVendorUrl(e.target.value)}
                       placeholder="vendor.example.com"
-                      className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa] transition-colors"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8] transition-colors"
                     />
                   </label>
                 </div>
@@ -489,8 +489,8 @@ export default function RoleChat({
                         onClick={() => toggleClipAssignment(assignedRole)}
                         className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-colors ${
                           selected
-                            ? "bg-[#89b4fa]/20 text-[#89b4fa] border border-[#89b4fa]/40"
-                            : "bg-[#313244] text-[#a6adc8] border border-[#45475a] hover:bg-[#45475a]"
+                           ? "bg-[#dbeafe] text-[#1d4ed8] border border-[#93c5fd]"
+                           : "bg-white text-[#334155] border border-black/10 hover:bg-[#f8fafc]"
                         }`}
                       >
                         {getRoleLabel(assignedRole)}
@@ -504,7 +504,7 @@ export default function RoleChat({
                 <button
                   type="button"
                   onClick={saveClip}
-                  className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#89b4fa] text-[11px] font-semibold hover:bg-[#45475a] transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[#e2e8f0] text-[#0f172a] text-[11px] font-semibold hover:bg-[#cbd5e1] transition-colors"
                 >
                   Save clip
                 </button>
@@ -519,18 +519,18 @@ export default function RoleChat({
             key={action.id}
             className={`min-w-0 w-full max-w-full overflow-hidden rounded-xl border p-4 text-[13px] transition-all ${
               action.status === "pending"
-                ? "border-[#f9e2af] bg-[#1e1e2e]"
+                ? "border-[#facc15] bg-[#fffbeb]"
                 : action.status === "approved"
-                  ? "border-[#a6e3a1] bg-[#1e1e2e] opacity-60"
-                  : "border-[#313244] bg-[#1e1e2e] opacity-40"
+                  ? "border-[#86efac] bg-[#f0fdf4] opacity-70"
+                  : "border-black/10 bg-[#f8fafc] opacity-40"
             }`}
           >
             <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#f9e2af] mb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#a16207] mb-1">
                   Proposed · {action.label}
                 </p>
-                <p className="text-[#a6adc8] text-[12px] leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
+                <p className="text-[#334155] text-[12px] leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
                   {action.context}
                   {action.context.length >= 220 ? "…" : ""}
                 </p>
@@ -545,7 +545,7 @@ export default function RoleChat({
                             targetRole: e.target.value as ExecRole,
                           })
                         }
-                        className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa]"
+                        className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8]"
                       >
                         {EXEC_ROLE_OPTIONS.map((option) => (
                           <option key={option} value={option}>
@@ -563,7 +563,7 @@ export default function RoleChat({
                           updatePendingAction(action.id, { vendorName: e.target.value })
                         }
                         placeholder="Optional"
-                        className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa]"
+                        className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8]"
                       />
                     </label>
 
@@ -575,7 +575,7 @@ export default function RoleChat({
                           updatePendingAction(action.id, { vendorUrl: e.target.value })
                         }
                         placeholder="vendor.example.com"
-                        className="w-full bg-[#313244] border border-[#45475a] rounded-lg px-3 py-2 text-[12px] text-[#cdd6f4] focus:outline-none focus:border-[#89b4fa]"
+                        className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-[12px] text-[#1f2937] focus:outline-none focus:border-[#1d4ed8]"
                       />
                     </label>
                   </div>
@@ -587,14 +587,14 @@ export default function RoleChat({
                   <button
                     type="button"
                     onClick={() => resolveAction(action.id, "approved")}
-                    className="px-3 py-1.5 rounded-lg bg-[#a6e3a1] text-[#1e1e2e] text-[11px] font-bold hover:bg-[#cdf0cb] transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-[#22c55e] text-white text-[11px] font-bold hover:bg-[#16a34a] transition-colors"
                   >
                     Approve
                   </button>
                   <button
                     type="button"
                     onClick={() => resolveAction(action.id, "dismissed")}
-                    className="px-3 py-1.5 rounded-lg bg-[#313244] text-[#a6adc8] text-[11px] font-bold hover:bg-[#45475a] transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-[#e2e8f0] text-[#334155] text-[11px] font-bold hover:bg-[#cbd5e1] transition-colors"
                   >
                     Dismiss
                   </button>
@@ -602,13 +602,13 @@ export default function RoleChat({
               )}
 
               {action.status === "approved" && (
-                <span className="text-[11px] text-[#a6e3a1] font-semibold shrink-0">
+                <span className="text-[11px] text-[#15803d] font-semibold shrink-0">
                   ✓ Approved · Not executed
                 </span>
               )}
 
               {action.status === "dismissed" && (
-                <span className="text-[11px] text-[#585b70] shrink-0">Dismissed</span>
+                <span className="text-[11px] text-[#64748b] shrink-0">Dismissed</span>
               )}
             </div>
           </div>
@@ -617,7 +617,7 @@ export default function RoleChat({
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={send} className="px-4 py-3 border-t border-[#313244] shrink-0">
+      <form onSubmit={send} className="px-4 py-3 border-t border-black/10 shrink-0 bg-white">
         <div className="flex min-w-0 gap-2 items-end">
           <textarea
             value={input}
@@ -627,18 +627,18 @@ export default function RoleChat({
             }}
             placeholder={`Ask your ${role.toUpperCase()} lens…`}
             rows={1}
-            className="min-w-0 flex-1 bg-[#313244] border border-[#45475a] rounded-xl px-3 py-2.5 text-[13px] text-[#cdd6f4] placeholder-[#585b70] resize-none focus:outline-none focus:border-[#89b4fa] transition-colors"
+            className="min-w-0 flex-1 bg-white border border-black/15 rounded-xl px-3 py-2.5 text-[13px] text-[#1f2937] placeholder-[#94a3b8] resize-none focus:outline-none focus:border-[#1d4ed8] transition-colors"
             style={{ minHeight: "40px", maxHeight: "120px" }}
           />
           <button
             type="submit"
             disabled={!input.trim() || streaming}
-            className="px-4 py-2.5 bg-[#89b4fa] text-[#1e1e2e] rounded-xl text-[12px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#b4d0fb] transition-colors shrink-0"
+            className="px-4 py-2.5 bg-[#1d4ed8] text-white rounded-xl text-[12px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1e40af] transition-colors shrink-0"
           >
             Send
           </button>
         </div>
-        <p className="mt-1.5 text-[10px] text-[#585b70]">
+        <p className="mt-1.5 text-[10px] text-[#64748b]">
           Enter to send · Shift+Enter for new line · Queries are auto-saved with estimated token fee
         </p>
       </form>
