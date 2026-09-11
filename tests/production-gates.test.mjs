@@ -5,7 +5,10 @@ import {
   createBetaSession,
   verifyBetaSession,
 } from "../lib/beta/session-core.mjs";
-import { authenticateBetaToken } from "../lib/server/auth-core.mjs";
+import {
+  isWorkspaceSessionId,
+  resolveWorkspaceSessionId,
+} from "../lib/server/workspace-session-core.mjs";
 import { evaluateHealth } from "../lib/server/health-core.mjs";
 
 const TEST_SECRET = "test-only-beta-session-secret-32-chars-minimum";
@@ -75,31 +78,31 @@ test("beta session tokens validate and reject tampering", async () => {
   });
 });
 
-test("missing beta session fails closed with a structured 401 response", async () => {
-  await withBetaSecret(TEST_SECRET, async () => {
-    let thrown;
-    try {
-      authenticateBetaToken(undefined);
-    } catch (error) {
-      thrown = error;
-    }
+test("open operation creates an isolated workspace session without sign-in", () => {
+  const session = resolveWorkspaceSessionId(undefined, undefined);
 
-    assert.ok(thrown instanceof Response);
-    assert.equal(thrown.status, 401);
-    assert.equal(thrown.headers.get("cache-control"), "no-store");
-    assert.deepEqual(await thrown.json(), {
-      error: "Unauthorized",
-      code: "AUTH_REQUIRED",
-    });
-  });
+  assert.equal(isWorkspaceSessionId(session.sessionId), true);
+  assert.equal(session.shouldSetCookie, true);
+  assert.equal(session.migrated, false);
 });
 
-test("valid beta session authenticates without provider or network access", async () => {
+test("an existing workspace session remains stable", () => {
+  const id = "a54db6da-4eb1-4e6c-8f09-cc7350d67d20";
+  const session = resolveWorkspaceSessionId(id, undefined);
+
+  assert.equal(session.sessionId, id);
+  assert.equal(session.shouldSetCookie, false);
+  assert.equal(session.migrated, false);
+});
+
+test("a valid legacy beta session migrates without losing its workspace", async () => {
   await withBetaSecret(TEST_SECRET, () => {
     const token = createBetaSession();
-    const auth = authenticateBetaToken(token);
+    const beta = verifyBetaSession(token);
+    const session = resolveWorkspaceSessionId(undefined, token);
 
-    assert.equal(typeof auth.sessionId, "string");
-    assert.ok(auth.sessionId.length > 0);
+    assert.equal(session.sessionId, beta.sub);
+    assert.equal(session.shouldSetCookie, true);
+    assert.equal(session.migrated, true);
   });
 });

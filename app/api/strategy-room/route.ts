@@ -1,5 +1,8 @@
 import { NextRequest } from "next/server";
-import { requireBetaSession, isResponseError } from "@/lib/server/auth";
+import {
+  attachWorkspaceSession,
+  resolveWorkspaceSession,
+} from "@/lib/server/workspace-session";
 import { runStrategyRoom } from "@/lib/maya/strategyRoom";
 import {
   buildFounderContinuityMessage,
@@ -26,13 +29,10 @@ function isExecRole(value: unknown): value is ExecRole {
 }
 
 export async function POST(req: NextRequest) {
-  let session;
-  try {
-    session = requireBetaSession(req);
-  } catch (error) {
-    if (isResponseError(error)) return error;
-    return Response.json({ error: "Authentication failed", code: "AUTH_ERROR" }, { status: 500 });
-  }
+  const session = resolveWorkspaceSession(req);
+
+  const respond = (payload: unknown, status = 200, headers?: HeadersInit) =>
+    attachWorkspaceSession(Response.json(payload, { status, headers }), session);
 
   let roles: ExecRole[] = [];
   let prompt = "";
@@ -53,14 +53,14 @@ export async function POST(req: NextRequest) {
     model = sanitizeText(payload.model, 100);
     ludicrousMode = payload.ludicrousMode === true;
   } catch {
-    return Response.json({ error: "Invalid request body", code: "INVALID_REQUEST" }, { status: 400 });
+    return respond({ error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
   }
 
   if (roles.length < 2) {
-    return Response.json({ error: "Select at least two executive roles", code: "ROLES_REQUIRED" }, { status: 400 });
+    return respond({ error: "Select at least two executive roles", code: "ROLES_REQUIRED" }, 400);
   }
   if (!prompt) {
-    return Response.json({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, { status: 400 });
+    return respond({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, 400);
   }
 
   const continuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
@@ -80,26 +80,22 @@ export async function POST(req: NextRequest) {
       founderContext,
     });
 
-    return Response.json(result, {
-      headers: {
+    return respond(result, 200, {
         "Cache-Control": "no-store",
         "X-Maya-Continuity": continuityActive ? "active" : "inactive",
-      },
     });
   } catch (error) {
     const incidentId = crypto.randomUUID();
     const errorType = error instanceof Error ? error.name : typeof error;
     console.error("Strategy Room request failed", { incidentId, errorType });
-    return Response.json(
+    return respond(
       {
         error: "Strategy Room is temporarily unavailable",
         code: "STRATEGY_ROOM_ERROR",
         incidentId,
       },
-      {
-        status: 502,
-        headers: { "Cache-Control": "no-store" },
-      },
+      502,
+      { "Cache-Control": "no-store" },
     );
   }
 }

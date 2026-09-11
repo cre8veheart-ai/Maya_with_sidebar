@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 
-import { isResponseError, requireBetaSession } from "@/lib/server/auth";
+import {
+  attachWorkspaceSession,
+  resolveWorkspaceSession,
+  type WorkspaceSession,
+} from "@/lib/server/workspace-session";
 import {
   buildMayaSessionCloseout,
   MAYA_SESSION_INACTIVITY_MS,
@@ -19,20 +23,11 @@ const VALID_ROLES = new Set<ExecRole | "strategy-room">([
   "admin", "hr", "legal", "strategy-room",
 ]);
 
-function noStore(payload: unknown, status = 200) {
-  return Response.json(payload, {
+function noStore(session: WorkspaceSession, payload: unknown, status = 200) {
+  return attachWorkspaceSession(Response.json(payload, {
     status,
     headers: { "Cache-Control": "no-store" },
-  });
-}
-
-function authorize(req: NextRequest): string | Response {
-  try {
-    return requireBetaSession(req).sessionId;
-  } catch (error) {
-    if (isResponseError(error)) return error;
-    return noStore({ error: "Authorization failed", code: "AUTH_ERROR" }, 500);
-  }
+  }), session);
 }
 
 function clean(value: unknown, max: number): string {
@@ -105,8 +100,8 @@ async function closeStale(
 }
 
 export async function GET(req: NextRequest) {
-  const workspaceId = authorize(req);
-  if (workspaceId instanceof Response) return workspaceId;
+  const sessionState = resolveWorkspaceSession(req);
+  const workspaceId = sessionState.sessionId;
 
   const clientVaultId = clean(
     req.nextUrl.searchParams.get("clientVaultId") || "personal",
@@ -117,12 +112,12 @@ export async function GET(req: NextRequest) {
   if (roleValue) {
     const parsedRole = parseRole(roleValue);
     if (!parsedRole) {
-      return noStore({ error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
+      return noStore(sessionState, { error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
     }
     role = parsedRole;
   }
   if (!clientVaultId) {
-    return noStore({ error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
+    return noStore(sessionState, { error: "Invalid session scope", code: "INVALID_SCOPE" }, 400);
   }
 
   const limit = Math.min(
@@ -137,10 +132,11 @@ export async function GET(req: NextRequest) {
       role,
       limit,
     );
-    return noStore({ sessions: await closeStale(workspaceId, sessions) });
+    return noStore(sessionState, { sessions: await closeStale(workspaceId, sessions) });
   } catch (error) {
     console.error("MAYA session read failed", error);
     return noStore(
+      sessionState,
       { error: "Session storage unavailable", code: "STORAGE_ERROR" },
       503,
     );
@@ -148,20 +144,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const workspaceId = authorize(req);
-  if (workspaceId instanceof Response) return workspaceId;
+  const sessionState = resolveWorkspaceSession(req);
+  const workspaceId = sessionState.sessionId;
 
   let body: Record<string, unknown>;
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return noStore({ error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
+    return noStore(sessionState, { error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
   }
 
   const input = parseSession(body.session);
   const action = body.action === "close" ? "close" : "checkpoint";
   if (!input) {
-    return noStore({ error: "Valid session required", code: "INVALID_SESSION" }, 400);
+    return noStore(sessionState, { error: "Valid session required", code: "INVALID_SESSION" }, 400);
   }
 
   const now = new Date();
@@ -175,12 +171,13 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    return noStore({
+    return noStore(sessionState, {
       session: await savePocketOfficeSession(workspaceId, session),
     });
   } catch (error) {
     console.error("MAYA session write failed", error);
     return noStore(
+      sessionState,
       { error: "Session storage unavailable", code: "STORAGE_ERROR" },
       503,
     );

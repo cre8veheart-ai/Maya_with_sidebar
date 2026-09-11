@@ -86,18 +86,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-11 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #123 is the active removal of the custom Claude MCP control plane and provider-specific repository restrictions.
-- VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
-- VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
-- GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
-- External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
+- Branch `ari/open-workspace-session` removes the retired beta-session gate from profile, role-lens, saved-session and Strategy Room APIs.
+- VERIFIED locally: open requests receive an isolated high-entropy HttpOnly workspace cookie; repeat requests retain the same workspace; separate browser cookie jars receive different workspaces; no inspected route returns `AUTH_REQUIRED`.
+- VERIFIED locally: valid legacy beta sessions migrate to the same workspace ID, preserving existing persisted data references.
+- VERIFIED locally: `npm ci` and the complete `npm run verify` suite pass, including credential audit, security gauntlet, persistence checks, TypeScript and the production build.
+- Preserved boundaries: General mode has no sign-in friction; founder continuity remains separately authorized; client-vault isolation and zero-plaintext design are unchanged; storage still fails safely when Supabase configuration is absent.
+- Exact first next action: open the focused pull request, verify GitHub checks and the canonical Vercel preview, then obtain Leslie's approval for the exact final PR head before merge.
 
 ### What we were building
 
@@ -176,6 +176,21 @@ Failure-record rules:
 - Builds, green checks, comments and status summaries are not proof of runtime behavior without the required capability test.
 - If a fix fails, append the result and next attempt; do not overwrite the prior entry.
 - Security, data-isolation, persistence and deployment failures remain visible permanently, including their containment and final resolution.
+
+### 2026-09-11 — Open General workspace-session migration
+
+- UTC date/time: 2026-09-11 02:23 UTC.
+- Trigger: Founder said “Proceed” after the CTO readiness audit found four legacy `requireBetaSession` blocks.
+- Blueprint sections used: Maya Core — Locked Frame; Shared Maya Services / Client Vaults; Permission Rules; Architectural North Star.
+- Live evidence: `/api/chat` was open, while `/api/user/profile`, `/api/user/lens`, `/api/sessions` and `/api/strategy-room` returned `401 AUTH_REQUIRED` without a beta cookie.
+- Change: replaced forced beta authorization on those four APIs with an automatically issued high-entropy HttpOnly workspace session; retained stable identity across requests and lossless migration from valid legacy beta sessions.
+- Permissions/data boundary: no new provider, credential, payment, external data recipient or repository permission. The opaque workspace cookie selects only its own server-side namespace. Client-vault authentication, encryption and zero-plaintext design were not changed.
+- Failure evidence: the initial local checkout was absent and direct HTTPS clone could not obtain credentials. Fix: reconstructed exact `main` commit `5dc93af04666d3f63211589fc64e04e397e616a1` through the authorized GitHub connector and mapped it to the requested runner path.
+- Verification: `npm ci` passed; focused unit, beta-hardening, persistence, closeout and lint checks passed; full `npm run verify` passed; live five-route test returned no `AUTH_REQUIRED`; independent cookie jars differed and repeat-cookie identity remained stable.
+- Expected local limitation: persistence routes returned `503 STORAGE_ERROR` because the local runner has no Supabase credentials; this occurred after workspace resolution and retained no-store handling.
+- Rollback: close the pull request without merge or revert the scoped workspace-session commit. Legacy beta session code remains available only for migration compatibility and founder-continuity signing.
+- Remaining gate: GitHub checks and the canonical Vercel preview are UNVERIFIED until the branch is pushed and the pull request is opened. Production remains unchanged.
+- Exact first next action: push `ari/open-workspace-session`, open the PR, verify checks and preview, then request Founder approval for the exact final head.
 
 ### 2026-09-02 — PR #64 disposition
 
