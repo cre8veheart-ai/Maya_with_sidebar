@@ -1,14 +1,6 @@
 import { NextRequest } from "next/server";
 import { requireBetaSession, isResponseError } from "@/lib/server/auth";
 import { runStrategyRoom } from "@/lib/maya/strategyRoom";
-import {
-  buildFounderContinuityMessage,
-  isAuthorizedFounderSession,
-} from "@/lib/maya/founderContinuity";
-import {
-  FOUNDER_CONTINUITY_COOKIE,
-  verifyFounderContinuitySession,
-} from "@/lib/maya/founderContinuitySession";
 import type { ExecRole, MayaProvider } from "@/lib/maya/types";
 
 const VALID_ROLES = new Set<ExecRole>([
@@ -63,13 +55,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, { status: 400 });
   }
 
-  const continuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityActive = isAuthorizedFounderSession(session.sessionId) && verifyFounderContinuitySession(
-    continuityToken,
-    session.sessionId,
-  );
-  const founderContext = buildFounderContinuityMessage(session.sessionId, continuityActive);
-
   try {
     const result = await runStrategyRoom({
       roles,
@@ -77,13 +62,11 @@ export async function POST(req: NextRequest) {
       provider,
       model: model || undefined,
       ludicrousMode,
-      founderContext,
     });
 
     return Response.json(result, {
       headers: {
         "Cache-Control": "no-store",
-        "X-Maya-Continuity": continuityActive ? "active" : "inactive",
       },
     });
   } catch (error) {

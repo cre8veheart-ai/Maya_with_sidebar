@@ -86,7 +86,7 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-11 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
@@ -97,7 +97,8 @@ Resume phrase: **DIH EVENT MAYA**
 - VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
+- VERIFIED on the current branch: the founder continuity runtime activation, cookie/header wiring, repository-required continuity gate, and continuity verification script are removed so recovery depends on blueprint/checkpoint files rather than a privileged hidden context path.
+- Exact first next action: inspect the remaining beta-session and GitHub repository-allowlist boundaries, then decide the next removal slice.
 
 ### What we were building
 
@@ -130,7 +131,7 @@ Verify PR #96's build and browser behavior, then implement the client-side crypt
 
 When **DIH EVENT MAYA** is invoked:
 
-1. Read founder continuity and this living blueprint from `main`.
+1. Read this living blueprint from `main` and the latest recorded checkpoint.
 2. Present this Current Working Checkpoint before proposing or taking substantive action.
 3. Verify the referenced PR, branch, deployment and blocker against live platform state.
 4. Continue from **First next action** unless the founder amends direction.
@@ -353,6 +354,7 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-11: Removed the founder continuity runtime/session gate and repository-required continuity layer; recovery now depends on blueprint/checkpoint records rather than a privileged hidden-context path.
 - 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
 
 - 2026-09-08: Applied one Founder-authorized production rule to all engineering agents. Claude and Ari may build branches and pull requests; a merge to `main` requires Leslie's fresh approval for the exact latest commit, and later commits invalidate prior approval.
@@ -383,7 +385,6 @@ If an architectural choice has meaningful tradeoffs, stop and discuss options be
 Core responsibilities:
 - Authentication and session handling
 - Secrets handling
-- Founder continuity
 - Permission policy and least privilege
 - Maya orchestration and adjudication
 - Deployment gates and CI verification
@@ -828,6 +829,18 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Migration blocker exposed, not removed: legacy beta-session authentication remains used by profile, role-lens, saved-session and Strategy Room APIs. Chat itself no longer uses that gate. Removing these checks before one unified MAYA sign-in replaces them would either break persistence or expose user data.
 - Recovery: restore `docs/MAYA_JAIL.md` from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; change `getCookieOptions(60 * 60 * 24 * 30)` back to `getCookieOptions(60 * 60 * 8)` to restore the shortened connector session.
 - Verification gate: full repository verification on the final PR head; one unified sign-in migration must be a separately tested implementation slice.
+
+
+### Work History Trail — 2026-09-11 founder continuity removal slice
+
+- Trigger: Founder directed immediate removal of remaining Ari/founder-created blockers one by one, starting with the hidden founder continuity layer.
+- Blueprint sections used/amended: Blueprint governance; Current Working Checkpoint; Amendment History; Maya Core — Locked Frame.
+- Live evidence checked: `AGENTS.md`; `package.json`; `app/api/chat/route.ts`; `app/api/strategy-room/route.ts`; `lib/maya/founderContinuity.ts`; `lib/maya/founderContinuitySession.ts`; `scripts/verify-continuity-gate.mjs`; `docs/DIH_WORKSPACE_CHECKPOINT.md`; `docs/MAYA_SESSION_PROTOCOL.md`.
+- Changes made: removed the founder continuity runtime activation path, signed continuity cookie/header wiring, strategy-room founder-context injection, repository-required continuity instructions, and the continuity verification script; updated recovery docs to rely on blueprint/checkpoint state instead.
+- Verified result: UNVERIFIED until `npm ci` and `npm run verify` complete on the current branch.
+- Remaining blocker: legacy beta-session authentication still guards profile, lens, sessions, and Strategy Room APIs; GitHub repository operations still enforce the canonical-repository allowlist boundary.
+- Exact first next action: run the full MAYA verification suite, then inspect the beta-session boundary as the next removal candidate.
+- Relevant branch: `copilot/restrict-claude-121-close-5-commits`.
 
 
 ### Work History Trail — 2026-09-10 full PR #1–#123 layered-authority audit

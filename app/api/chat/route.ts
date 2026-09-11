@@ -9,16 +9,6 @@ import {
   buildExecSystemPrompt,
   type ExecProfile,
 } from "@/lib/maya/execLens";
-import {
-  buildFounderContinuityMessage,
-  shouldActivateFounderContinuity,
-} from "@/lib/maya/founderContinuity";
-import {
-  createFounderContinuitySession,
-  FOUNDER_CONTINUITY_COOKIE,
-  founderContinuityMaxAge,
-  verifyFounderContinuitySession,
-} from "@/lib/maya/founderContinuitySession";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import type {
   ExecRole,
@@ -33,7 +23,6 @@ const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
 const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
-const BUILD_SESSION_ID = "maya-build-session";
 
 function sanitizeText(raw: unknown, maxLen: number): string {
   if (typeof raw !== "string") return "";
@@ -132,21 +121,6 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
   };
 }
 
-function appendTrustedContext(base: string | null, addition: string | null): string | null {
-  return [base, addition].filter(Boolean).join("\n\n") || null;
-}
-
-function buildContinuityCookie(token: string): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return [
-    `${FOUNDER_CONTINUITY_COOKIE}=${token}`,
-    "Path=/",
-    `Max-Age=${founderContinuityMaxAge}`,
-    "HttpOnly",
-    "SameSite=Strict",
-  ].join("; ") + secure;
-}
-
 export async function POST(req: NextRequest) {
 
   let workspace: ChatWorkspace;
@@ -185,29 +159,9 @@ export async function POST(req: NextRequest) {
   }
 
   const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
-  const baseContextMessage = workspace === "community"
+  const execContextMessage = workspace === "community"
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
-
-  const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(
-    existingContinuityToken,
-    BUILD_SESSION_ID,
-  );
-  const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(
-    BUILD_SESSION_ID,
-    messages,
-  );
-  const continuityActive = continuityAlreadyActive || continuityActivatedNow;
-
-  const founderContinuityMessage = workspace === "exec"
-    ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
-    : null;
-
-  const execContextMessage = appendTrustedContext(
-    baseContextMessage,
-    founderContinuityMessage,
-  );
 
   let stream: AsyncGenerator<string>;
   try {
@@ -247,13 +201,7 @@ export async function POST(req: NextRequest) {
     "Content-Type": "text/plain; charset=utf-8",
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
-    "X-Maya-Continuity": continuityActive ? "active" : "inactive",
   });
-
-  if (continuityActivatedNow) {
-    const token = createFounderContinuitySession(BUILD_SESSION_ID);
-    headers.set("Set-Cookie", buildContinuityCookie(token));
-  }
 
   return new Response(readable, { headers });
 }

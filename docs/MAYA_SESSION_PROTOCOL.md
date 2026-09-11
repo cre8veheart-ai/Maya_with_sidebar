@@ -69,9 +69,9 @@ A Maya conversation does not itself authorize a code change. Design discussion c
 
 When an implementation choice has meaningful tradeoffs, stop before hard-wiring it. Present the viable options, consequences, and CTO recommendation, then record the chosen decision in the architecture blueprint.
 
-## Continuity Principle
+## Session Continuity Principle
 
-Ari should preserve durable Maya working context across sessions to the extent supported by the system. The repository blueprint and session checkpoints provide the concrete source of truth when conversational memory is incomplete.
+MAYA should preserve durable working context across sessions through the repository blueprint and session checkpoints. Those recorded artifacts are the concrete source of truth when conversational memory is incomplete.
 
 ## Current Recovery Target
 

@@ -9,7 +9,7 @@ Technical lead: Ari / Acting CTO
 
 Canonical phrase: **DIH EVENT MAYA**
 
-The phrase activates continuity recovery for an already authorized founder session. It is not a password and never bypasses authentication.
+The phrase requests workspace recovery from the recorded blueprint/checkpoint state. It is not a password and never bypasses authentication.
 
 ## Canonical coordinates
 
@@ -60,7 +60,7 @@ Completed:
 - Ari / CTO standalone operating clone and delivery command center
 - Erica / CMO and Dana / CFO chassis gates
 - CEO + CTO adjudication fixtures
-- Security, beta-hardening, permissions, and continuity gates
+- Security, beta-hardening, and permissions gates
 - Protected beta session boundary for `/api/chat`
 - Canonical private repository and canonical Vercel project
 
@@ -83,8 +83,7 @@ Production limitation still visible in `README.md`:
 
 On the next **DIH EVENT MAYA**:
 1. Read `AGENTS.md`.
-2. Read `continuity/LESLIE_ARI_CONTEXT.md`.
-3. Read `docs/MAYA_SESSION_PROTOCOL.md`.
-4. Read this checkpoint.
-5. Confirm current `main`, open PRs, and latest production deployment.
-6. Continue the Persistent Workspace Foundation unless Leslie changes direction.
+2. Read `docs/MAYA_SESSION_PROTOCOL.md`.
+3. Read this checkpoint.
+4. Confirm current `main`, open PRs, and latest production deployment.
+5. Continue the Persistent Workspace Foundation unless Leslie changes direction.
