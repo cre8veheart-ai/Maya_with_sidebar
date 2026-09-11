@@ -97,7 +97,7 @@ Current completed build edge:
 2. Standalone Ari / CTO operating clone and delivery command center
 3. Erica / CMO and Dana / CFO chassis verification
 4. CEO + CTO adjudication and conflict gates
-5. Protected beta session and `/api/chat` server boundary
+5. Server auth boundary for `/api/chat` with optional beta mode
 6. One canonical private GitHub repository and one canonical Vercel project
 
 Next approved build package:

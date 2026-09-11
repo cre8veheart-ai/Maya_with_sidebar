@@ -825,7 +825,7 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Removed in this sweep: `docs/MAYA_JAIL.md`. It was non-executable but instructed future operators to treat capabilities as detained/convicted, fail unknown authority closed and revoke externally connected authority not justified by the jail ledger.
 - Restored: GitHub product session cookie duration from the hardening-imposed 8 hours to the prior 30 days in `lib/github/session.ts`. Session invalidation on true authentication failure remains.
 - Preserved intentionally: founder continuity code and verification because it carries Leslie's requested DIH continuity and does not grant repository authority.
-- Migration blocker exposed, not removed: legacy beta-session authentication remains used by profile, role-lens, saved-session and Strategy Room APIs. Chat itself no longer uses that gate. Removing these checks before one unified MAYA sign-in replaces them would either break persistence or expose user data.
+- Migration update: profile, role-lens, saved-session and Strategy Room APIs now run through a server auth boundary that defaults to owner-authorized open mode. Legacy beta-session enforcement remains available only when `MAYA_AUTH_BOUNDARY_MODE=beta` is explicitly set.
 - Recovery: restore `docs/MAYA_JAIL.md` from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; change `getCookieOptions(60 * 60 * 24 * 30)` back to `getCookieOptions(60 * 60 * 8)` to restore the shortened connector session.
 - Verification gate: full repository verification on the final PR head; one unified sign-in migration must be a separately tested implementation slice.
 

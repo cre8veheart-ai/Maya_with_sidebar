@@ -47,7 +47,7 @@ MAYA is the orchestration and intelligence platform, not an executive persona.
 - Use a focused branch and pull request for changes.
 - Production deploys originate from `main` only.
 - Keep credentials and secrets server-only.
-- `/api/chat` remains protected by an authorized beta session.
+- `/api/chat` uses the server auth boundary and defaults to owner-authorized open mode unless beta mode is explicitly enabled.
 - External actions require explicit human approval.
 - Do not use Copilot legacy branches as architectural authority.
 - Do not create duplicate repositories or shadow production projects.
@@ -60,8 +60,8 @@ Completed:
 - Ari / CTO standalone operating clone and delivery command center
 - Erica / CMO and Dana / CFO chassis gates
 - CEO + CTO adjudication fixtures
-- Security, beta-hardening, permissions, and continuity gates
-- Protected beta session boundary for `/api/chat`
+- Security, boundary-hardening, permissions, and continuity gates
+- Auth boundary for `/api/chat` with optional beta mode
 - Canonical private repository and canonical Vercel project
 
 Production limitation still visible in `README.md`:

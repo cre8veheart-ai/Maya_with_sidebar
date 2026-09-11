@@ -60,7 +60,7 @@ The complete placeholder list and server/client boundaries are documented in `.e
 
 ## Current limitations
 
-- One unified MAYA sign-in and the final client-vault authentication model are not yet complete.
+- Auth boundary defaults to owner-authorized open mode; the legacy beta-session gate is optional and can be re-enabled only by setting `MAYA_AUTH_BOUNDARY_MODE=beta`.
 - Some surveys, provider preferences, community content, documents, sessions, decisions, campaigns, and connector surfaces remain browser-local or UI-only.
 - Supabase-backed durability and encrypted Client Vault portability require further implementation and end-to-end verification.
 - Optional website, email, calendar, Zapier, Adobe, Notion, Google Drive, and other tool capabilities remain staged integrations rather than assumed access.
