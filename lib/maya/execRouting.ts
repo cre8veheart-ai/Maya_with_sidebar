@@ -14,6 +14,8 @@ export const EXEC_ROLE_META: Record<RoutedRole, { label: string; href: string }>
   admin: { label: "Office Admin", href: "/office-admin" },
   hr: { label: "HR", href: "/hr" },
   legal: { label: "Legal", href: "/legal" },
+  art: { label: "Art Agent", href: "/art-agent" },
+  appraiser: { label: "Gallery Appraiser", href: "/gallery-appraiser" },
   "strategy-room": { label: "Strategy Room", href: "/strategy-room" },
 };
 
@@ -66,6 +68,10 @@ export function getSafeRoleHref(role: unknown): string | null {
       return "/hr";
     case "legal":
       return "/legal";
+    case "art":
+      return "/art-agent";
+    case "appraiser":
+      return "/gallery-appraiser";
     case "strategy-room":
       return "/strategy-room";
     default:

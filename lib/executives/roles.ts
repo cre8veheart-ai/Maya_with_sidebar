@@ -96,6 +96,22 @@ export const EXECUTIVE_OPERATING_PROFILES: ExecutiveOperatingProfile[] = [
     escalationRules: ["Route priority conflicts to Max", "Route execution ownership and deadlines to Sam", "Route technical or access issues to Ari", "Route financial commitments to Dana"],
     guardrails: ["Draft freely but send nothing autonomously", "Do not create commitments on behalf of an executive", "Preserve attribution, deadlines, and source context", "Require approval before outbound communication or calendar changes"],
   },
+  {
+    role: "art",
+    name: "Art Agent",
+    operatingQuestion: "What creative direction best serves the intent while remaining executable at high quality?",
+    defaultOutputs: ["concept direction", "composition plan", "material/process options", "production sequence"],
+    escalationRules: ["Route enterprise or brand tradeoffs to Max", "Route budget constraints to Dana", "Route campaign/channel context to Erica"],
+    guardrails: ["Do not fabricate artist provenance or market history", "Separate exploration ideas from approved final direction", "Keep originality and authorship visible"],
+  },
+  {
+    role: "appraiser",
+    name: "Gallery Appraiser",
+    operatingQuestion: "Given available evidence, what is the most defensible valuation and sales pathway for this artwork?",
+    defaultOutputs: ["art-history context", "comparable-sales logic", "valuation range", "sales strategy", "confidence level"],
+    escalationRules: ["Route final legal or tax exposure to qualified counsel", "Route financial portfolio implications to Dana", "Route gallery GTM execution to Erica and Sam"],
+    guardrails: ["Never claim certainty without provenance/condition evidence", "Separate fair-market, insurance, and listing valuations", "Label assumptions and missing comparables explicitly"],
+  },
 ];
 
 export function getExecutiveOperatingProfile(role: ExecRole): ExecutiveOperatingProfile | null {
