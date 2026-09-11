@@ -32,6 +32,12 @@ const CONNECTORS: ConnectorCard[] = [
     setup: "Optional NEXT_PUBLIC_ADOBE_FONTS_PROJECT_ID enables licensed font previews.",
   },
   {
+    name: "Replit",
+    purpose: "Cloud coding/workspace handoff lane",
+    tokenRule: "No token for internal notes/handoff; Replit token only for direct API automation.",
+    setup: "Use internal workflow by default; keep any Replit API key server-only if enabled.",
+  },
+  {
     name: "Notion",
     purpose: "Client vault document/workspace linking",
     tokenRule: "Requires Notion OAuth token only when connector is activated.",
@@ -42,6 +48,18 @@ const CONNECTORS: ConnectorCard[] = [
     purpose: "Publishing lane for approved content",
     tokenRule: "Requires WordPress API credentials only when publishing is enabled.",
     setup: "Keep write credentials server-side and approval-gated.",
+  },
+  {
+    name: "Email",
+    purpose: "Draft and outbound communication lane",
+    tokenRule: "No token for drafting; provider credentials required only for send/sync integration.",
+    setup: "Keep SMTP/OAuth credentials server-only and enforce human approval before send.",
+  },
+  {
+    name: "Vendor Contact List",
+    purpose: "Vendor directory, routing, and follow-up tracking",
+    tokenRule: "No external token required for local list management.",
+    setup: "Store contact metadata with attribution; never store plaintext secrets in entries.",
   },
   {
     name: "PowerPoint",
