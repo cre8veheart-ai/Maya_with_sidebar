@@ -140,7 +140,7 @@ test("open auth mode uses configured override session id", async () => {
       assert.deepEqual(authenticateBetaToken(undefined), {
         sessionId: "leslie-owner",
       });
-    });
+    })
   );
 });
 

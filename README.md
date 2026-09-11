@@ -57,6 +57,7 @@ The complete placeholder list and server/client boundaries are documented in `.e
 - Provider credentials and service-role keys remain server-only.
 - Connections that publish, send, deploy, spend money, or access client data require explicit authorization and an activity record.
 - Preview and production behavior must use the one canonical Vercel project; duplicate deployments are not part of the architecture.
+- Repository destruction warning: never delete the canonical MAYA repository, rewrite protected history, or run destructive branch/repo cleanup without explicit founder authorization and a verified rollback path.
 
 ## Current limitations
 

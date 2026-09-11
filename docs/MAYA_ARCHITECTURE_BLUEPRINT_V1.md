@@ -14,7 +14,7 @@ Blueprint governance:
 - MAYA implementation PRs must identify the blueprint section they implement or amend.
 - A stale PR description, transferred summary or older plan cannot override the current blueprint.
 - Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
-- The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
+- The Current Working Checkpoint must be refreshed before ending substantive MAYA work so MAYA continuity can resume accurately.
 - When implementation and blueprint conflict, disclose the conflict and follow the Founder's newest explicit decision. Reconcile the blueprint in the same change when practical; the blueprint may not silently stop Founder-authorized work.
 - The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
 
@@ -88,7 +88,7 @@ Initial candidate categories (providers intentionally undecided):
 
 Last updated: 2026-09-08 UTC
 Update authority: Founder-approved working state
-Resume phrase: **DIH EVENT MAYA**
+Resume phrase: **MAYA continuity**
 
 ### Active engineering-control checkpoint
 
@@ -128,7 +128,7 @@ Verify PR #96's build and browser behavior, then implement the client-side crypt
 
 ### Resume protocol
 
-When **DIH EVENT MAYA** is invoked:
+When **MAYA continuity** is invoked:
 
 1. Read founder continuity and this living blueprint from `main`.
 2. Present this Current Working Checkpoint before proposing or taking substantive action.
@@ -179,7 +179,7 @@ Failure-record rules:
 
 ### 2026-09-02 — PR #64 disposition
 
-- Trigger: DIH EVENT MAYA / finish the PR #64 blocker.
+- Trigger: MAYA continuity / finish the PR #64 blocker.
 - Evidence: GitHub reported PR #64 open but `mergeable_state: dirty`; current `main` had advanced 33 commits; canonical Vercel production for PR #95 commit `dd86a3f` was READY.
 - Change: Added an evidence comment and closed PR #64 without merging.
 - Result: Obsolete integration branch safely retired; no conflict merge performed.
@@ -301,7 +301,7 @@ Scope and evidence:
 | [#58](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/58) | 2026-08-24 | MERGED | security: enforce branch lifecycle in production | `60a7a6ec7c` |
 | [#59](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/59) | 2026-08-24 | MERGED | security: purge legacy Copilot branch sprawl | `156407494f` |
 | [#60](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/60) | 2026-08-24 | CLOSED UNMERGED | Build Dana CFO and Ari CTO executive chassis | `32f4a6cedc` |
-| [#61](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/61) | 2026-08-25 | CLOSED UNMERGED DRAFT | DIH Event Mode: governed incident workspace | `49716a8bef` |
+| [#61](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/61) | 2026-08-25 | CLOSED UNMERGED DRAFT | MAYA continuity mode: governed incident workspace | `49716a8bef` |
 | [#62](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/62) | 2026-08-25 | MERGED | Build Maya executive core and specialist staff | `1339cc5d1a` |
 | [#63](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/63) | 2026-08-25 | MERGED | Deepen Maya executive operating profiles | `2a195a0c43` |
 | [#64](https://github.com/cre8veheart-ai/Maya_with_sidebar/pull/64) | 2026-08-25 | CLOSED UNMERGED | Integrate governed MAYA executives, DIH, and beta access | `dc14fb8ebd` |

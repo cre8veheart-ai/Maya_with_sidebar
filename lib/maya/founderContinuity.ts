@@ -1,6 +1,6 @@
 import type { MayaMessage } from "./types";
 
-const CONTINUITY_TRIGGER = "dih event";
+const CONTINUITY_TRIGGER = "maya continuity";
 
 const FOUNDER_CONTINUITY_CONTEXT = `FOUNDER CONTINUITY LAYER — LESLIE + ARI
 

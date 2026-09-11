@@ -7,7 +7,7 @@ Technical lead: Ari / Acting CTO
 
 ## Activation
 
-Canonical phrase: **DIH EVENT MAYA**
+Canonical phrase: **MAYA continuity**
 
 The phrase activates continuity recovery for an already authorized founder session. It is not a password and never bypasses authentication.
 
@@ -81,7 +81,7 @@ Production limitation still visible in `README.md`:
 
 ## Resume sequence
 
-On the next **DIH EVENT MAYA**:
+On the next **MAYA continuity**:
 1. Read `AGENTS.md`.
 2. Read `continuity/LESLIE_ARI_CONTEXT.md`.
 3. Read `docs/MAYA_SESSION_PROTOCOL.md`.

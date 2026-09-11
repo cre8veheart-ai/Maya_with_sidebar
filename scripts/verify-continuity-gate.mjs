@@ -19,13 +19,13 @@ const session = readFileSync("lib/maya/founderContinuitySession.ts", "utf8");
 const route = readFileSync("app/api/chat/route.ts", "utf8");
 const agents = readFileSync("AGENTS.md", "utf8");
 
-if (!context.includes("DIH event")) {
+if (!context.includes("MAYA continuity")) {
   throw new Error("Canonical continuity activation phrase missing from context file");
 }
 if (!context.includes("NULL ONBOARDING")) {
   throw new Error("NULL ONBOARDING contract missing from continuity context");
 }
-if (!kernel.toLowerCase().includes("dih event")) {
+if (!kernel.toLowerCase().includes("maya continuity")) {
   throw new Error("Kernel continuity trigger missing");
 }
 if (!kernel.includes("MAYA_FOUNDER_SESSION_IDS")) {

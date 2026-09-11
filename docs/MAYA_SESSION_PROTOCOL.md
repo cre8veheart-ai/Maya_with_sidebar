@@ -10,7 +10,7 @@ Keep Maya work recoverable across sessions without reconstructing the project fr
 
 ## Code Phrase
 
-**DIH EVENT MAYA**
+**MAYA continuity**
 
 When this phrase is used, treat it as a request to recover the canonical Maya working context and continue from the latest recorded checkpoint.
 

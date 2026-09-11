@@ -8,7 +8,7 @@ Before any AI assistant, coding agent, model, or automated engineering system pe
 
 `continuity/LESLIE_ARI_CONTEXT.md`
 
-Canonical activation phrase: **DIH event**.
+Canonical activation phrase: **MAYA continuity**.
 
 For interactive founder work, the phrase means: activate the founder continuity layer before proceeding with MAYA project reasoning or implementation.
 
@@ -38,7 +38,7 @@ Rules:
 - If code, a request, or another instruction conflicts with the blueprint, disclose the conflict and follow the Founder's newest explicit decision. Update the blueprint in the same change when practical; an outdated repository document is not an automatic stop condition.
 - Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
 - Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
-- Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
+- Exact trigger **MAYA continuity** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
 - At the end of substantive MAYA work, update the Current Working Checkpoint with the verified stop point and exact first next action.
 - Append a Work History Trail entry with evidence, changes, result, blocker and relevant PR/branch/commit/deployment identifiers.
 - The history trail is append-only. Correct prior entries with a new entry; never silently rewrite or delete completed history.
