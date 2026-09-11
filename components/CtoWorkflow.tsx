@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Stage = "specification" | "implementation" | "verification" | "approval" | "release";
+type ActionType = "create" | "evidence" | "advance";
 
 interface WorkPackage {
   id: string;
@@ -18,7 +19,7 @@ interface ActionLogEntry {
   id: string;
   at: string;
   author: string;
-  action: "create" | "evidence" | "advance";
+  action: ActionType;
   detail: string;
 }
 
@@ -56,7 +57,7 @@ function cleanAuthor(value: string) {
 
 function createAction(
   author: string,
-  action: ActionLogEntry["action"],
+  action: ActionType,
   detail: string,
 ): ActionLogEntry {
   return {
@@ -71,7 +72,7 @@ function createAction(
 function withAction(
   item: WorkPackage,
   author: string,
-  action: ActionLogEntry["action"],
+  action: ActionType,
   detail: string,
 ): WorkPackage {
   return {
@@ -85,22 +86,34 @@ function formatActionAt(iso: string): string {
   return Number.isNaN(value.valueOf()) ? iso : value.toLocaleString();
 }
 
+function isStage(value: unknown): value is Stage {
+  return value === "specification"
+    || value === "implementation"
+    || value === "verification"
+    || value === "approval"
+    || value === "release";
+}
+
+function isActionType(value: unknown): value is ActionType {
+  return value === "create" || value === "evidence" || value === "advance";
+}
+
 function normalizeActionLog(raw: unknown): ActionLogEntry[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((entry) => entry && typeof entry === "object")
-    .map((entry) => {
+    .map((entry): ActionLogEntry | null => {
       const value = entry as Record<string, unknown>;
+      if (!isActionType(value.action)) return null;
       return {
         id: typeof value.id === "string" ? value.id : crypto.randomUUID(),
         at: typeof value.at === "string" ? value.at : new Date().toISOString(),
         author: cleanAuthor(typeof value.author === "string" ? value.author : DEFAULT_ACTION_AUTHOR),
-        action: value.action === "create" || value.action === "evidence" || value.action === "advance"
-          ? value.action
-          : "create",
+        action: value.action,
         detail: typeof value.detail === "string" ? value.detail : "Recovered action",
       };
     })
+    .filter((entry): entry is ActionLogEntry => Boolean(entry))
     .slice(0, 20);
 }
 
@@ -108,15 +121,14 @@ function normalizePackages(raw: unknown): WorkPackage[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((item) => item && typeof item === "object")
-    .map((item) => {
+    .map((item): WorkPackage | null => {
       const value = item as Record<string, unknown>;
+      if (!isStage(value.stage)) return null;
       return {
         id: typeof value.id === "string" ? value.id : crypto.randomUUID(),
         title: typeof value.title === "string" ? value.title : "Untitled",
         objective: typeof value.objective === "string" ? value.objective : "",
-        stage: value.stage === "specification" || value.stage === "implementation" || value.stage === "verification" || value.stage === "approval" || value.stage === "release"
-          ? value.stage
-          : "specification",
+        stage: value.stage,
         evidence: typeof value.evidence === "object" && value.evidence
           ? { ...makeEvidence(), ...(value.evidence as Record<string, boolean>) }
           : makeEvidence(),
@@ -124,7 +136,7 @@ function normalizePackages(raw: unknown): WorkPackage[] {
         actionLog: normalizeActionLog(value.actionLog),
       };
     })
-    .filter((item) => item.title.trim() && item.objective.trim());
+    .filter((item): item is WorkPackage => Boolean(item && item.title.trim() && item.objective.trim()));
 }
 
 export default function CtoWorkflow() {
