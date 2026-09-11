@@ -18,7 +18,7 @@ export function setGitHubSessionCookie(
   response: NextResponse,
   sessionId: string
 ): void {
-  response.cookies.set(GITHUB_SESSION_COOKIE, sessionId, getCookieOptions(60 * 60 * 8));
+  response.cookies.set(GITHUB_SESSION_COOKIE, sessionId, getCookieOptions(60 * 60 * 24 * 30));
 }
 
 export function clearGitHubSessionCookie(response: NextResponse): void {

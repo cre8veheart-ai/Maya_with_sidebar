@@ -17,8 +17,8 @@
     "test:security": "node scripts/verify-security-gauntlet.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:continuity": "node scripts/verify-continuity-gate.mjs",
-    "test:permissions": "node scripts/audit-read-write-infiltrates.mjs",
-    "verify": "npm run lint && npm run test:permissions && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:continuity && npm run test:session-closeout && npm run test:persistence && npm run build",
+    "test:credentials": "node scripts/audit-credential-leaks.mjs",
+    "verify": "npm run lint && npm run test:credentials && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:continuity && npm run test:session-closeout && npm run test:persistence && npm run build",
     "test:persistence": "node scripts/verify-persistence-foundation.mjs",
     "test:session-closeout": "node scripts/verify-session-closeouts.mjs"
   },

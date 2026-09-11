@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchGitHubViewer } from "@/lib/github/api";
+import { fetchGitHubViewer, GitHubApiError } from "@/lib/github/api";
 import {
   getAllowedRepos,
   getDefaultRepoConfig,
@@ -44,19 +44,31 @@ export async function GET() {
       scopes: session.scope,
     });
   } catch (error) {
-    await deleteGitHubSession(session.id);
+    const credentialRejected =
+      error instanceof GitHubApiError && error.status === 401;
+
+    if (credentialRejected) {
+      await deleteGitHubSession(session.id);
+    }
+
     const response = NextResponse.json({
       configured: true,
-      connected: false,
+      connected: !credentialRejected,
+      connectionDegraded: !credentialRejected,
       requestedScopes: getRequestedScopes(),
       allowedRepos: getAllowedRepos(),
-      repoConfig: getDefaultRepoConfig(),
-      permissions: getGitHubPermissions([]),
-      audit: [],
+      repoConfig: session.repoConfig ?? getDefaultRepoConfig(),
+      permissions: credentialRejected
+        ? getGitHubPermissions([])
+        : getGitHubPermissions(session.scope),
+      audit: await listGitHubAudit(session.id),
       connectionError:
-        error instanceof Error ? error.message : "GitHub connection expired",
+        error instanceof Error ? error.message : "GitHub connection check failed",
     });
-    clearGitHubSessionCookie(response);
+
+    if (credentialRejected) {
+      clearGitHubSessionCookie(response);
+    }
     return response;
   }
 }

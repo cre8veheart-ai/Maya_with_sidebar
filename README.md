@@ -1,37 +1,28 @@
-# Maya with Sidebar
+# MAYA — Executive Operating System
 
-Maya is an invite-only executive workspace with role-specific AI chat and community feedback features.
+MAYA is a governed executive workspace with role-specific AI executives, persistent context, structured decisions, shared workspaces, and optional external tools.
 
-## Private beta setup
+## Current engineering state
 
-The beta fails closed until all required production variables are configured.
+MAYA is under active private-beta development. The canonical source is this repository and the canonical hosted project is `maya-with-sidebar`.
 
-1. Install an [Upstash Redis integration](https://vercel.com/marketplace?category=storage&search=redis) through the Vercel Marketplace. Vercel KV is no longer first-party.
-2. Set the following in the project's production environment:
+Current capabilities include:
 
-| Variable | Purpose |
-| --- | --- |
-| `ANTHROPIC_API_KEY` | Enables the default AI provider. |
-| `BETA_INVITE_CODES` | Comma-separated invite codes. Store only codes you are prepared to consume once. |
-| `BETA_SESSION_SECRET` | Unique 32+ character secret used to sign beta sessions. |
-| `KV_REST_API_URL` | Upstash Redis REST endpoint. |
-| `KV_REST_API_TOKEN` | Upstash Redis REST credential. |
+- Executive chat surfaces and role-specific operating contracts.
+- Anthropic as the default AI provider, with optional OpenAI and OpenClaw provider adapters.
+- An optional internal Gemini advisory layer.
+- GitHub engineering integration scoped to the canonical MAYA repository.
+- Persistent-profile and role-lens API foundations.
+- Browser-local workflows that are still being migrated to durable storage.
 
-Generate a session secret locally:
+Run the complete verification suite before treating a change as beta-ready:
 
 ```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+npm ci
+npm run verify
 ```
 
-Configure these values in [Environment Variables](https://vercel.com/docs/projects/environment-variables), then redeploy.
-
-### Access behavior
-
-- A valid invite code is redeemed atomically in Redis and cannot be used again.
-- Redemption issues an HTTP-only, same-site session cookie valid for 14 days.
-- Protected pages redirect unauthenticated visitors to the invite screen.
-- `/api/chat` requires that signed beta session.
-- Chat is capped at 20 requests per session per hour. The current implementation is process-local; use Redis-backed rate limiting before scaling beta traffic.
+A successful build or deployment status is not by itself proof that every user-facing capability works. Browser and API behavior must also be verified.
 
 ## Local development
 
@@ -41,16 +32,37 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Fill every beta variable in `.env.local`; invite redemption requires a reachable Upstash Redis REST database. Run checks before opening a PR:
+Configure only the providers and services required for the capability being tested. Never commit credentials.
 
-```bash
-npm run build
-npm run lint
-```
+## Service configuration
 
-## Current beta limitations
+| Variable group | Purpose | Current status |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | Default MAYA intelligence provider | Active integration |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | Optional OpenAI provider | Optional |
+| `OPENCLAW_BASE_URL`, `OPENCLAW_API_KEY`, `OPENCLAW_MODEL` | Optional compatible external gateway | Optional; destination must be trusted |
+| `GEMINI_API_KEY`, `GEMINI_MODEL`, `MAYA_GEMINI_ENABLED` | Internal executive advisory layer | Optional |
+| `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Durable server-owned workspace storage foundation | In development |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Legacy beta invite/redemption storage | Under review |
+| GitHub OAuth variables | Repository engineering connection | Canonical repository only |
+| Vercel project variables | Hosted deployment configuration | Canonical project only |
 
-- User profiles and role lenses have authenticated server API routes backed by Supabase. During the private beta they are isolated by the signed beta-session subject, so they persist for that authorized session but are not yet portable across separately authenticated devices.
-- Surveys, provider preferences, and community posts still use browser storage and are not synced across browsers.
-- Documents, sessions, knowledge vault, search, decisions, campaigns, external-source connections, and action approvals are UI-only workflows; they do not yet store data, upload files, call connectors, or create external records.
-- There is no automated test suite. The project should not be released until `npm run build` passes for the beta branch.
+The complete placeholder list and server/client boundaries are documented in `.env.example`.
+
+## Access and data boundaries
+
+- Leslie remains the final production authority.
+- External providers are tools, not MAYA authorities.
+- Client Vault plaintext must not be exposed to model providers, engineering tools, logs, or deployment systems.
+- Provider credentials and service-role keys remain server-only.
+- Connections that publish, send, deploy, spend money, or access client data require explicit authorization and an activity record.
+- Preview and production behavior must use the one canonical Vercel project; duplicate deployments are not part of the architecture.
+
+## Current limitations
+
+- One unified MAYA sign-in and the final client-vault authentication model are not yet complete.
+- Some surveys, provider preferences, community content, documents, sessions, decisions, campaigns, and connector surfaces remain browser-local or UI-only.
+- Supabase-backed durability and encrypted Client Vault portability require further implementation and end-to-end verification.
+- Optional website, email, calendar, Zapier, Adobe, Notion, Google Drive, and other tool capabilities remain staged integrations rather than assumed access.
+
+See `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md` for the active architecture, governance, recovery ledger, verified checkpoint, and build order.

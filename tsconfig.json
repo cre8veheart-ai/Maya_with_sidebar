@@ -36,7 +36,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "services/claude-mcp"
+    "node_modules"
   ]
 }

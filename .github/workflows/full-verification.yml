@@ -35,27 +35,3 @@ jobs:
 
       - name: Run complete production verification
         run: npm run verify
-
-  verify-claude-mcp:
-    name: Secure Claude MCP
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: services/claude-mcp
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: services/claude-mcp/package-lock.json
-
-      - name: Install locked MCP dependencies
-        run: npm ci
-
-      - name: Verify authenticated MCP service
-        run: npm run verify
