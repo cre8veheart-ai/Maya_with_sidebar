@@ -9,6 +9,14 @@ import {
 import { clearGitHubSessionCookie, getCurrentGitHubSession } from "@/lib/github/session";
 import { deleteGitHubSession, listGitHubAudit, saveGitHubSession } from "@/lib/github/store";
 
+async function listGitHubAuditBestEffort(sessionId: string) {
+  try {
+    return await listGitHubAudit(sessionId);
+  } catch {
+    return [];
+  }
+}
+
 export async function GET() {
   const session = await getCurrentGitHubSession();
 
@@ -61,7 +69,7 @@ export async function GET() {
       permissions: credentialRejected
         ? getGitHubPermissions([])
         : getGitHubPermissions(session.scope),
-      audit: await listGitHubAudit(session.id),
+      audit: await listGitHubAuditBestEffort(session.id),
       connectionError:
         error instanceof Error ? error.message : "GitHub connection check failed",
     });

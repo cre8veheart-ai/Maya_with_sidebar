@@ -86,18 +86,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-11 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
 - PR #123 is the active removal of the custom Claude MCP control plane and provider-specific repository restrictions.
-- VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
-- VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
+- VERIFIED in source: the custom Claude workflow, `services/claude-mcp/**` tree, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
+- VERIFIED through final PR #123 head `3c357179b987c8786eb168734f7550f4edd580b2`: MAYA Full Verification run #82 passed and the canonical native Vercel preview reported READY.
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
+- Exact first next action: obtain Leslie's approval for the verified final PR #123 state before merge.
 
 ### What we were building
 
@@ -764,9 +764,9 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Founder authorization: remove Claude-specific control-plane remnants from the repository and live GitHub/Vercel configuration while preserving ordinary collaborator access, required MAYA verification, secrets protection, client-vault boundaries, and Founder production authority.
 - PR/branch: PR #123, `ari/restore-ai-team-collaboration`.
 - Repository removals: `.github/workflows/claude.yml`; `services/claude-mcp/**`; `scripts/audit-read-write-infiltrates.mjs`; the `verify-claude-mcp` job; provider-specific branch allowlists, exact-comment merge gates, and MCP verification requirements.
-- Replacements: `scripts/audit-credential-leaks.mjs`; `test:credentials`; credential-leak steps in preview, production, and full verification workflows; provider-neutral Founder approval language.
+- Replacements: `scripts/audit-credential-leaks.mjs`; `test:credentials`; the `full-verification.yml` `npm ci` + `npm run verify` path; provider-neutral Founder approval language.
 - External sweep: GitHub repository rulesets returned `[]`. Branch-protection details remain UNKNOWN because the installed integration returned 403 without administration read access. Vercel confirmed the separate project `maya-claude-mcp` (`prj_uQg0guOVAMsAbIkmOPMZorN85Pzc`) still exists and is linked to this repository; deletion remains pending.
-- Verification: initial PR head passed MAYA Full Verification and both Vercel status contexts. A second sweep found and corrected two leftover workflow calls plus stale policy text; final checks are pending on the newest commit.
+- Verification: initial PR head passed MAYA Full Verification and both Vercel status contexts. A second sweep found and corrected two leftover workflow calls plus stale policy text; final PR head `3c357179b987c8786eb168734f7550f4edd580b2` then passed MAYA Full Verification run #82 and the canonical native Vercel preview reported READY.
 - Recovery: revert PR #123 or restore individual deleted files from pre-PR `main` commit `13224fd45c30df1cb4e3303f695126c92593d3f7`. Recreate the Vercel project only if a future approved architecture again requires a dedicated MCP service.
 
 ### Work History Trail — 2026-09-08 Founder-authorized agent merges
