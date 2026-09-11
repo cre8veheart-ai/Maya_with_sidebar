@@ -34,7 +34,7 @@ test("decoy drift report detects script changes as confirmed manual change", () 
 
   const baseline = buildSnapshot(root, "baseline");
 
-  write(path.join(root, "package.json"), JSON.stringify({ name: "fixture", scripts: { test: "node --test", alert: "node monitor.mjs" }, dependencies: {}, devDependencies: {} }, null, 2));
+  write(path.join(root, "package.json"), JSON.stringify({ name: "fixture", scripts: { test: "node --test", alert: "node notify.mjs" }, dependencies: {}, devDependencies: {} }, null, 2));
 
   const current = buildSnapshot(root, "current");
   const report = compareSnapshots(baseline, current);

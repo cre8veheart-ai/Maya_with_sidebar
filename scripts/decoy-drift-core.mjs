@@ -255,6 +255,7 @@ function collectSentinelSummary(rootDir, corpus) {
 }
 
 function safeGit(rootDir, args) {
+  if (!fs.existsSync(path.join(rootDir, ".git"))) return null;
   try {
     return execFileSync("git", args, { cwd: rootDir, encoding: "utf8" }).trim();
   } catch {
