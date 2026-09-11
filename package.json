@@ -17,6 +17,9 @@
     "test:security": "node scripts/verify-security-gauntlet.mjs",
     "test:beta": "node scripts/verify-beta-hardening.mjs",
     "test:credentials": "node scripts/audit-credential-leaks.mjs",
+    "decoy:baseline": "node scripts/decoy-baseline.mjs",
+    "decoy:report": "node scripts/decoy-report.mjs",
+    "decoy:alert": "node scripts/decoy-report.mjs --fail-on-suspicious",
     "verify": "npm run lint && npm run test:credentials && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:session-closeout && npm run test:persistence && npm run build",
     "test:persistence": "node scripts/verify-persistence-foundation.mjs",
     "test:session-closeout": "node scripts/verify-session-closeouts.mjs"

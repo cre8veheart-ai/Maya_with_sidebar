@@ -24,6 +24,17 @@ npm run verify
 
 A successful build or deployment status is not by itself proof that every user-facing capability works. Browser and API behavior must also be verified.
 
+## Decoy drift audit
+
+For a non-production decoy or a watched working copy, create a local baseline and compare later drift without adding secrets or live deployment authority:
+
+```bash
+npm run decoy:baseline
+npm run decoy:report
+```
+
+The scripts write transparent local reports under `.maya-decoy/` and classify drift across files, config, authority patterns, external endpoints/env refs, and previously removed control-plane sentinels.
+
 ## Local development
 
 ```bash

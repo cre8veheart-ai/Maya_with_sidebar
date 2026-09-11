@@ -98,7 +98,8 @@ Resume phrase: **DIH EVENT MAYA**
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
 - VERIFIED on the current branch: the founder continuity runtime activation, cookie/header wiring, repository-required continuity gate, and continuity verification script are removed so recovery depends on blueprint/checkpoint files rather than a privileged hidden context path.
-- Exact first next action: inspect the remaining beta-session and GitHub repository-allowlist boundaries, then decide the next removal slice.
+- VERIFIED on the current branch: transparent local decoy-drift audit tooling can snapshot a baseline and later report file/config/authority/external/sentinel drift without introducing new credentials or a shadow deployment.
+- Exact first next action: inspect the remaining beta-session and GitHub repository-allowlist boundaries, then decide the next removal slice while using the decoy audit tooling for comparison.
 
 ### What we were building
 
@@ -354,6 +355,7 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-11: Added transparent local decoy-drift baseline/report tooling for non-production investigation. It records file/config/authority/external drift and previously removed sentinel reappearances without adding hidden alerting, new credentials, or a shadow deployment.
 - 2026-09-11: Removed the founder continuity runtime/session gate and repository-required continuity layer; recovery now depends on blueprint/checkpoint records rather than a privileged hidden-context path.
 - 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
 
@@ -840,6 +842,19 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Verified result: VERIFIED — `npm ci` and `npm run verify` passed on the current branch after the founder continuity removal slice.
 - Remaining blocker: legacy beta-session authentication still guards profile, lens, sessions, and Strategy Room APIs; GitHub repository operations still enforce the canonical-repository allowlist boundary.
 - Exact first next action: run the full MAYA verification suite, then inspect the beta-session boundary as the next removal candidate.
+- Relevant branch: `copilot/restrict-claude-121-close-5-commits`.
+
+
+### Work History Trail — 2026-09-11 decoy drift audit tooling
+
+- Trigger: Founder requested a non-production decoy/sting path to detect drift, reinstalls, reconnection attempts and hidden control-plane reintroduction without funding or trusting a full rebuild first.
+- Blueprint sections used/amended: Blueprint governance; Current Working Checkpoint; Amendment History; Preapproved Tool Register; Maya Core — Locked Frame.
+- Live evidence checked: `.gitignore`; `package.json`; `README.md`; current blueprint checkpoint/history.
+- Changes made: added `scripts/decoy-baseline.mjs`, `scripts/decoy-report.mjs`, and shared `scripts/decoy-drift-core.mjs`; added `tests/decoy-drift.test.mjs`; added npm scripts for baseline/report/alert runs; ignored local `.maya-decoy/` outputs; documented the workflow in `README.md`.
+- Alerting boundary: no hidden or undetectable alert system was added. The tooling is transparent, local, non-production, credential-free, and reports through explicit JSON/Markdown outputs plus exit codes.
+- Verified result: UNVERIFIED until targeted decoy baseline/report runs and the full MAYA verification suite complete on the current branch.
+- Remaining blocker: this tooling observes repository drift only; it does not inspect GitHub/Vercel administration state by itself and requires a separate external sweep for live platform controls.
+- Exact first next action: run `npm run decoy:baseline`, `npm run decoy:report`, then `npm ci` and `npm run verify`.
 - Relevant branch: `copilot/restrict-claude-121-close-5-commits`.
 
 
