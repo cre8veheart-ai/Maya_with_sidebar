@@ -837,7 +837,7 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Blueprint sections used/amended: Blueprint governance; Current Working Checkpoint; Amendment History; Maya Core — Locked Frame.
 - Live evidence checked: `AGENTS.md`; `package.json`; `app/api/chat/route.ts`; `app/api/strategy-room/route.ts`; `lib/maya/founderContinuity.ts`; `lib/maya/founderContinuitySession.ts`; `scripts/verify-continuity-gate.mjs`; `docs/DIH_WORKSPACE_CHECKPOINT.md`; `docs/MAYA_SESSION_PROTOCOL.md`.
 - Changes made: removed the founder continuity runtime activation path, signed continuity cookie/header wiring, strategy-room founder-context injection, repository-required continuity instructions, and the continuity verification script; updated recovery docs to rely on blueprint/checkpoint state instead.
-- Verified result: UNVERIFIED until `npm ci` and `npm run verify` complete on the current branch.
+- Verified result: VERIFIED — `npm ci` and `npm run verify` passed on the current branch after the founder continuity removal slice.
 - Remaining blocker: legacy beta-session authentication still guards profile, lens, sessions, and Strategy Room APIs; GitHub repository operations still enforce the canonical-repository allowlist boundary.
 - Exact first next action: run the full MAYA verification suite, then inspect the beta-session boundary as the next removal candidate.
 - Relevant branch: `copilot/restrict-claude-121-close-5-commits`.
