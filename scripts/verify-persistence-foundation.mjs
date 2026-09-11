@@ -13,8 +13,11 @@ for (const [name, source] of [
   ["profile route", profileRoute],
   ["lens route", lensRoute],
 ]) {
-  if (!source.includes("requireBetaSession")) {
-    throw new Error(`${name} does not enforce the beta-session boundary`);
+  if (!source.includes("resolveWorkspaceSession")) {
+    throw new Error(`${name} does not enforce the isolated workspace boundary`);
+  }
+  if (/requireBetaSession|AUTH_REQUIRED/.test(source)) {
+    throw new Error(`${name} restores the retired beta-session gate`);
   }
   if (!source.includes('"Cache-Control": "no-store"')) {
     throw new Error(`${name} can be cached`);
