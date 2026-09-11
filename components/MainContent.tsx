@@ -11,11 +11,11 @@ export default function MainContent({ isOpen, onToggle, children }: MainContentP
     <main
       className={[
         "flex flex-col flex-1 min-w-0 w-full max-w-full h-screen overflow-x-hidden overflow-y-auto",
-        "bg-[#ffffff] transition-all duration-300 ease-in-out",
+        "bg-gradient-to-b from-white via-[#f8fafc] to-[#f1f5f9] transition-all duration-300 ease-in-out",
       ].join(" ")}
     >
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-black/10 bg-[#ffffff] sticky top-0 z-10">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-black/10 bg-white/85 backdrop-blur sticky top-0 z-10">
         {!isOpen && (
           <button
             onClick={onToggle}
@@ -29,7 +29,7 @@ export default function MainContent({ isOpen, onToggle, children }: MainContentP
             </svg>
           </button>
         )}
-        <span className="text-sm text-[#334155] font-semibold">Maya</span>
+        <span className="text-sm text-[#334155] font-semibold tracking-[0.08em] uppercase">MAYA</span>
       </div>
 
       {/* Page content */}

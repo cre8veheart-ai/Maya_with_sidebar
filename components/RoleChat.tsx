@@ -349,8 +349,8 @@ export default function RoleChat({
     !streaming;
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden bg-white text-[#1f2937]">
-      <div className="px-4 py-2.5 border-b border-black/10 shrink-0 flex items-center gap-2">
+    <div className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-x-hidden bg-gradient-to-b from-white to-[#f8fafc] text-[#1f2937]">
+      <div className="px-4 py-2.5 border-b border-black/10 bg-white/80 backdrop-blur shrink-0 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
         <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#475569]">
           Talk to your {role.toUpperCase()} · MAYA executive workspace
@@ -385,9 +385,9 @@ export default function RoleChat({
             className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] ${
+              className={`max-w-[88%] px-4 py-3 rounded-xl text-[13px] leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] shadow-[0_8px_20px_rgba(15,23,42,0.06)] ${
                 message.role === "user"
-                 ? "bg-[#e2e8f0] text-[#0f172a] font-medium"
+                ? "bg-[#dbeafe] text-[#0f172a] font-medium"
                  : "bg-[#ffffff] border border-black/10 text-[#1f2937]"
               }`}
             >
@@ -421,7 +421,7 @@ export default function RoleChat({
               )}
             </div>
 
-            <div className="rounded-xl border border-black/10 bg-[#f8fafc] p-4">
+            <div className="rounded-xl border border-black/10 bg-[#f8fafc] p-4 shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#475569]">
                   Save Working Clip

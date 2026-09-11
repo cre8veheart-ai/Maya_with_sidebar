@@ -15,7 +15,7 @@ export default function ExecutiveStandalonePage({
 }: ExecutiveStandalonePageProps) {
   return (
     <PageShell title={title} subtitle={subtitle}>
-      <div className="rounded-2xl border border-black/10 bg-white shadow-[0_14px_42px_rgba(15,23,42,0.08)] overflow-hidden min-h-[72vh]">
+      <div className="rounded-[1.4rem] border border-black/10 bg-gradient-to-b from-white to-[#f8fafc] shadow-[0_20px_52px_rgba(15,23,42,0.1)] overflow-hidden min-h-[72vh]">
         <RoleChat role={role} />
       </div>
     </PageShell>
