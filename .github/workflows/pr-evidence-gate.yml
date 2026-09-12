@@ -1,0 +1,68 @@
+name: MAYA PR Evidence Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: maya-pr-evidence-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  evidence:
+    name: PR evidence complete
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validate durable handoff sections
+        env:
+          EVENT_PATH: ${{ github.event_path }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const event = JSON.parse(fs.readFileSync(process.env.EVENT_PATH, 'utf8'));
+          const pr = event.pull_request;
+          const body = pr.body || '';
+
+          // PRs opened before the unified workflow remain reviewable without retroactive churn.
+          if (pr.number < 132) {
+            console.log(`PR #${pr.number} predates the unified workflow; evidence gate not applied retroactively.`);
+            process.exit(0);
+          }
+
+          const required = [
+            'Outcome',
+            'Blueprint authority',
+            'Scope',
+            'Dependencies and conflicts',
+            'Verification evidence',
+            'Security and data boundary',
+            'Deployment impact',
+            'Rollback',
+            'Agent handoff',
+            'Leslie decision'
+          ];
+
+          const missing = required.filter(
+            heading => !new RegExp(`^##\\s+${heading}\\s*$`, 'im').test(body)
+          );
+
+          if (missing.length) {
+            console.error('Missing required PR evidence sections:');
+            for (const heading of missing) console.error(`- ## ${heading}`);
+            process.exit(1);
+          }
+
+          console.log('PR evidence structure is complete.');
+          NODE
