@@ -116,6 +116,10 @@ Canonical project: `maya-with-sidebar` under team `mayav11`.
 - If requirements conflict with this file, disclose the conflict and follow the Founder's newest explicit decision. Do not treat this file as authority above the Founder.
 
 
+## Stable delivery loop — REQUIRED
+
+All contributors must follow `docs/STABLE_AGENT_WORKFLOW.md`. The provider or tool may change; the baseline → objective → branch → build → verify → handoff → Leslie decision → integrate → prove loop does not.
+
 ## Pull request evidence and handoff — REQUIRED
 
 Every pull request must complete `.github/pull_request_template.md`. Do not delete unanswered sections.
