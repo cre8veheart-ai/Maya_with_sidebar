@@ -114,3 +114,21 @@ Canonical project: `maya-with-sidebar` under team `mayav11`.
 - Never merge a failing PR.
 - Never use Copilot-generated legacy branches as architectural authority.
 - If requirements conflict with this file, disclose the conflict and follow the Founder's newest explicit decision. Do not treat this file as authority above the Founder.
+
+
+## Pull request evidence and handoff — REQUIRED
+
+Every pull request must complete `.github/pull_request_template.md`. Do not delete unanswered sections.
+
+Before handing work to Leslie or another agent, record:
+
+- the contributor or agent identity, branch, and exact commit SHA;
+- the verified outcome and the commands or checks that produced it;
+- every dependency on another pull request, secret name, connector, service, or repository setting;
+- security, authentication, Client Vault, and deployment impact;
+- facts that remain inferred, unverified, unknown, or blocked;
+- the smallest rollback and the exact next action.
+
+A green preview is evidence only for that preview. It is not proof of merge, production deployment, connector access, permission changes, secret validity, or end-to-end behavior.
+
+GitHub code ownership and the `main` ruleset are the technical approval boundary. Repository prose alone is not enforcement.
