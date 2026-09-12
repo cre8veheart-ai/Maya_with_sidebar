@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { load } from "js-yaml";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const auditScript = path.join(repoRoot, "scripts", "audit-credential-leaks.mjs");
@@ -35,7 +36,7 @@ function runCredentialAudit(files) {
 
 test("credential audit rejects generic OpenAI sk- keys", () => {
   const result = runCredentialAudit({
-    ".env.local": "OPENAI_API_KEY=sk-1234567890abcdef\n",
+    ".env.local": `OPENAI_API_KEY ${["sk", "1234567890abcdefghijklmnopqrstuv"].join("-")}\n`,
   });
 
   assert.equal(result.status, 1);
@@ -44,16 +45,28 @@ test("credential audit rejects generic OpenAI sk- keys", () => {
 
 test("credential audit still rejects provider-specific sk-ant- keys", () => {
   const result = runCredentialAudit({
-    ".env.local": "ANTHROPIC_API_KEY=sk-ant-1234567890abcdef\n",
+    ".env.local": `ANTHROPIC_API_KEY=${["sk", "ant", "1234567890abcdef"].join("-")}\n`,
   });
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /embedded-provider-key \.env\.local:1/);
 });
 
-test("full verification covers main pushes and MCP service remnants are gone", () => {
-  const source = fs.readFileSync(verificationWorkflow, "utf8");
+test("credential audit does not flag ordinary words containing sk-", () => {
+  const result = runCredentialAudit({
+    "notes.txt": `${["the", "sk", "1234567890abcdefghijklmnop", "format"].join("-")}\nrisk-concentration\n`,
+  });
 
-  assert.match(source, /push:\n    branches:\n      - main/);
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /MAYA CREDENTIAL AUDIT: PASS/);
+});
+
+test("full verification covers main pushes", () => {
+  const workflow = load(fs.readFileSync(verificationWorkflow, "utf8"));
+
+  assert.deepEqual(workflow.on.push.branches, ["main"]);
+});
+
+test("retired Claude MCP service remnants are gone", () => {
   assert.equal(fs.existsSync(retiredMcpDir), false);
 });

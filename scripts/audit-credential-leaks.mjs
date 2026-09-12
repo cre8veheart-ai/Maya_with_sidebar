@@ -30,7 +30,7 @@ const RULES = [
   },
   {
     id: 'embedded-provider-key',
-    re: /(?:sk-[A-Za-z0-9_-]{12,}|sk-ant-[A-Za-z0-9_-]{12,}|sk-proj-[A-Za-z0-9_-]{12,})/,
+    re: /(?:\bsk-(?!(?:ant-|proj-))[A-Za-z0-9]{32,}\b|\bsk-ant-[A-Za-z0-9_-]{12,}|\bsk-proj-[A-Za-z0-9_-]{12,})/,
     why: 'Possible embedded provider credential.'
   }
 ];

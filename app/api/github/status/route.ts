@@ -12,7 +12,8 @@ import { deleteGitHubSession, listGitHubAudit, saveGitHubSession } from "@/lib/g
 async function listGitHubAuditBestEffort(sessionId: string) {
   try {
     return await listGitHubAudit(sessionId);
-  } catch {
+  } catch (error) {
+    console.error("GitHub audit read failed during status fallback", error);
     return [];
   }
 }
