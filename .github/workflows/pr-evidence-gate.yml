@@ -26,12 +26,10 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Validate durable handoff sections
-        env:
-          EVENT_PATH: ${{ github.event_path }}
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const event = JSON.parse(fs.readFileSync(process.env.EVENT_PATH, 'utf8'));
+          const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
           const pr = event.pull_request;
           const body = pr.body || '';
 
