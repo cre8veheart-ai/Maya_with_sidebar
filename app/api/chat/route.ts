@@ -19,6 +19,7 @@ import {
   founderContinuityMaxAge,
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
+import { BETA_SESSION_COOKIE, verifyBetaSession } from "@/lib/beta/session";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import type {
   ExecRole,
@@ -33,7 +34,6 @@ const VALID_ROLES = new Set<ExecRole>([
   "ceo", "coo", "cmo", "cfo", "cto", "cio", "cro", "cd", "admin", "hr", "legal",
 ]);
 const VALID_PROVIDERS = new Set<MayaProvider>(["anthropic", "openclaw", "openai"]);
-const BUILD_SESSION_ID = "maya-build-session";
 
 function sanitizeText(raw: unknown, maxLen: number): string {
   if (typeof raw !== "string") return "";
@@ -189,19 +189,20 @@ export async function POST(req: NextRequest) {
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
 
+  const betaSession = verifyBetaSession(req.cookies.get(BETA_SESSION_COOKIE)?.value);
+  const founderSessionId = workspace === "exec" ? betaSession?.sub ?? null : null;
+
   const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityAlreadyActive = workspace === "exec" && verifyFounderContinuitySession(
-    existingContinuityToken,
-    BUILD_SESSION_ID,
+  const continuityAlreadyActive = Boolean(
+    founderSessionId && verifyFounderContinuitySession(existingContinuityToken, founderSessionId),
   );
-  const continuityActivatedNow = workspace === "exec" && shouldActivateFounderContinuity(
-    BUILD_SESSION_ID,
-    messages,
+  const continuityActivatedNow = Boolean(
+    founderSessionId && shouldActivateFounderContinuity(founderSessionId, messages),
   );
   const continuityActive = continuityAlreadyActive || continuityActivatedNow;
 
-  const founderContinuityMessage = workspace === "exec"
-    ? buildFounderContinuityMessage(BUILD_SESSION_ID, continuityActive)
+  const founderContinuityMessage = founderSessionId
+    ? buildFounderContinuityMessage(founderSessionId, continuityActive)
     : null;
 
   const execContextMessage = appendTrustedContext(
@@ -255,8 +256,8 @@ export async function POST(req: NextRequest) {
     "X-Maya-Continuity": continuityActive ? "active" : "inactive",
   });
 
-  if (continuityActivatedNow) {
-    const token = createFounderContinuitySession(BUILD_SESSION_ID);
+  if (continuityActivatedNow && founderSessionId) {
+    const token = createFounderContinuitySession(founderSessionId);
     headers.set("Set-Cookie", buildContinuityCookie(token));
   }
 
