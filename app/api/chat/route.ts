@@ -11,6 +11,7 @@ import {
 } from "@/lib/maya/execLens";
 import {
   buildFounderContinuityMessage,
+  resolveFounderSessionId,
   shouldActivateFounderContinuity,
 } from "@/lib/maya/founderContinuity";
 import {
@@ -19,7 +20,7 @@ import {
   founderContinuityMaxAge,
   verifyFounderContinuitySession,
 } from "@/lib/maya/founderContinuitySession";
-import { BETA_SESSION_COOKIE, verifyBetaSession } from "@/lib/beta/session";
+import { BETA_SESSION_COOKIE } from "@/lib/beta/session";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import type {
   ExecRole,
@@ -189,8 +190,9 @@ export async function POST(req: NextRequest) {
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
 
-  const betaSession = verifyBetaSession(req.cookies.get(BETA_SESSION_COOKIE)?.value);
-  const founderSessionId = workspace === "exec" ? betaSession?.sub ?? null : null;
+  const founderSessionId = workspace === "exec"
+    ? resolveFounderSessionId(req.cookies.get(BETA_SESSION_COOKIE)?.value)
+    : null;
 
   const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
   const continuityAlreadyActive = Boolean(

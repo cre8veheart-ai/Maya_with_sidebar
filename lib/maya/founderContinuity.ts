@@ -1,3 +1,4 @@
+import { verifyBetaSession } from "@/lib/beta/session";
 import type { MayaMessage } from "./types";
 
 const CONTINUITY_TRIGGER = "dih event";
@@ -26,6 +27,10 @@ function normalize(value: string): string {
     .toLowerCase()
     .replace(/[.!?]+$/g, "")
     .replace(/\s+/g, " ");
+}
+
+export function resolveFounderSessionId(betaSessionCookieValue: string | undefined): string | null {
+  return verifyBetaSession(betaSessionCookieValue)?.sub ?? null;
 }
 
 export function hasFounderContinuityTrigger(messages: MayaMessage[]): boolean {
