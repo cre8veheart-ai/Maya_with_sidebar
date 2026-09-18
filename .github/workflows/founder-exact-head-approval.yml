@@ -24,15 +24,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
-          EVENT_PATH: ${{ github.event_path }}
           FOUNDER_LOGIN: cre8veheart-ai
         run: |
           set -euo pipefail
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            PR_NUMBER="$(jq -r '.pull_request.number' "$EVENT_PATH")"
+            PR_NUMBER="$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")"
           else
-            PR_NUMBER="$(jq -r '.issue.number' "$EVENT_PATH")"
+            PR_NUMBER="$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")"
           fi
 
           PR_JSON="$(curl --fail-with-body --silent --show-error \
