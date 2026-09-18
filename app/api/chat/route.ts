@@ -9,18 +9,6 @@ import {
   buildExecSystemPrompt,
   type ExecProfile,
 } from "@/lib/maya/execLens";
-import {
-  buildFounderContinuityMessage,
-  resolveFounderSessionId,
-  shouldActivateFounderContinuity,
-} from "@/lib/maya/founderContinuity";
-import {
-  createFounderContinuitySession,
-  FOUNDER_CONTINUITY_COOKIE,
-  founderContinuityMaxAge,
-  verifyFounderContinuitySession,
-} from "@/lib/maya/founderContinuitySession";
-import { BETA_SESSION_COOKIE } from "@/lib/beta/session";
 import { createChatProviderStream } from "@/lib/maya/chatProviders";
 import type {
   ExecRole,
@@ -133,21 +121,6 @@ function parseCommunityContext(raw: unknown): CommunityAssistantContext | null {
   };
 }
 
-function appendTrustedContext(base: string | null, addition: string | null): string | null {
-  return [base, addition].filter(Boolean).join("\n\n") || null;
-}
-
-function buildContinuityCookie(token: string): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return [
-    `${FOUNDER_CONTINUITY_COOKIE}=${token}`,
-    "Path=/",
-    `Max-Age=${founderContinuityMaxAge}`,
-    "HttpOnly",
-    "SameSite=Strict",
-  ].join("; ") + secure;
-}
-
 export async function POST(req: NextRequest) {
 
   let workspace: ChatWorkspace;
@@ -186,31 +159,9 @@ export async function POST(req: NextRequest) {
   }
 
   const systemPrompt = workspace === "community" ? buildCommunitySystemPrompt() : buildExecSystemPrompt(lens.role);
-  const baseContextMessage = workspace === "community"
+  const execContextMessage = workspace === "community"
     ? buildCommunityContextMessage(communityContext)
     : buildExecContextMessage(lens, profile);
-
-  const founderSessionId = workspace === "exec"
-    ? resolveFounderSessionId(req.cookies.get(BETA_SESSION_COOKIE)?.value)
-    : null;
-
-  const existingContinuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityAlreadyActive = Boolean(
-    founderSessionId && verifyFounderContinuitySession(existingContinuityToken, founderSessionId),
-  );
-  const continuityActivatedNow = Boolean(
-    founderSessionId && shouldActivateFounderContinuity(founderSessionId, messages),
-  );
-  const continuityActive = continuityAlreadyActive || continuityActivatedNow;
-
-  const founderContinuityMessage = founderSessionId
-    ? buildFounderContinuityMessage(founderSessionId, continuityActive)
-    : null;
-
-  const execContextMessage = appendTrustedContext(
-    baseContextMessage,
-    founderContinuityMessage,
-  );
 
   let stream: AsyncGenerator<string>;
   try {
@@ -255,13 +206,7 @@ export async function POST(req: NextRequest) {
     "Content-Type": "text/plain; charset=utf-8",
     "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff",
-    "X-Maya-Continuity": continuityActive ? "active" : "inactive",
   });
-
-  if (continuityActivatedNow && founderSessionId) {
-    const token = createFounderContinuitySession(founderSessionId);
-    headers.set("Set-Cookie", buildContinuityCookie(token));
-  }
 
   return new Response(readable, { headers });
 }
