@@ -130,7 +130,7 @@ Verify PR #96's build and browser behavior, then implement the client-side crypt
 
 When **DIH EVENT MAYA** is invoked:
 
-1. Read founder continuity and this living blueprint from `main`.
+1. Read this living blueprint from `main`.
 2. Present this Current Working Checkpoint before proposing or taking substantive action.
 3. Verify the referenced PR, branch, deployment and blocker against live platform state.
 4. Continue from **First next action** unless the founder amends direction.
@@ -383,7 +383,6 @@ If an architectural choice has meaningful tradeoffs, stop and discuss options be
 Core responsibilities:
 - Authentication and session handling
 - Secrets handling
-- Founder continuity
 - Permission policy and least privilege
 - Maya orchestration and adjudication
 - Deployment gates and CI verification
