@@ -99,14 +99,12 @@ export async function runStrategyRoom({
   provider,
   model,
   ludicrousMode,
-  founderContext,
 }: {
   roles: ExecRole[];
   prompt: string;
   provider: MayaProvider;
   model?: string;
   ludicrousMode?: boolean;
-  founderContext?: string | null;
 }): Promise<StrategyRoomResult> {
   const settled = await mapWithConcurrency(
     roles,
@@ -116,7 +114,7 @@ export async function runStrategyRoom({
         provider,
         messages: [{ role: "user", content: buildRolePrompt(role, prompt) }],
         systemPrompt: buildExecSystemPrompt(role),
-        execContextMessage: founderContext || null,
+        execContextMessage: null,
         model,
         ludicrousMode,
         useGeminiAdvisory: false,
@@ -150,7 +148,7 @@ export async function runStrategyRoom({
       "Select the strongest reasoning path rather than averaging viewpoints.",
       "Be concise, explicit about tradeoffs, and action-oriented.",
     ].join(" "),
-    execContextMessage: founderContext || null,
+    execContextMessage: null,
     model,
     ludicrousMode,
     useGeminiAdvisory: false,
