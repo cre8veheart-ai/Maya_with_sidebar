@@ -1,14 +1,6 @@
 import { NextRequest } from "next/server";
 import { requireBetaSession, isResponseError } from "@/lib/server/auth";
 import { runStrategyRoom } from "@/lib/maya/strategyRoom";
-import {
-  buildFounderContinuityMessage,
-  isAuthorizedFounderSession,
-} from "@/lib/maya/founderContinuity";
-import {
-  FOUNDER_CONTINUITY_COOKIE,
-  verifyFounderContinuitySession,
-} from "@/lib/maya/founderContinuitySession";
 import type { ExecRole, MayaProvider } from "@/lib/maya/types";
 
 const VALID_ROLES = new Set<ExecRole>([
@@ -26,9 +18,8 @@ function isExecRole(value: unknown): value is ExecRole {
 }
 
 export async function POST(req: NextRequest) {
-  let session;
   try {
-    session = requireBetaSession(req);
+    requireBetaSession(req);
   } catch (error) {
     if (isResponseError(error)) return error;
     return Response.json({ error: "Authentication failed", code: "AUTH_ERROR" }, { status: 500 });
@@ -63,12 +54,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, { status: 400 });
   }
 
-  const continuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityActive = isAuthorizedFounderSession(session.sessionId) && verifyFounderContinuitySession(
-    continuityToken,
-    session.sessionId,
-  );
-  const founderContext = buildFounderContinuityMessage(session.sessionId, continuityActive);
 
   try {
     const result = await runStrategyRoom({
@@ -77,14 +62,10 @@ export async function POST(req: NextRequest) {
       provider,
       model: model || undefined,
       ludicrousMode,
-      founderContext,
     });
 
     return Response.json(result, {
-      headers: {
-        "Cache-Control": "no-store",
-        "X-Maya-Continuity": continuityActive ? "active" : "inactive",
-      },
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
     const incidentId = crypto.randomUUID();
