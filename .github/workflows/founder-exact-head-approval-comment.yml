@@ -1,9 +1,8 @@
-name: Founder Exact-Head Approval
+name: Founder Exact-Head Approval Comment Recheck
 
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created, edited]
 
 permissions:
   contents: read
@@ -12,7 +11,7 @@ permissions:
 
 jobs:
   approval:
-    if: github.event_name == 'pull_request' || github.event.issue.pull_request
+    if: github.event.issue.pull_request
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
