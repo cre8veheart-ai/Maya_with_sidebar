@@ -92,11 +92,10 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- Branch `copilot/sk-ant-query-api-keys` is the active security-hardening slice to remove an Anthropic key-like placeholder from tracked examples.
-- VERIFIED in source on this branch: `.env.example` no longer contains an `sk-ant-` style value and now uses a non-key sentinel placeholder for `ANTHROPIC_API_KEY`.
-- VERIFIED in local validation on this branch: `npm ci` and `npm run verify` both passed after the placeholder hardening change.
-- Remaining blocker: merge/review completion and any downstream secret-scanning confirmation remain UNVERIFIED until post-merge checks run.
-- Exact first next action: complete review and merge, then confirm repository secret scanning no longer flags an Anthropic key pattern from `.env.example`.
+- Branch `copilot/credential-placeholder-hardening` is currently restoring a sensible default GitHub/Vercel workflow surface.
+- VERIFIED in source on this branch: custom founder exact-head approval workflow and its helper files are removed; workflow set is now limited to `full-verification.yml` plus retained `claude.yml` by founder request.
+- Remaining blocker: local validation after workflow cleanup is still UNVERIFIED for this exact branch head.
+- Exact first next action: run `npm ci` and `npm run verify`, then complete review/merge with post-merge CI observation.
 
 ### What we were building
 
@@ -859,12 +858,26 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 
 - Trigger or task: remediate `sk-ant- — query api keys` by removing Anthropic key-like text from repository-tracked configuration examples.
 - Blueprint sections used: Architecture rules; Required validation; Engineering discipline; Current Working Checkpoint.
-- Live evidence checked: repository-wide search found `sk-ant-` in `.env.example` and in credential-audit detection logic (`scripts/audit-credential-leaks.mjs`) where it is expected and intentional.
-- Root cause classification: VERIFIED — `.env.example` contained `ANTHROPIC_API_KEY=sk-ant-...`, which can be interpreted as a provider-key pattern by scanners despite being a placeholder.
+- Live evidence checked: repository-wide search found an Anthropic key-prefix placeholder pattern in `.env.example` and in credential-audit detection logic (`scripts/audit-credential-leaks.mjs`) where detection is expected and intentional.
+- Root cause classification: VERIFIED — `.env.example` contained `ANTHROPIC_API_KEY=<key-prefix-placeholder>`, which can be interpreted as a provider-key pattern by scanners despite being a placeholder.
 - Changes made: updated `.env.example` to use `ANTHROPIC_API_KEY=replace-with-your-anthropic-api-key`; refreshed Current Working Checkpoint for this branch and task.
 - Attempted fixes and failures: no failed implementation attempts in this slice.
 - Verification performed after fixes: `npm ci` PASSED; `npm run verify` PASSED (lint, credential audit, tests, focused verification scripts, production build).
 - Verified result: local quality gates pass and the tracked Anthropic env example no longer resembles a live key prefix.
 - Remaining blocker or unknown: UNVERIFIED whether external GitHub secret scanning alerts clear until post-merge scanners evaluate the updated default branch.
-- Exact first next action: merge after review, then confirm that no active secret-scanning findings remain for the former `sk-ant-` placeholder pattern.
-- Relevant PR, branch and commit identifiers: branch `copilot/sk-ant-query-api-keys`; commit identifier pending next checkpoint refresh after commit.
+- Exact first next action: merge after review, then confirm that no active secret-scanning findings remain for the former Anthropic key-prefix placeholder pattern.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifier pending next checkpoint refresh after commit.
+
+### Work History Trail — 2026-09-19 GitHub/Vercel default workflow restoration
+
+- Trigger or task: founder direction to remove workflow impediments/corruption and return to GitHub/Vercel normal defaults that make sense.
+- Blueprint sections used: Blueprint governance; Founder-authorized production rule; Required validation; Engineering discipline; Current Working Checkpoint.
+- Live evidence checked: repository workflow directory and grep confirmed custom approval workflow artifacts and helper files were present from prior slices.
+- Root cause classification: VERIFIED — custom founder exact-head approval automation and script/test helpers added non-default enforcement behavior and failure paths beyond canonical verification/deployment defaults.
+- Changes made: removed `.github/workflows/founder-exact-head-approval.yml`, `lib/founder-approval-core.mjs`, `scripts/founder-exact-head-approval.mjs`, and `tests/founder-approval-core.test.mjs`; retained `.github/workflows/claude.yml` per founder follow-up requirement.
+- Attempted fixes and failures: a temporary restoration of founder-approval files was attempted and then reversed after refined founder direction to remove only impediments.
+- Verification performed after fixes: pending for current head at time of this entry.
+- Verified result: workflow surface is reduced toward sensible defaults (full verification + retained Claude workflow).
+- Remaining blocker or unknown: UNVERIFIED until `npm ci` and `npm run verify` complete on this exact head and downstream CI runs on GitHub.
+- Exact first next action: run required validation locally, then confirm GitHub Actions behavior on the updated workflow set.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
