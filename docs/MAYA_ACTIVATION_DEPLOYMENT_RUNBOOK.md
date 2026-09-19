@@ -61,10 +61,10 @@ ANTHROPIC_API_KEY
 
 ## Part 2 — Activate MAYA locally
 
-From the repository root:
+From your cloned repository root:
 
 ```bash
-cd /home/runner/work/Maya_with_sidebar/Maya_with_sidebar
+cd /path/to/Maya_with_sidebar
 npm ci
 cp .env.example .env.local
 npm run dev
@@ -120,15 +120,14 @@ Create a branch ruleset for `main` with these settings:
 - block force pushes
 - restrict deletions
 
-Required checks should include the workflow results for:
+Required checks should include these exact reported checks:
 
 ```text
-npm ci
 npm run verify
 Founder exact-head approval
 ```
 
-Select the exact check names GitHub shows in the ruleset UI.
+`npm ci` is already run inside the `npm run verify` workflow job and should not be added as a separate required status check unless GitHub shows a separate check with that exact name in the ruleset UI.
 
 ## Part 5 — Move approved work through the canonical deployment path
 
