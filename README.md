@@ -34,6 +34,10 @@ npm run dev
 
 Configure only the providers and services required for the capability being tested. Never commit credentials.
 
+## Operator runbooks
+
+- Printable activation and deployment instructions: `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`
+
 ## Service configuration
 
 | Variable group | Purpose | Current status |

@@ -86,7 +86,7 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-19 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
@@ -96,8 +96,9 @@ Resume phrase: **DIH EVENT MAYA**
 - VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
 - VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
+- Documentation now includes `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, a printable activation/deployment operator runbook derived from the current workflows, `.env.example`, README, and this blueprint.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
+- Exact first next action: apply the documented `main` ruleset and Actions secret configuration in GitHub, run the Claude smoke test, confirm the canonical native Vercel preview behavior on the active PR head, then obtain Leslie's approval for the exact final PR state before merge.
 
 ### What we were building
 
@@ -841,3 +842,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Preserved open work: #34 remains until duplicate Vercel projects are fully removed; #35 persistence, #38 observability, #39 release quality, #41 tooling capability, #67/#70 persistence investigation, #71 connectors, #76 executive backbone, #89/#91–#94 product design, #96 Pocket Desk and security dependency updates remain subject to current blueprint review.
 - Verified founder-auth impact: restrictions affected real OAuth scopes, runtime write/workflow capability, sessions, repository allowlists, workflow permissions, token wiring, automatic branch deletion, deployment execution and the instructions/tests future agents were required to follow.
 - Recovery: all closed issues/PRs may be reopened; deleted files and prior session duration remain recoverable from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`.
+
+### Work History Trail — 2026-09-19 printable activation/deployment runbook
+
+- Trigger: Founder requested printable instructions for activating Claude Code, following the GitHub ruleset steps, and deploying across the canonical MAYA `main` build.
+- Blueprint sections used: Source of truth; Founder-authorized production rule; Required validation; Vercel; Current Working Checkpoint.
+- Live evidence checked: `README.md`, `.env.example`, `.github/workflows/claude.yml`, `.github/workflows/full-verification.yml`, `.github/workflows/founder-exact-head-approval.yml`, and the active blueprint checkpoint.
+- Changes made: added `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`; linked it from `README.md`; refreshed the Current Working Checkpoint so the new operator document and next activation step are recorded in the living blueprint.
+- Verified result: VERIFIED in source that the runbook points at the canonical GitHub surfaces, names the required `ANTHROPIC_API_KEY` secret, preserves `npm ci` plus `npm run verify` as the merge gate, and routes production deployment through `main` to the canonical `maya-with-sidebar` Vercel project.
+- Stop reason or remaining blocker: live GitHub rulesets, live Actions secrets, smoke-test execution, preview behavior, and Vercel project state remain UNVERIFIED in this documentation-only slice because no external settings were changed here.
+- Exact first next action: apply the runbook on the live GitHub repository, run the Claude smoke test, verify preview behavior on the active PR head, and then obtain Leslie's approval for the exact final PR state before merge/deploy.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no PR number assigned in this session; no deployment invoked.
+- Failures, exact error evidence and affected boundary: none during this documentation slice.
+- Every attempted fix, including unsuccessful attempts: none required.
+- The fix that resolved the failure, or why it remains unresolved: not applicable; operator readiness improved through documentation only.
+- Verification performed after each fix: source review of the new runbook, README link, workflow names, validation commands, and canonical project identifiers.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: revert `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, the README runbook link, and this history/checkpoint update if the operator guidance needs replacement.
+- Follow-up debt, owner and next verification gate: Founder/CTO to verify the live GitHub ruleset, Actions secret, Claude smoke test, preview behavior, and canonical production deployment path on the next operational pass.
