@@ -231,14 +231,19 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
+      let streamedAny = false;
       try {
         for await (const chunk of stream) {
+          if (chunk) streamedAny = true;
           controller.enqueue(encoder.encode(chunk));
         }
-        controller.close();
       } catch (error) {
         console.error("Maya chat stream failed", error);
-        controller.error(error);
+        const detail = error instanceof Error ? error.message : "The provider stopped responding.";
+        const prefix = streamedAny ? "\n\n" : "";
+        controller.enqueue(encoder.encode(`${prefix}[MAYA] The response could not be completed: ${detail}`));
+      } finally {
+        controller.close();
       }
     },
   });

@@ -84,6 +84,8 @@ const DEEP_THINK_ROLES: ExecRole[] = [
   "admin",
   "hr",
   "legal",
+  "art",
+  "appraiser",
 ];
 
 const SAFE_EXEC_LINKS: Record<ExecRole, { href: string; label: string }> = {
@@ -98,6 +100,8 @@ const SAFE_EXEC_LINKS: Record<ExecRole, { href: string; label: string }> = {
   admin: { href: "/office-admin", label: "Office Admin" },
   hr: { href: "/hr", label: "HR" },
   legal: { href: "/legal", label: "Legal" },
+  art: { href: "/art-agent", label: "Art Agent" },
+  appraiser: { href: "/gallery-appraiser", label: "Gallery Appraiser" },
 };
 
 const SOURCE_META: Record<IntelSource["source"], { label: string; accent: string }> = {

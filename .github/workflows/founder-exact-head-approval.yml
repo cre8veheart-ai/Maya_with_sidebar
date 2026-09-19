@@ -1,0 +1,83 @@
+name: Founder Exact-Head Approval
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  approval:
+    if: github.event_name == 'pull_request' || github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validate founder approval for the current head
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          FOUNDER_LOGIN: cre8veheart-ai
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            PR_NUMBER="$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")"
+          else
+            PR_NUMBER="$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")"
+          fi
+
+          PR_JSON="$(curl --fail-with-body --silent --show-error \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER")"
+          HEAD_SHA="$(jq -r '.head.sha' <<<"$PR_JSON")"
+
+          COMMENTS_JSON="$(curl --fail-with-body --silent --show-error \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPOSITORY/issues/$PR_NUMBER/comments?per_page=100")"
+
+          APPROVED="$(jq -r \
+            --arg login "$FOUNDER_LOGIN" \
+            --arg expected "APPROVE $HEAD_SHA" \
+            '[.[] | select(
+              .user.login == $login and
+              .author_association == "OWNER" and
+              ((.body // "") | gsub("^\\s+|\\s+$"; "")) == $expected
+            )] | length > 0' <<<"$COMMENTS_JSON")"
+
+          STATE=pending
+          DESCRIPTION="Awaiting founder approval for exact head $HEAD_SHA"
+          if [ "$APPROVED" = "true" ]; then
+            STATE=success
+            DESCRIPTION="Founder approved exact head $HEAD_SHA"
+          fi
+
+          jq -n \
+            --arg state "$STATE" \
+            --arg context "Founder exact-head approval" \
+            --arg description "$DESCRIPTION" \
+            --arg target_url "https://github.com/$REPOSITORY/pull/$PR_NUMBER" \
+            '{state:$state,context:$context,description:$description,target_url:$target_url}' |
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPOSITORY/statuses/$HEAD_SHA" \
+            --data-binary @-
+
+          if [ "$APPROVED" != "true" ]; then
+            echo "::error::Comment exactly 'APPROVE $HEAD_SHA' as @$FOUNDER_LOGIN."
+            exit 1
+          fi
