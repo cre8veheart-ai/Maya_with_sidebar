@@ -92,10 +92,11 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- Branch `copilot/credential-placeholder-hardening` is currently adding a retrievable append-only history ledger with PR enforcement.
-- VERIFIED in source on this branch: `docs/MAYA_HISTORY_LEDGER.md` now exists, and `.github/workflows/history-ledger-guard.yml` enforces non-deletion and append-only edits in pull requests.
-- Remaining blocker: merge/review and live GitHub Actions confirmation of the new ledger guard are still UNVERIFIED on default branch events.
-- Exact first next action: complete `npm ci` and `npm run verify` on this head, then confirm the new ledger-guard workflow executes on the next qualifying PR update.
+- Branch `copilot/credential-placeholder-hardening` is now setting a clean build baseline to reduce workflow loops.
+- VERIFIED in source on this branch: workflow set is constrained to `.github/workflows/full-verification.yml`, `.github/workflows/founder-exact-head-approval.yml` (issue-comment path limited to founder actor), and a manual-only `.github/workflows/claude.yml` (`workflow_dispatch` only).
+- VERIFIED locally on this branch: `npm ci` and `npm run verify` passed after the workflow baseline stabilization.
+- Remaining blocker: default-branch live behavior of the new Claude manual-only trigger model is still UNVERIFIED until post-merge workflow events run from `main`.
+- Exact first next action: merge this stabilization slice, then confirm that comment/review events no longer spawn Claude workflow loops.
 
 ### What we were building
 
@@ -908,4 +909,18 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Verified result: repository now has a dedicated retrievable history ledger with CI guardrail for append-only behavior.
 - Remaining blocker or unknown: UNVERIFIED until the new guard workflow runs on GitHub for a PR update and confirms enforcement from default-branch workflow state.
 - Exact first next action: run required local verification (`npm ci`, `npm run verify`), then observe and confirm ledger-guard workflow behavior on GitHub.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
+
+### Work History Trail — 2026-09-19 clean build baseline and loop removal
+
+- Trigger or task: founder request for a clean build baseline and explicit removal of looping behavior.
+- Blueprint sections used: Current Working Checkpoint; Required validation; Engineering discipline; Founder-authorized production rule.
+- Live evidence checked: recent GitHub Actions history showed repeated Claude workflow runs from review/comment-trigger events with `action_required`/failure churn.
+- Root cause classification: VERIFIED — multi-event Claude workflow triggers caused repeated noisy runs and rework loops.
+- Changes made: reduced `.github/workflows/claude.yml` to `workflow_dispatch` only; restricted founder approval issue-comment runs to founder actor only; preserved full verification workflow as baseline build control.
+- Attempted fixes and failures: earlier trigger narrowing still allowed comment-driven runs; this slice removed the event path entirely for loop control.
+- Verification performed after fixes: `npm ci` PASSED; `npm run verify` PASSED.
+- Verified result: local build baseline is clean and the repository workflow surface is simplified to non-looping defaults.
+- Remaining blocker or unknown: UNVERIFIED until merged default-branch Actions confirm Claude no longer runs on comment/review noise.
+- Exact first next action: merge this slice and confirm no new Claude runs are created by issue/review comments.
 - Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.

@@ -7,59 +7,7 @@ on:
         description: Read-only prompt used to verify Claude model/API execution
         required: false
         default: Read README.md and respond exactly MAYA_CLAUDE_SMOKE_OK. Do not edit, commit, push, create a branch, or open a pull request.
-  issue_comment:
-    types: [created]
-
 jobs:
-  claude:
-    if: |
-      github.event_name != 'workflow_dispatch' &&
-      github.actor == 'cre8veheart-ai' &&
-      github.event_name == 'issue_comment' &&
-      contains(github.event.comment.body, '@claude')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-      actions: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 1
-
-      - name: Check ANTHROPIC_API_KEY availability
-        id: key_check
-        shell: bash
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "has_key=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::ANTHROPIC_API_KEY is missing for this event context; skipping Claude run."
-          else
-            echo "has_key=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run Claude Code
-        id: claude
-        if: steps.key_check.outputs.has_key == 'true'
-        uses: anthropics/claude-code-action@9c5ddab2e6d17b83ea679153b31f1d5f023cf636 # v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Record skipped Claude run
-        if: steps.key_check.outputs.has_key != 'true'
-        shell: bash
-        run: |
-          {
-            echo "## Claude run skipped"
-            echo
-            echo "- Reason: ANTHROPIC_API_KEY unavailable in this workflow context."
-            echo "- Action: no-op (non-failing)."
-          } >> "$GITHUB_STEP_SUMMARY"
 
   claude-smoke:
     if: github.event_name == 'workflow_dispatch'

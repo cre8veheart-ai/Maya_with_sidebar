@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   approval:
-    if: github.event_name == 'pull_request' || github.event.issue.pull_request
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request && github.actor == 'cre8veheart-ai')
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
