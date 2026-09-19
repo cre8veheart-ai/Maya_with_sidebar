@@ -92,12 +92,13 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
-- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
-- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
-- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
-- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
+- PR #137 (`copilot/fix-code-review-comment`) is the active blueprint-only follow-up for the merged Founder Exact-Head Approval workflow repair from PR #135.
+- VERIFIED in source on `main`: merge commit `95fb9c53cb1ea61b238a1d29ac1f74d306bcab47` contains the Founder Exact-Head Approval workflow update from PR #135.
+- VERIFIED in historical GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
+- VERIFIED in post-merge live GitHub Actions evidence: run `35463383296` / job `105951128621` executed the default-branch `issue_comment` workflow from `main`, then logged `Skipping founder exact-head approval for unrelated comment.` and succeeded for a `vercel[bot]` comment.
+- VERIFIED in prior local validation for the merged workflow fix: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed before PR #135 merged; this follow-up changes only the blueprint checkpoint/history.
+- Remaining blocker: an actual founder `APPROVE <head_sha>` comment exercising the exact-head success path from `main` remains UNVERIFIED after the post-merge unrelated-comment confirmation.
+- Exact first next action: land this blueprint-only follow-up, then confirm on the next qualifying founder approval comment that the exact-head approval path still succeeds from `main`.
 
 ### What we were building
 
@@ -855,3 +856,20 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
 - Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
 - Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
+
+### Work History Trail — 2026-09-19 approval workflow blueprint follow-up
+
+- Trigger or task: address PR #135 review comment `discussion_r4054310288` by refreshing the MAYA blueprint checkpoint/history after the workflow fix merged.
+- Blueprint sections used: Blueprint governance; Current Working Checkpoint; Work History Trail; Engineering discipline.
+- Live evidence checked: PR #135 is merged into `main` at commit `95fb9c53cb1ea61b238a1d29ac1f74d306bcab47`; workflow run `35463383296` / job `105951128621` on `main` was triggered by `vercel[bot]` via `issue_comment` and logged `Skipping founder exact-head approval for unrelated comment.` before succeeding.
+- Changes made: refreshed the Current Working Checkpoint to the post-merge state and appended this evidence entry; no workflow, test, or product code changed in this follow-up.
+- Failures, exact error evidence and affected boundary: the prior checkpoint state was CONTRADICTED after merge because it still said PR #135 was the active repair awaiting review and post-merge confirmation; live GitHub state had already advanced beyond that wording.
+- Every attempted fix, including unsuccessful attempts: no additional workflow-logic changes were attempted in this follow-up because the linked review comment only required blueprint reconciliation with the merged state.
+- The fix that resolved the failure, or why it remains unresolved: replaced the stale checkpoint language with merged-state evidence and recorded the successful default-branch `issue_comment` verification path in the blueprint history.
+- Verification performed after each fix: reviewed the blueprint diff to confirm the update stays limited to the checkpoint/history requested by the review comment and matches the cited GitHub Actions evidence.
+- Verified result: the blueprint now records both the original failure and the post-merge proof that unrelated bot comments no longer fail the Founder Exact-Head Approval workflow on `main`.
+- Regressions introduced or discovered: none in repository code; only stale documentation state was discovered and corrected.
+- Rollbacks, reversals, removals and superseded approaches: none.
+- Stop reason or remaining blocker: the founder exact-head success path for an actual `APPROVE <head_sha>` comment on `main` remains UNVERIFIED after this skip-path confirmation.
+- Exact first next action: merge this review-comment follow-up, then capture live evidence from the next qualifying founder approval comment to confirm the exact-head success path on `main`.
+- Relevant PR, branch and commit identifiers: merged PR #135; current branch `copilot/fix-code-review-comment`; current PR #137.
