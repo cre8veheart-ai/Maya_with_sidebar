@@ -92,12 +92,11 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
-- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
-- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
-- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
-- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
+- Branch `copilot/sk-ant-query-api-keys` is the active security-hardening slice to remove an Anthropic key-like placeholder from tracked examples.
+- VERIFIED in source on this branch: `.env.example` no longer contains an `sk-ant-` style value and now uses a non-key sentinel placeholder for `ANTHROPIC_API_KEY`.
+- VERIFIED in local validation on this branch: `npm ci` and `npm run verify` both passed after the placeholder hardening change.
+- Remaining blocker: merge/review completion and any downstream secret-scanning confirmation remain UNVERIFIED until post-merge checks run.
+- Exact first next action: complete review and merge, then confirm repository secret scanning no longer flags an Anthropic key pattern from `.env.example`.
 
 ### What we were building
 
@@ -855,3 +854,17 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
 - Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
 - Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
+
+### Work History Trail — 2026-09-19 sk-ant query api keys hardening
+
+- Trigger or task: remediate `sk-ant- — query api keys` by removing Anthropic key-like text from repository-tracked configuration examples.
+- Blueprint sections used: Architecture rules; Required validation; Engineering discipline; Current Working Checkpoint.
+- Live evidence checked: repository-wide search found `sk-ant-` in `.env.example` and in credential-audit detection logic (`scripts/audit-credential-leaks.mjs`) where it is expected and intentional.
+- Root cause classification: VERIFIED — `.env.example` contained `ANTHROPIC_API_KEY=sk-ant-...`, which can be interpreted as a provider-key pattern by scanners despite being a placeholder.
+- Changes made: updated `.env.example` to use `ANTHROPIC_API_KEY=replace-with-your-anthropic-api-key`; refreshed Current Working Checkpoint for this branch and task.
+- Attempted fixes and failures: no failed implementation attempts in this slice.
+- Verification performed after fixes: `npm ci` PASSED; `npm run verify` PASSED (lint, credential audit, tests, focused verification scripts, production build).
+- Verified result: local quality gates pass and the tracked Anthropic env example no longer resembles a live key prefix.
+- Remaining blocker or unknown: UNVERIFIED whether external GitHub secret scanning alerts clear until post-merge scanners evaluate the updated default branch.
+- Exact first next action: merge after review, then confirm that no active secret-scanning findings remain for the former `sk-ant-` placeholder pattern.
+- Relevant PR, branch and commit identifiers: branch `copilot/sk-ant-query-api-keys`; commit identifier pending next checkpoint refresh after commit.
