@@ -92,10 +92,10 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- Branch `copilot/credential-placeholder-hardening` is currently restoring a sensible default GitHub/Vercel workflow surface.
-- VERIFIED in source on this branch: custom founder exact-head approval workflow and its helper files are removed; workflow set is now limited to `full-verification.yml` plus retained `claude.yml` by founder request.
-- Remaining blocker: local validation after workflow cleanup is still UNVERIFIED for this exact branch head.
-- Exact first next action: run `npm ci` and `npm run verify`, then complete review/merge with post-merge CI observation.
+- Branch `copilot/credential-placeholder-hardening` is currently restoring founder workflow capability needed for build work in the single canonical MAYA repository.
+- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` is restored together with `lib/founder-approval-core.mjs`, `scripts/founder-exact-head-approval.mjs`, and `tests/founder-approval-core.test.mjs`; `.github/workflows/claude.yml` remains retained by founder request.
+- Remaining blocker: local validation after this restoration is still UNVERIFIED for this exact branch head.
+- Exact first next action: run `npm ci` and `npm run verify`, then complete review/merge and observe GitHub Actions behavior on the restored workflow set.
 
 ### What we were building
 
@@ -880,4 +880,18 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Verified result: workflow surface is reduced toward sensible defaults (full verification + retained Claude workflow).
 - Remaining blocker or unknown: UNVERIFIED until `npm ci` and `npm run verify` complete on this exact head and downstream CI runs on GitHub.
 - Exact first next action: run required validation locally, then confirm GitHub Actions behavior on the updated workflow set.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
+
+### Work History Trail — 2026-09-19 founder head workflow restoration for build
+
+- Trigger or task: founder request to restore “founder head yml” and keep build workflow capability in one canonical MAYA repository.
+- Blueprint sections used: Blueprint governance; Source of truth; Founder-authorized production rule; Required validation; Current Working Checkpoint.
+- Live evidence checked: `.github/workflows` initially lacked `founder-exact-head-approval.yml`; blueprint history already recorded both removal and prior presence of the founder-approval path.
+- Root cause classification: VERIFIED — earlier cleanup removed founder exact-head workflow artifacts, but current founder direction requires this workflow restored.
+- Changes made: restored `.github/workflows/founder-exact-head-approval.yml`, `lib/founder-approval-core.mjs`, `scripts/founder-exact-head-approval.mjs`, and `tests/founder-approval-core.test.mjs`; retained `.github/workflows/claude.yml`.
+- Attempted fixes and failures: removal and restoration were both executed in the same session as direction evolved; no runtime execution failure evidence was observed during file restoration itself.
+- Verification performed after fixes: pending for this exact branch head at time of entry.
+- Verified result: repository source now includes founder exact-head approval workflow and supporting logic required by that workflow.
+- Remaining blocker or unknown: UNVERIFIED until `npm ci` and `npm run verify` pass on this exact head and CI executes on GitHub.
+- Exact first next action: run required local verification and then observe workflow behavior on the next qualifying PR/comment events.
 - Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
