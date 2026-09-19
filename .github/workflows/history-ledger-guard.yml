@@ -23,7 +23,7 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
-          FILE="docs/MAYA_HISTORY_LEDGER.md"
+          FILE="MAYA_HISTORY_LEDGER.md"
 
           if [ ! -f "$FILE" ]; then
             echo "::error::${FILE} is missing. The history ledger must not be deleted."
@@ -47,7 +47,7 @@ base = Path("/tmp/base-ledger.md").read_text(encoding="utf-8")
 head = Path("/tmp/head-ledger.md").read_text(encoding="utf-8")
 
 if not head.startswith(base):
-    print("::error::docs/MAYA_HISTORY_LEDGER.md is append-only. Existing content was modified or removed.")
+    print("::error::MAYA_HISTORY_LEDGER.md is append-only. Existing content was modified or removed.")
     sys.exit(1)
 
 print("History ledger append-only check passed.")

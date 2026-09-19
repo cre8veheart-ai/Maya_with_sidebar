@@ -92,11 +92,11 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- Branch `copilot/credential-placeholder-hardening` is now setting a clean build baseline to reduce workflow loops.
-- VERIFIED in source on this branch: workflow set is constrained to `.github/workflows/full-verification.yml`, `.github/workflows/founder-exact-head-approval.yml` (issue-comment path limited to founder actor), and a manual-only `.github/workflows/claude.yml` (`workflow_dispatch` only).
-- VERIFIED locally on this branch: `npm ci` and `npm run verify` passed after the workflow baseline stabilization.
-- Remaining blocker: default-branch live behavior of the new Claude manual-only trigger model is still UNVERIFIED until post-merge workflow events run from `main`.
-- Exact first next action: merge this stabilization slice, then confirm that comment/review events no longer spawn Claude workflow loops.
+- Branch `copilot/credential-placeholder-hardening` is executing full stabilization with inventory, classification, ordered fixes, and before/after ledgering.
+- VERIFIED in source on this branch: workflows are stabilized (`claude.yml` manual-only, founder-approval comment path founder-actor constrained), root history ledger is canonicalized (`MAYA_HISTORY_LEDGER.md`), and ledger guard enforcement targets the root ledger.
+- VERIFIED locally on this branch: `npm ci` and `npm run verify` passed after stabilization changes.
+- Remaining blocker: default-branch live behavior of stabilized workflows is still UNVERIFIED until post-merge events execute from `main`.
+- Exact first next action: merge this stabilization slice, then verify on live GitHub Actions that loop triggers remain suppressed and ledger guard enforces append-only root history.
 
 ### What we were building
 
@@ -923,4 +923,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Verified result: local build baseline is clean and the repository workflow surface is simplified to non-looping defaults.
 - Remaining blocker or unknown: UNVERIFIED until merged default-branch Actions confirm Claude no longer runs on comment/review noise.
 - Exact first next action: merge this slice and confirm no new Claude runs are created by issue/review comments.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
+
+### Work History Trail — 2026-09-19 full stabilization implementation (freeze→inventory→classify→fix→validate→ledger)
+
+- Trigger or task: implement full stabilization plan with strict ordering and final before/after accounting.
+- Blueprint sections used: Current Working Checkpoint; Work History Trail; Required validation; Engineering discipline; Founder-authorized production rule.
+- Live evidence checked: repository workflows, auth routes, connector control points, governance docs, and open PR deltas (`#67 #70 #71 #76 #96 #126 #127 #129 #131 #132 #136 #137 #138 #140`).
+- Root cause classification: VERIFIED — loop churn stemmed from workflow trigger surfaces and unstable governance/control-plane transitions.
+- Changes made:
+  - workflow stability: `claude.yml` kept manual-only (`workflow_dispatch`), founder approval issue-comment path constrained to founder actor.
+  - authority/safety: root canonical `MAYA_HISTORY_LEDGER.md` established as append-only system of record; ledger guard updated to enforce root file.
+  - governance docs: checkpoint and history trail synchronized to stabilization state; `docs/MAYA_HISTORY_LEDGER.md` converted to pointer.
+- Attempted fixes and failures: earlier partial trigger narrowing still allowed comment-driven churn; final stabilization removed non-manual Claude trigger paths and constrained founder-comment path.
+- Verification performed after fixes: `npm ci` PASSED; `npm run verify` PASSED.
+- Verified result: local baseline is stable with reduced loop surfaces and explicit root retrievable history controls.
+- Remaining blocker or unknown: UNVERIFIED until `main` executes the updated workflows on live events and confirms no loop regressions.
+- Exact first next action: merge stabilization slice and observe the next qualifying workflow events on `main` for loop suppression and root-ledger guard enforcement.
 - Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.

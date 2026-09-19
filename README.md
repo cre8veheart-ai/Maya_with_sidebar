@@ -66,4 +66,4 @@ The complete placeholder list and server/client boundaries are documented in `.e
 - Optional website, email, calendar, Zapier, Adobe, Notion, Google Drive, and other tool capabilities remain staged integrations rather than assumed access.
 
 See `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md` for the active architecture, governance, recovery ledger, verified checkpoint, and build order.  
-See `docs/MAYA_HISTORY_LEDGER.md` for the append-only retrievable history ledger.
+See `MAYA_HISTORY_LEDGER.md` for the append-only retrievable history ledger (root canonical).
