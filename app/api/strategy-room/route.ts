@@ -1,17 +1,6 @@
 import { NextRequest } from "next/server";
-import {
-  attachWorkspaceSession,
-  resolveWorkspaceSession,
-} from "@/lib/server/workspace-session";
+import { requireBetaSession, isResponseError } from "@/lib/server/auth";
 import { runStrategyRoom } from "@/lib/maya/strategyRoom";
-import {
-  buildFounderContinuityMessage,
-  isAuthorizedFounderSession,
-} from "@/lib/maya/founderContinuity";
-import {
-  FOUNDER_CONTINUITY_COOKIE,
-  verifyFounderContinuitySession,
-} from "@/lib/maya/founderContinuitySession";
 import type { ExecRole, MayaProvider } from "@/lib/maya/types";
 
 const VALID_ROLES = new Set<ExecRole>([
@@ -29,10 +18,12 @@ function isExecRole(value: unknown): value is ExecRole {
 }
 
 export async function POST(req: NextRequest) {
-  const session = resolveWorkspaceSession(req);
-
-  const respond = (payload: unknown, status = 200, headers?: HeadersInit) =>
-    attachWorkspaceSession(Response.json(payload, { status, headers }), session);
+  try {
+    requireBetaSession(req);
+  } catch (error) {
+    if (isResponseError(error)) return error;
+    return Response.json({ error: "Authentication failed", code: "AUTH_ERROR" }, { status: 500 });
+  }
 
   let roles: ExecRole[] = [];
   let prompt = "";
@@ -53,22 +44,16 @@ export async function POST(req: NextRequest) {
     model = sanitizeText(payload.model, 100);
     ludicrousMode = payload.ludicrousMode === true;
   } catch {
-    return respond({ error: "Invalid request body", code: "INVALID_REQUEST" }, 400);
+    return Response.json({ error: "Invalid request body", code: "INVALID_REQUEST" }, { status: 400 });
   }
 
   if (roles.length < 2) {
-    return respond({ error: "Select at least two executive roles", code: "ROLES_REQUIRED" }, 400);
+    return Response.json({ error: "Select at least two executive roles", code: "ROLES_REQUIRED" }, { status: 400 });
   }
   if (!prompt) {
-    return respond({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, 400);
+    return Response.json({ error: "A strategy prompt is required", code: "PROMPT_REQUIRED" }, { status: 400 });
   }
 
-  const continuityToken = req.cookies.get(FOUNDER_CONTINUITY_COOKIE)?.value;
-  const continuityActive = isAuthorizedFounderSession(session.sessionId) && verifyFounderContinuitySession(
-    continuityToken,
-    session.sessionId,
-  );
-  const founderContext = buildFounderContinuityMessage(session.sessionId, continuityActive);
 
   try {
     const result = await runStrategyRoom({
@@ -77,25 +62,25 @@ export async function POST(req: NextRequest) {
       provider,
       model: model || undefined,
       ludicrousMode,
-      founderContext,
     });
 
-    return respond(result, 200, {
-        "Cache-Control": "no-store",
-        "X-Maya-Continuity": continuityActive ? "active" : "inactive",
+    return Response.json(result, {
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
     const incidentId = crypto.randomUUID();
     const errorType = error instanceof Error ? error.name : typeof error;
     console.error("Strategy Room request failed", { incidentId, errorType });
-    return respond(
+    return Response.json(
       {
         error: "Strategy Room is temporarily unavailable",
         code: "STRATEGY_ROOM_ERROR",
         incidentId,
       },
-      502,
-      { "Cache-Control": "no-store" },
+      {
+        status: 502,
+        headers: { "Cache-Control": "no-store" },
+      },
     );
   }
 }

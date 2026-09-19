@@ -84,9 +84,7 @@ async function buildGeminiAdvisory({ messages, systemPrompt, execContextMessage 
 }
 
 async function* streamAnthropicResponse({ messages, systemPrompt, execContextMessage, model }: ProviderRequest): AsyncGenerator<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("Anthropic provider is not configured");
-  const anthropic = new Anthropic({ apiKey, timeout: PROVIDER_TIMEOUT_MS });
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: PROVIDER_TIMEOUT_MS });
   const stream = await anthropic.messages.create({
     model: model || process.env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
     max_tokens: 1400,
@@ -101,9 +99,7 @@ async function* streamAnthropicResponse({ messages, systemPrompt, execContextMes
 }
 
 async function openClawTextResponse({ messages, systemPrompt, execContextMessage, model, ludicrousMode }: ProviderRequest): Promise<string> {
-  const baseUrl = process.env.OPENCLAW_BASE_URL;
-  if (!baseUrl) throw new Error("OpenClaw provider is not configured");
-  const endpoint = new URL("/v1/chat/completions", baseUrl);
+  const endpoint = new URL("/v1/chat/completions", process.env.OPENCLAW_BASE_URL);
   const apiKey = process.env.OPENCLAW_API_KEY?.trim();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (apiKey) headers.Authorization = ["Bearer", apiKey].join(" ");
@@ -141,7 +137,6 @@ async function openClawTextResponse({ messages, systemPrompt, execContextMessage
 
 async function* streamOpenAIResponse({ messages, systemPrompt, execContextMessage, model }: ProviderRequest): AsyncGenerator<string> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) throw new Error("OpenAI provider is not configured");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
   try {
@@ -174,9 +169,22 @@ async function* streamOpenClawResponse(request: ProviderRequest): AsyncGenerator
   yield await openClawTextResponse(request);
 }
 
+function ensureProviderConfigured(provider: MayaProvider): void {
+  if (provider === "anthropic" && !process.env.ANTHROPIC_API_KEY) {
+    throw new Error("Anthropic provider is not configured");
+  }
+  if (provider === "openclaw" && !process.env.OPENCLAW_BASE_URL) {
+    throw new Error("OpenClaw provider is not configured");
+  }
+  if (provider === "openai" && !process.env.OPENAI_API_KEY?.trim()) {
+    throw new Error("OpenAI provider is not configured");
+  }
+}
+
 export async function createChatProviderStream(request: ProviderRequest): Promise<AsyncGenerator<string>> {
   const validProviders: MayaProvider[] = ["anthropic", "openclaw", "openai"];
   if (!validProviders.includes(request.provider)) throw new Error(`Unsupported provider: "${request.provider}"`);
+  ensureProviderConfigured(request.provider);
   const geminiAdvisory = request.useGeminiAdvisory ? await buildGeminiAdvisory(request) : null;
   const enrichedRequest: ProviderRequest = { ...request, execContextMessage: appendGeminiAdvisory(request.execContextMessage, geminiAdvisory) };
   if (request.provider === "openclaw") return streamOpenClawResponse(enrichedRequest);

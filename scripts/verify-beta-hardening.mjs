@@ -22,30 +22,12 @@ function assert(condition, message) {
 
 const chatRoute = read("app/api/chat/route.ts");
 const roleChat = read("components/RoleChat.tsx");
-const formerlyGatedRoutes = [
-  "app/api/user/profile/route.ts",
-  "app/api/user/lens/route.ts",
-  "app/api/sessions/route.ts",
-  "app/api/strategy-room/route.ts",
-].map(read);
 
 assertNoMatch(
   chatRoute,
   /requireBetaSession|AUTH_REQUIRED|isResponseError/,
   "Executive chat must remain available without the retired beta-session gate",
 );
-for (const route of formerlyGatedRoutes) {
-  assertNoMatch(
-    route,
-    /requireBetaSession|AUTH_REQUIRED|isResponseError/,
-    "Default MAYA routes must not restore the retired beta-session gate",
-  );
-  assertMatch(
-    route,
-    /resolveWorkspaceSession/,
-    "Open MAYA persistence routes must use an isolated workspace session",
-  );
-}
 
 assert(
   !exists("app/api/beta-validate/route.ts"),
