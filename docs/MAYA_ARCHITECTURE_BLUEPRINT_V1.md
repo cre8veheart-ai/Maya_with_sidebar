@@ -92,10 +92,10 @@ Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- Branch `copilot/credential-placeholder-hardening` is currently restoring founder workflow capability needed for build work in the single canonical MAYA repository.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` is restored together with `lib/founder-approval-core.mjs`, `scripts/founder-exact-head-approval.mjs`, and `tests/founder-approval-core.test.mjs`; `.github/workflows/claude.yml` remains retained by founder request.
-- Remaining blocker: local validation after this restoration is still UNVERIFIED for this exact branch head.
-- Exact first next action: run `npm ci` and `npm run verify`, then complete review/merge and observe GitHub Actions behavior on the restored workflow set.
+- Branch `copilot/credential-placeholder-hardening` is currently adding a retrievable append-only history ledger with PR enforcement.
+- VERIFIED in source on this branch: `docs/MAYA_HISTORY_LEDGER.md` now exists, and `.github/workflows/history-ledger-guard.yml` enforces non-deletion and append-only edits in pull requests.
+- Remaining blocker: merge/review and live GitHub Actions confirmation of the new ledger guard are still UNVERIFIED on default branch events.
+- Exact first next action: complete `npm ci` and `npm run verify` on this head, then confirm the new ledger-guard workflow executes on the next qualifying PR update.
 
 ### What we were building
 
@@ -894,4 +894,18 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Verified result: repository source now includes founder exact-head approval workflow and supporting logic required by that workflow.
 - Remaining blocker or unknown: UNVERIFIED until `npm ci` and `npm run verify` pass on this exact head and CI executes on GitHub.
 - Exact first next action: run required local verification and then observe workflow behavior on the next qualifying PR/comment events.
+- Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
+
+### Work History Trail — 2026-09-19 retrievable append-only history ledger
+
+- Trigger or task: founder request to place history documentation somewhere retrievable and safer from change/delete.
+- Blueprint sections used: Living MAYA blueprint rules; Current Working Checkpoint; Work History Trail; Engineering discipline.
+- Live evidence checked: `docs/` had no dedicated `*HISTORY*.md` file before this change; existing historical narrative lived primarily in blueprint entries.
+- Root cause classification: VERIFIED — retrievable history existed but lacked a dedicated standalone ledger path with explicit PR-level append-only enforcement.
+- Changes made: added `docs/MAYA_HISTORY_LEDGER.md`; added `.github/workflows/history-ledger-guard.yml` to block deletion and non-append edits; linked the ledger from `README.md`.
+- Attempted fixes and failures: none in this slice.
+- Verification performed after fixes: pending for this exact head at time of entry.
+- Verified result: repository now has a dedicated retrievable history ledger with CI guardrail for append-only behavior.
+- Remaining blocker or unknown: UNVERIFIED until the new guard workflow runs on GitHub for a PR update and confirms enforcement from default-branch workflow state.
+- Exact first next action: run required local verification (`npm ci`, `npm run verify`), then observe and confirm ledger-guard workflow behavior on GitHub.
 - Relevant PR, branch and commit identifiers: branch `copilot/credential-placeholder-hardening`; commit identifiers pending.
