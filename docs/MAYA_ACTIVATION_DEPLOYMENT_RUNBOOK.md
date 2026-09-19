@@ -134,9 +134,9 @@ Founder exact-head approval
 1. Create or update a feature branch
 2. Open or update a pull request into `main`
 3. Let GitHub Actions run
-4. Confirm **MAYA Full Verification** passes
+4. Confirm the required check **`npm run verify`** passes in the **MAYA Full Verification** workflow
 5. Confirm the preview deployment behaves correctly
-6. Confirm the **Founder Exact-Head Approval** requirement is satisfied
+6. Confirm the required check **`Founder exact-head approval`** is satisfied through the **Founder Exact-Head Approval** workflow
 7. Merge the pull request into `main`
 8. Confirm the canonical Vercel project deploys production from `main`
 9. Verify production behavior in the browser
@@ -164,16 +164,16 @@ The repository workflow `MAYA Full Verification` runs:
 - [ ] Rulesets protect `main`
 - [ ] `ANTHROPIC_API_KEY` exists in Actions secrets
 - [ ] Claude Code smoke test passes
-- [ ] MAYA Full Verification passes
+- [ ] The required check `npm run verify` passes in the MAYA Full Verification workflow
 - [ ] Preview deployment matches expected behavior
-- [ ] Founder approval gate passes
+- [ ] The required check `Founder exact-head approval` passes
 - [ ] PR is merged into `main`
 - [ ] Canonical Vercel project deploys from `main`
 - [ ] Production behavior is verified in browser, not just green CI
 
 ## Founder approval meaning
 
-The workflow `Founder Exact-Head Approval` requires approval for the current PR head SHA.
+The workflow `Founder Exact-Head Approval` emits the required status check `Founder exact-head approval` and requires approval for the current PR head SHA.
 
 Meaning:
 
@@ -187,9 +187,9 @@ Meaning:
 2. Confirm the `main` ruleset is active
 3. Run the Claude Code smoke test
 4. Open or update a pull request
-5. Wait for **MAYA Full Verification**
+5. Wait for the required check **`npm run verify`** in **MAYA Full Verification**
 6. Confirm preview deployment behavior
-7. Satisfy the Founder approval gate
+7. Satisfy the required check **`Founder exact-head approval`**
 8. Merge to `main`
 9. Confirm production deployment on the canonical Vercel project
 
