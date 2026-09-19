@@ -15,7 +15,7 @@ export async function supabaseRest<T>(path: string, init: RequestInit = {}): Pro
     cache: "no-store",
     headers: {
       apikey: cfg.serviceRoleKey,
-      Authorization: "Bearer " + cfg.serviceRoleKey,
+      Authorization: `Bearer ${cfg.serviceRoleKey}`,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
