@@ -86,18 +86,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-08 UTC
+Last updated: 2026-09-19 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #123 is the active removal of the custom Claude MCP control plane and provider-specific repository restrictions.
-- VERIFIED in source: the custom Claude workflow, MCP service, branch allowlist, exact-comment merge gate, MCP verification job, and read/write infiltration audit are removed on the PR branch.
-- VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
-- GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
-- External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: verify the final PR #123 cleanup commit, confirm the canonical native Vercel preview, then obtain Leslie's approval for the final PR state before merge.
+- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
+- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
+- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
+- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
+- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
+- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
 
 ### What we were building
 
@@ -841,3 +841,17 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Preserved open work: #34 remains until duplicate Vercel projects are fully removed; #35 persistence, #38 observability, #39 release quality, #41 tooling capability, #67/#70 persistence investigation, #71 connectors, #76 executive backbone, #89/#91–#94 product design, #96 Pocket Desk and security dependency updates remain subject to current blueprint review.
 - Verified founder-auth impact: restrictions affected real OAuth scopes, runtime write/workflow capability, sessions, repository allowlists, workflow permissions, token wiring, automatic branch deletion, deployment execution and the instructions/tests future agents were required to follow.
 - Recovery: all closed issues/PRs may be reopened; deleted files and prior session duration remain recoverable from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`.
+
+### Work History Trail — 2026-09-19 approval workflow false-failure fix
+
+- Trigger or task: fix failing GitHub Actions job `approval` from check run `105860886178` / run `35429303629`.
+- Blueprint sections used: Blueprint governance; Current Working Checkpoint; Required validation; Engineering discipline.
+- Live evidence checked: GitHub Actions `list_workflow_runs` showed repeated `Founder Exact-Head Approval` failures on `issue_comment`; job logs for `105860886178` showed `vercel[bot]` triggered the workflow and the job exited with `Comment exactly 'APPROVE 4e5d120f5c07c9b27f11f02df4d2d660b54f111c' as @cre8veheart-ai.` after posting a pending status on PR #127.
+- Root cause classification: VERIFIED — the workflow treated every PR `issue_comment` as an approval attempt instead of only founder approval comments, so unrelated bot comments produced false failures.
+- Changes made: added `lib/founder-approval-core.mjs`; added `scripts/founder-exact-head-approval.mjs`; added `tests/founder-approval-core.test.mjs`; replaced the inline shell in `.github/workflows/founder-exact-head-approval.yml` with the scripted check plus repository checkout so the workflow can skip unrelated comments while preserving exact-head approval enforcement.
+- Attempted fixes and failures: first extraction attempt forgot that Actions runners do not automatically include repository files, which would have left `node scripts/founder-exact-head-approval.mjs` unavailable; corrected by adding `actions/checkout@v4` before final verification.
+- Verification performed after fixes: `node --test tests/founder-approval-core.test.mjs` PASSED; `npm ci` PASSED; `npm run verify` PASSED, including lint, credential audit, repository tests, focused MAYA verification scripts, and production build.
+- Verified result: local repository validation is green and the approval logic now distinguishes unrelated bot chatter from founder approval events.
+- Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
+- Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
+- Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
