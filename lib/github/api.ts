@@ -10,16 +10,6 @@ import {
 
 const GITHUB_API_ROOT = "https://api.github.com";
 
-export class GitHubApiError extends Error {
-  status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.name = "GitHubApiError";
-    this.status = status;
-  }
-}
-
 function encodePath(path: string): string {
   return path
     .split("/")
@@ -54,7 +44,7 @@ export async function githubRequest<T>(
   });
 
   if (!response.ok) {
-    throw new GitHubApiError(response.status, await parseGitHubError(response));
+    throw new Error(await parseGitHubError(response));
   }
 
   if (response.status === 204) {

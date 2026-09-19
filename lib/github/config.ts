@@ -77,12 +77,7 @@ export function getAllowedRepos(): string[] {
 
   const owner = sanitizeOwner(process.env.GITHUB_DEFAULT_OWNER);
   const repo = sanitizeRepo(process.env.GITHUB_DEFAULT_REPO);
-  if (owner && repo) return [`${owner}/${repo}`.toLowerCase()];
-
-  // A missing optional environment override must not turn a valid MAYA
-  // connection into zero repository access. Keep the fallback explicit and
-  // limited to the canonical repository.
-  return ["cre8veheart-ai/maya_with_sidebar"];
+  return owner && repo ? [`${owner}/${repo}`.toLowerCase()] : [];
 }
 
 export function isRepoAllowed(repoConfig: GitHubRepoConfig): boolean {

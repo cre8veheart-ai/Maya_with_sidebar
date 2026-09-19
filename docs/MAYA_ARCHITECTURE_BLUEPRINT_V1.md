@@ -368,8 +368,6 @@ Scope and evidence:
 
 ### Amendment History
 
-- 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
-
 - 2026-09-08: Applied one Founder-authorized production rule to all engineering agents. Claude and Ari may build branches and pull requests; a merge to `main` requires Leslie's fresh approval for the exact latest commit, and later commits invalidate prior approval.
 - 2026-09-08: Founder Leslie personally discovered and ordered removal of repository hardening and automatic branch-deletion controls. Established Founder authority over repository-local policies; conflicts now require disclosure and Founder decision rather than an automatic stop.
 - 2026-09-02: Made the blueprint the living build authority on `main`.
@@ -768,21 +766,11 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - The official Vercel MCP connection is available to Claude project sessions. Each Claude environment must complete Vercel OAuth when first prompted; credentials are never committed to the repository.
 - Claude-created branches and pull requests may trigger preview builds through the canonical GitHub-to-Vercel integration.
 - Granted technical permission and authorization to use it are separate. Claude and Ari may inspect, edit, test, branch, and open or update pull requests without separate merge permission.
-- Production authority remains with Founder Leslie. Claude, Ari/Codex, Copilot, and later collaborators may merge an eligible pull request only after Leslie explicitly approves the current pull request.
-- Approval may be given in the current working conversation or through GitHub's ordinary approval controls. No provider-specific phrase, exact-comment syntax, custom MCP gate, or special bot workflow is required.
-- If a materially different commit is added after approval, disclose the change and obtain renewed approval before production.
+- Production authority remains with Founder Leslie. Claude may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@claude merge` on that pull request after its latest commit.
+- Ari/Codex may merge an eligible pull request only after GitHub user `cre8veheart-ai` posts the exact comment `@ari merge` after its latest commit, or Leslie gives an explicit current-turn instruction naming that exact pull request and directing its merge.
+- Any later commit invalidates an earlier merge authorization. A fresh authorization is required for the new final commit.
 - Pull-request preview deployments remain automatic and reversible. Production may come only from `main` after the Founder-authorized merge; green checks or a READY preview are not themselves merge permission.
 - Standard engineering safeguards remain: do not expose secrets, do not copy client-vault plaintext into engineering context, report failures accurately, and preserve one canonical repository and deployment path.
-
-### Work History Trail — 2026-09-10 custom Claude control-plane removal
-
-- Founder authorization: remove Claude-specific control-plane remnants from the repository and live GitHub/Vercel configuration while preserving ordinary collaborator access, required MAYA verification, secrets protection, client-vault boundaries, and Founder production authority.
-- PR/branch: PR #123, `ari/restore-ai-team-collaboration`.
-- Repository removals: `.github/workflows/claude.yml`; `services/claude-mcp/**`; `scripts/audit-read-write-infiltrates.mjs`; the `verify-claude-mcp` job; provider-specific branch allowlists, exact-comment merge gates, and MCP verification requirements.
-- Replacements: `scripts/audit-credential-leaks.mjs`; `test:credentials`; credential-leak steps in preview, production, and full verification workflows; provider-neutral Founder approval language.
-- External sweep: GitHub repository rulesets returned `[]`. Branch-protection details remain UNKNOWN because the installed integration returned 403 without administration read access. Vercel confirmed the separate project `maya-claude-mcp` (`prj_uQg0guOVAMsAbIkmOPMZorN85Pzc`) still exists and is linked to this repository; deletion remains pending.
-- Verification: initial PR head passed MAYA Full Verification and both Vercel status contexts. A second sweep found and corrected two leftover workflow calls plus stale policy text; final checks are pending on the newest commit.
-- Recovery: revert PR #123 or restore individual deleted files from pre-PR `main` commit `13224fd45c30df1cb4e3303f695126c92593d3f7`. Recreate the Vercel project only if a future approved architecture again requires a dedicated MCP service.
 
 ### Work History Trail — 2026-09-08 Founder-authorized agent merges
 
@@ -808,52 +796,3 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Security boundary: workflow trigger is restricted to GitHub actor `cre8veheart-ai`; production deploy, merge, secrets changes, and repository administration are prohibited in Claude instructions.
 - Unresolved blocker: `main` remains unprotected. Branch protection must be enabled before this path is considered production-ready.
 - Exact next action: open the governed Claude PR, require full verification, then enable `main` protection before merge and run a Founder-authored `@claude` test.
-
-
-
-### Work History Trail — 2026-09-10 third-party connection and root-config sweep
-
-- Founder direction: preserve legitimate third-party services as optional MAYA tools; remove only obsolete control planes, duplicate deployment paths, permission interference and misleading configuration.
-- Connection inventory: Anthropic, OpenAI, Gemini and OpenClaw remain optional provider capabilities; GitHub, canonical Vercel and Google Drive remain connected tools. Zapier, Adobe and Notion are approved future options but were not verified as installed ChatGPT connections during this sweep.
-- Root cleanup: removed stale `services/claude-mcp/**` exclusions from `eslint.config.mjs` and `tsconfig.json` after the service deletion.
-- Deployment cleanup: removed `.github/workflows/vercel-preview.yml` and `.github/workflows/vercel-deploy.yml`. Both used the third-party `amondnet/vercel-action@v25`; the preview deployment step was silently skipped when secrets were missing, while the native Vercel Git integration separately deployed the same commit. The canonical native Git integration remains.
-- Documentation correction: replaced the stale README claim that MAYA currently fails closed behind an invite-code gate; documented actual provider, persistence, access and beta limitations without representing staged connectors as active.
-- External removal still pending: Vercel project `maya-claude-mcp` remains linked to the repository and must be deleted through a Vercel management surface that supports project deletion.
-- Recovery: restore either removed workflow or root-config entry from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; revert this PR commit to restore the previous README as a unit.
-- Verification gate: full GitHub verification plus one canonical Vercel preview on the resulting commit. PR remains unmerged pending Leslie's approval of its exact final head.
-
-
-### Work History Trail — 2026-09-10 obsolete control-plane PR closure
-
-- Founder direction: continue disassembling technical blocks while preserving legitimate third-party tools as optional capabilities.
-- Closed without merge: PR #97 (custom Claude Anthropic MCP access), PR #117 and PR #121 (Claude-specific trigger workflow revisions), PR #120 (model pin used only by the removed Claude workflow), and PR #122 (second in-app main-push control plane and OAuth allowlists).
-- Reason: each PR would restore, modify or depend on the superseded control-plane architecture removed by PR #123.
-- Preservation: each PR received an explanatory closure comment; branches, commits, diffs and conversation history remain recoverable. No branch or commit history was deleted.
-- Unaffected: MAYA's Anthropic runtime provider, official optional tools/connectors, canonical GitHub integration, canonical native Vercel integration and unrelated feature PRs.
-- Verification before closure: every target was confirmed open and its current title/body inspected. GitHub returned each target as closed and unmerged afterward.
-
-
-### Work History Trail — 2026-09-10 layered authorization-remnant sweep
-
-- Historical layers traced: repository policy documents, agent instructions, verification scripts, runtime OAuth/session code, GitHub workflows and external project connections.
-- Confirmed already removed: `.github/MAYA_SECURITY_GUARDRAILS.md` and `.github/workflows/branch-lifecycle.yml`, including automatic deletion of `copilot/*`, merged and closed-PR branches.
-- Removed in this sweep: `docs/MAYA_JAIL.md`. It was non-executable but instructed future operators to treat capabilities as detained/convicted, fail unknown authority closed and revoke externally connected authority not justified by the jail ledger.
-- Restored: GitHub product session cookie duration from the hardening-imposed 8 hours to the prior 30 days in `lib/github/session.ts`. Session invalidation on true authentication failure remains.
-- Preserved intentionally: founder continuity code and verification because it carries Leslie's requested DIH continuity and does not grant repository authority.
-- Migration blocker exposed, not removed: legacy beta-session authentication remains used by profile, role-lens, saved-session and Strategy Room APIs. Chat itself no longer uses that gate. Removing these checks before one unified MAYA sign-in replaces them would either break persistence or expose user data.
-- Recovery: restore `docs/MAYA_JAIL.md` from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`; change `getCookieOptions(60 * 60 * 24 * 30)` back to `getCookieOptions(60 * 60 * 8)` to restore the shortened connector session.
-- Verification gate: full repository verification on the final PR head; one unified sign-in migration must be a separately tested implementation slice.
-
-
-### Work History Trail — 2026-09-10 full PR #1–#123 layered-authority audit
-
-- Scope: inspected every numbered repository item from #1 through #123 and traced policy, workflow, runtime, test, session, OAuth, connector, deployment and issue-level authority.
-- Earliest exposure event: PR #1 proposed temporarily changing the repository from private to public. Issue #34 later recorded that the repository was in fact public and directed restoration to private.
-- Deployment layer: PRs #7 and #11 introduced third-party Vercel Action workflows; PRs #12 and #25 converted missing deployment credentials into skipped steps that could leave the workflow green. These workflows are removed in PR #123; native canonical Vercel Git deployment remains.
-- Beta-auth layer: PR #16 installed the signed invite/Redis gate; PR #24 removed its visible components; PR #30 removed a stale redirect; PRs #32, #48, #84 and #86 retained/reintroduced authentication beneath selected APIs; PR #87 removed it from chat; PR #109 removed retired beta dependencies from health. Current residual use is limited to profile, role-lens, saved-session and Strategy Room APIs pending unified sign-in.
-- Repository-authority layer: PR #46 disabled GitHub OAuth/write access; PR #57 established restrictive policy; PRs #58 and #59 automatically deleted branches; PR #106 removed the explicit policy and branch-deletion workflow. PR #123 removes remaining MCP/workflow/audit/policy remnants.
-- Claude-specific layer: PRs #97–#123 repeatedly added, restricted, restored, pinned and tested a repository-specific Claude execution path. Obsolete PRs #97, #117, #120, #121 and #122 were closed earlier in this cleanup; issues #107, #116 and #119 are now closed as superseded.
-- Stale directive cleanup: closed issues #33, #36, #37, #40 and #69 because they instructed future work to restore retired beta blockers or asserted a parallel canonical build authority. Closed PR #105 as unrelated incident-period navigation scaffolding. Every item retains comments, diffs and recoverable history.
-- Preserved open work: #34 remains until duplicate Vercel projects are fully removed; #35 persistence, #38 observability, #39 release quality, #41 tooling capability, #67/#70 persistence investigation, #71 connectors, #76 executive backbone, #89/#91–#94 product design, #96 Pocket Desk and security dependency updates remain subject to current blueprint review.
-- Verified founder-auth impact: restrictions affected real OAuth scopes, runtime write/workflow capability, sessions, repository allowlists, workflow permissions, token wiring, automatic branch deletion, deployment execution and the instructions/tests future agents were required to follow.
-- Recovery: all closed issues/PRs may be reopened; deleted files and prior session duration remain recoverable from pre-PR main commit `13224fd45c30df1cb4e3303f695126c92593d3f7`.
