@@ -10,6 +10,20 @@ const creativeApps = [
 ];
 
 const productionChecks = ["CMYK document mode", "Pantone / spot-color specification", "Bleed + trim", "Linked assets", "Fonts + licensing", "PDF proof", "Final production package"];
+const adobeAuthorizeLinks = [
+  {
+    label: "Authorize Adobe account",
+    href: "https://account.adobe.com/",
+  },
+  {
+    label: "Open Adobe Developer Console",
+    href: "https://developer.adobe.com/console",
+  },
+  {
+    label: "Manage Adobe Fonts web projects",
+    href: "https://fonts.adobe.com/my_fonts",
+  },
+];
 
 export default function AdobeProductionHub() {
   return (
@@ -25,7 +39,26 @@ export default function AdobeProductionHub() {
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-[#313244] bg-[#1e1e2e] p-5"><h2 className="font-semibold text-white">Brand + Creative Cloud Libraries</h2><p className="mt-2 text-sm text-[#a6adc8]">Reserved for authenticated MAYA access to approved logos, colors, graphics and reusable brand assets.</p><div className="mt-4 rounded-lg border border-dashed border-[#45475a] p-4 text-sm text-[#f9e2af]">Connector status: requires Adobe developer authorization. No credentials are stored in this page.</div></div>
+          <div className="rounded-xl border border-[#313244] bg-[#1e1e2e] p-5">
+            <h2 className="font-semibold text-white">Brand + Creative Cloud Libraries</h2>
+            <p className="mt-2 text-sm text-[#a6adc8]">Reserved for authenticated MAYA access to approved logos, colors, graphics and reusable brand assets.</p>
+            <div className="mt-4 rounded-lg border border-dashed border-[#45475a] p-4 text-sm text-[#f9e2af]">
+              <p>Connector status: requires Adobe developer authorization. No credentials are stored in this page.</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {adobeAuthorizeLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-[#89b4fa]/40 px-4 py-2 text-sm font-semibold text-[#89b4fa] hover:border-[#89b4fa] hover:bg-[#89b4fa]/10"
+                  >
+                    {link.label} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
           <div className="rounded-xl border border-[#313244] bg-[#1e1e2e] p-5"><h2 className="font-semibold text-white">Print Production Gate</h2><div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">{productionChecks.map((item) => <div key={item} className="rounded-lg bg-[#181825] px-3 py-2 text-sm">○ {item}</div>)}</div></div>
         </section>
 
