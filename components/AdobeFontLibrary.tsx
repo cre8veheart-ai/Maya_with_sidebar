@@ -195,9 +195,29 @@ export default function AdobeFontLibrary({ connected }: { connected: boolean }) 
           </div>
         )}
         {!connected && (
-          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900">
-            Add an Adobe Fonts Web Project ID to activate licensed previews. Until connected, MAYA uses a safe local fallback while preserving each font selection.
-          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900">
+            <p>
+              Add an Adobe Fonts Web Project ID to activate licensed previews. Until connected, MAYA uses a safe local fallback while preserving each font selection.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a
+                href="https://account.adobe.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-amber-300 bg-white px-3 py-2 font-semibold text-amber-900"
+              >
+                Authorize Adobe ↗
+              </a>
+              <a
+                href="https://fonts.adobe.com/my_fonts"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-amber-300 bg-white px-3 py-2 font-semibold text-amber-900"
+              >
+                Open Fonts Projects ↗
+              </a>
+            </div>
+          </div>
         )}
       </section>
     </div>
