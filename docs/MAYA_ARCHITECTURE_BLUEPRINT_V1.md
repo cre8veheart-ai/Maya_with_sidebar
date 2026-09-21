@@ -86,18 +86,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-19 UTC
+Last updated: 2026-09-21 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
-- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
-- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
-- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
-- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
+- PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
+- PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
+- `main` also carries PR #139 (Adobe connector authorization links) and PR #141 (Copilot repo-scan pass), both merged after #134/#135.
+- Audit finding, this session: `AGENTS.md`'s "Founder-authorized production rule" still carried PR #123's looser language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate actually installed by PR #133 and still enforcing on every PR. A full revert of PR #123 was evaluated and rejected — most of what #123 removed turned out to be genuine bug fixes (GitHub repo-allowlist fail-open bug, session killed on non-401 errors) or security improvements (credential-leak audit) or duplicate infrastructure (`services/claude-mcp`, duplicate Vercel Action workflows) that should stay removed.
+- Change made in this branch: rewrote the `AGENTS.md` rule to name the live `founder-exact-head-approval.yml` / `APPROVE <head_sha>` mechanism explicitly, instead of the superseded looser text. No code, workflow, or runtime behavior changed — documentation-only correction.
+- Exact first next action: run `npm run verify` on this branch, push, open a PR describing this as a documentation correction (not a #123 revert), and wait for Leslie's `APPROVE <sha>` comment before merge.
 
 ### What we were building
 
@@ -855,3 +855,15 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
 - Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
 - Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
+
+### Work History Trail — 2026-09-21 stale gate language correction in AGENTS.md
+
+- Trigger or task: Founder asked to "get rid of PR #123." PR #123 (merged 2026-09-11, `fe42234`) is closed and merged; GitHub does not allow deleting a merged PR, so a full `git revert -m 1` of its merge commit was evaluated instead.
+- Evidence checked: `git revert -m 1 --no-commit fe42234` against current `main` produced conflicts in `.github/workflows/claude.yml`, `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`, and `package.json`, plus clean-applied changes across 19 more files.
+- Root cause classification: VERIFIED — a full revert would reintroduce a `lib/github/config.ts` fail-open-to-empty-allowlist bug, reintroduce GitHub session deletion on non-401 connector errors (`lib/github/api.ts`, `app/api/github/status/route.ts`), downgrade `scripts/audit-credential-leaks.mjs` back to the older `audit-read-write-infiltrates.mjs`, resurrect the removed `services/claude-mcp` duplicate microservice and its duplicate `vercel-deploy.yml`/`vercel-preview.yml` GitHub Actions, and overwrite two blocks of append-only Work History Trail content with stale pre-#111 checkpoint text. Founder separately confirmed `docs/MAYA_JAIL.md` must not return.
+- Decision: full revert REJECTED. Only one piece of PR #123 was still live and actually wrong: `AGENTS.md`'s "Founder-authorized production rule" retained #123's looser authorization language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate (`APPROVE <head_sha>`) installed afterward by PR #133 and currently enforcing on every PR (confirmed live via PR #134's own merge, which required and received a matching `APPROVE 2e9568e...` comment).
+- Changes made: rewrote `AGENTS.md`'s "Founder-authorized production rule" section to name the live `founder-exact-head-approval.yml` / `scripts/founder-exact-head-approval.mjs` mechanism and its exact `APPROVE <head_sha>` comment requirement explicitly, replacing the superseded "no exact-comment syntax required" text. No runtime code, workflow, or CI behavior changed.
+- Verification performed: see Required validation below for this branch's `npm run verify` result.
+- Verified result: documentation now matches enforced reality; no functional change.
+- Remaining blocker or unknown: none for this change. The broader PR #123 revert remains available if the Founder wants any of the rejected items (duplicate MCP service, old audit script, shorter GitHub session, etc.) restored individually — none should be restored as a single blanket revert.
+- Relevant PR, branch and commit identifiers: branch `fix/agents-md-exact-head-gate`, created from `main` at `1301812`; PR to be opened after local verification.

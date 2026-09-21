@@ -39,10 +39,10 @@ Rules:
 This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
 
 - Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
-- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes the current pull request.
-- Authorization may be given directly in the current working conversation or through GitHub's ordinary approval controls. No provider-specific phrase, custom MCP gate, exact-comment syntax, or special bot workflow is required.
-- Claude, Ari/Codex, Copilot, and later collaborators operate under the same rule; repository-local instructions must not create provider-specific restrictions.
-- If a materially different commit is added after approval, disclose the change and obtain renewed approval before production.
+- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes that exact current PR head after its latest commit.
+- The live, enforced mechanism for that authorization is the `founder-exact-head-approval` GitHub Actions check (`.github/workflows/founder-exact-head-approval.yml` / `scripts/founder-exact-head-approval.mjs`): a PR comment reading exactly `APPROVE <head_sha>`, posted by GitHub user `cre8veheart-ai`, after the PR's latest commit. A PR is not mergeable until this check passes — no chat instruction, agent-side judgment, or other repository-local claim substitutes for it.
+- Claude, Ari/Codex, Copilot, and later collaborators operate under the same rule; repository-local instructions must not create provider-specific bypasses of this gate.
+- Any commit added after an `APPROVE <sha>` comment invalidates that authorization. A fresh `APPROVE <new_sha>` comment is required for the new head.
 - Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
 - Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
 
