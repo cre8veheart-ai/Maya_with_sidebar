@@ -49,6 +49,25 @@ Terms reviewed:
 - `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/next-env.d.ts`
 - `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/.gitignore`
 
+## Root-directory hardening and control layers
+
+These root files also show hardened control layers around authority, approvals, verification, and boundaries:
+
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/AGENTS.md:13-18`
+  - architecture authority and separate governance authority are explicitly named
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/AGENTS.md:41-59`
+  - founder-authorized production rule, exact-head approval rule, anti-drift rule, and branch-protection/ruleset requirements
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/AGENTS.md:67-71`
+  - required validation is explicitly `npm ci` and `npm run verify`
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/AGENTS.md:79-82`
+  - `/api/chat` is treated as a protected server boundary and external actions require explicit human approval
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/README.md:18-25`
+  - beta-readiness requires the full verification suite, not just a green build/deploy surface
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/README.md:56-63`
+  - production authority, provider/tool non-authority, client-vault secrecy, server-only credentials, explicit authorization for external actions, and canonical-project-only deployment boundaries
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/.env.example:1-31`
+  - provider and service configuration is separated into explicit variable groups instead of hidden inline assumptions
+
 ## Explicit wording not found in repository root files
 
 No root-directory file matched:
