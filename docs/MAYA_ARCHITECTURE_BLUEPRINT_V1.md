@@ -98,8 +98,9 @@ Resume phrase: **DIH EVENT MAYA**
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - Documentation now includes `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, a printable activation/deployment operator runbook derived from the current workflows, `.env.example`, README, and this blueprint.
 - The operator runbook now also contains click-by-click GitHub instructions for Claude activation, ruleset confirmation, local verification, PR checks, and canonical `main` deployment follow-through.
+- VERIFIED from GitHub Actions history: recent Claude smoke runs reached the configured Anthropic secret but failed with `is_error: true` before useful model work. The repository `.mcp.json` points at Vercel MCP, so the smoke workflow is now being scoped to a zero-server MCP config plus fuller output to avoid project-MCP/OAuth interference and preserve diagnostics.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: follow the click-by-click runbook against the live GitHub repository — add `ANTHROPIC_API_KEY`, confirm the `main` ruleset, run the Claude smoke test, verify preview behavior on the active PR head, then obtain Leslie's approval for the exact final PR state before merge.
+- Exact first next action: rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, confirm the run succeeds with full diagnostics retained, then continue the click-by-click runbook for ruleset confirmation, preview verification, and Leslie's approval on the exact final PR state before merge.
 
 ### What we were building
 
@@ -879,3 +880,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: revert the new checklist sections and corresponding checkpoint/history text if a future operator flow supersedes them.
 - Follow-up debt, owner and next verification gate: Founder/CTO to execute the live GitHub/Vercel steps and record actual smoke-test, preview, and production evidence on the next operational pass.
+
+### Work History Trail — 2026-09-22 Claude smoke-test isolation and diagnostics fix
+
+- Trigger: Founder asked to knock out the Claude smoke-test failures after GitHub Actions showed repeated `is_error: true` smoke results.
+- Blueprint sections used: Source of truth; Founder-authorized production rule; Required validation; Current Working Checkpoint.
+- Live evidence checked: `.github/workflows/claude.yml`; repository `.mcp.json`; GitHub Actions workflow list and recent Claude workflow runs; failed job logs for runs `35560017678` and `35559853992`.
+- Failure evidence: both workflow-dispatch smoke runs on `main` verified `ANTHROPIC_API_KEY`, installed Claude Code, then failed the `Run read-only Claude model/API smoke test` step with `subtype: "success"` plus `is_error: true` and zero useful model output. The action log showed project MCP loading was enabled while the repository `.mcp.json` targets the Vercel MCP endpoint.
+- Changes made: updated `.github/workflows/claude.yml` so the smoke prompt no longer requires a repo read, the smoke step passes an empty `mcp_config`, enables `show_full_output: true`, and reduces the smoke turn budget; updated `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md` with the new smoke-test behavior and troubleshooting notes; refreshed this checkpoint with the verified root cause and next rerun step.
+- Verified result: VERIFIED in source that the smoke workflow now isolates model/API verification from repository MCP/OAuth dependencies and keeps fuller smoke-test diagnostics in the workflow output.
+- Stop reason or remaining blocker: live rerun evidence is still UNVERIFIED until the updated workflow is executed on GitHub. The user-triggered Claude workflow and any Vercel MCP usage outside the smoke path remain intentionally unchanged.
+- Exact first next action: rerun the Claude smoke workflow on GitHub after this change lands, inspect the full output, and confirm whether the smoke path now passes before proceeding with broader activation/deployment steps.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; GitHub Actions runs `35560017678` and `35559853992`; no deployment invoked during this fix.
+- Every attempted fix, including unsuccessful attempts: first traced the failure through Actions logs and external issue research; then isolated the likely project-MCP/OAuth interference in the smoke path and applied a workflow-only fix.
+- The fix that resolved the failure, or why it remains unresolved: unresolved in live evidence until rerun; source-level mitigation is the empty MCP config plus fuller output on the smoke step.
+- Verification performed after each fix: source review of the updated workflow inputs, prompt, and runbook language against the observed failure mode.
+- Regressions introduced or discovered: none identified in source review; non-smoke Claude workflow behavior remains unchanged.
+- Rollbacks, reversals, removals and superseded approaches: restore the previous smoke prompt/args and remove the explicit `mcp_config` override if a future verified Claude action release fixes the underlying issue without repository-specific isolation.
+- Follow-up debt, owner and next verification gate: Founder/CTO to rerun the smoke workflow and capture post-fix evidence; if failure persists, inspect the full output retained by `show_full_output: true` before changing broader repository permissions or connectors.

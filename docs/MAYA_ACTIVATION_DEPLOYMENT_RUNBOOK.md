@@ -66,16 +66,17 @@ Then follow this exact order:
 14. Open the new workflow run
 15. Confirm **Verify ANTHROPIC_API_KEY is configured** passes
 16. Confirm **Run read-only Claude model/API smoke test** passes
-17. Confirm the summary reports a successful smoke run
-18. Confirm no branch edits or pull requests were created
-19. Open **Settings**
-20. Open **Rules**
-21. Open **Rulesets**
-22. Open or create the `main` branch ruleset
-23. Confirm the required checks include:
+17. Confirm the smoke step runs without loading project MCP servers
+18. Confirm the summary reports a successful smoke run
+19. Confirm no branch edits or pull requests were created
+20. Open **Settings**
+21. Open **Rules**
+22. Open **Rulesets**
+23. Open or create the `main` branch ruleset
+24. Confirm the required checks include:
     - `npm run verify`
     - `Founder exact-head approval`
-24. Save the ruleset if you changed anything
+25. Save the ruleset if you changed anything
 
 ### A. Add the required secret
 
@@ -100,6 +101,18 @@ ANTHROPIC_API_KEY
 - The workflow finishes successfully
 - The summary reports a successful smoke run
 - No branch edits, commits, or pull requests are created by the smoke test
+
+### D. Why the smoke test disables project MCP
+
+The repository has a project `.mcp.json` that points Claude at the Vercel MCP endpoint. The smoke test now overrides MCP configuration with an empty server list so model/API verification does not fail in GitHub Actions because of project MCP OAuth or other external connector requirements.
+
+### E. If the smoke test still fails
+
+- Open the failed workflow run on the Actions page
+- Open the `claude-smoke` job
+- Review the full output from **Run read-only Claude model/API smoke test**
+- Confirm whether the failure is model/API related or external-tool related
+- Do not treat `subtype: success` with `is_error: true` as a passing smoke result
 
 ## Part 2 — Activate MAYA locally
 

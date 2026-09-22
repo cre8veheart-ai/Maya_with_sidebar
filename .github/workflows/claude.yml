@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       smoke_prompt:
-        description: Read-only prompt used to verify Claude model/API execution
+        description: Read-only prompt used to verify Claude model/API execution without project MCP dependencies
         required: false
-        default: Read README.md and respond exactly MAYA_CLAUDE_SMOKE_OK. Do not edit, commit, push, create a branch, or open a pull request.
+        default: Respond exactly MAYA_CLAUDE_SMOKE_OK. Do not use any tools. Do not edit, commit, push, create a branch, or open a pull request.
   issue_comment:
     types: [created]
   pull_request_review_comment:
@@ -77,9 +77,13 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ inputs.smoke_prompt }}
+          mcp_config: |
+            {
+              "mcpServers": {}
+            }
+          show_full_output: true
           claude_args: |
-            --max-turns 3
-            --allowedTools Read
+            --max-turns 1
 
       - name: Record smoke-test result
         if: always()
