@@ -68,6 +68,23 @@ These root files also show hardened control layers around authority, approvals, 
 - `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/.env.example:1-31`
   - provider and service configuration is separated into explicit variable groups instead of hidden inline assumptions
 
+## Root-file authorship visible in local history
+
+Visible local git history for the matched root files currently shows:
+
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/AGENTS.md`
+  - `44d9d33da165ef9839dfc8376bf6955b42b39c47` — `copilot-swe-agent[bot]` — `2026-09-22` — `Apply remaining changes`
+  - `d18febee3f4bd0a7c59b9401aeae5caa8a1e9a95` — `copilot-swe-agent[bot]` — `2026-09-22` — `chore: restore canonical founder gate files`
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/README.md`
+  - `d18febee3f4bd0a7c59b9401aeae5caa8a1e9a95` — `copilot-swe-agent[bot]` — `2026-09-22` — `chore: restore canonical founder gate files`
+- `/home/runner/work/Maya_with_sidebar/Maya_with_sidebar/.env.example`
+  - `d18febee3f4bd0a7c59b9401aeae5caa8a1e9a95` — `copilot-swe-agent[bot]` — `2026-09-22` — `chore: restore canonical founder gate files`
+
+Authorship note:
+- This is only the visible local history from the current clone.
+- It shows recent visible root-file touches by `copilot-swe-agent[bot]`.
+- It does not by itself prove original creation authorship, complete history, or sole authorship without a deeper full-history review.
+
 ## Explicit wording not found in repository root files
 
 No root-directory file matched:
