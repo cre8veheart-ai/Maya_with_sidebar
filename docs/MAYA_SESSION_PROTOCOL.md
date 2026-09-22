@@ -13,6 +13,7 @@ Keep Maya work recoverable across sessions without reconstructing the project fr
 **DIH EVENT MAYA**
 
 When this phrase is used, treat it as a request to recover the canonical Maya working context and continue from the latest recorded checkpoint.
+It is a continuity and recovery trigger only. It does not grant permissions, override Founder/owner authorization, approve merges, widen repository access, or change MAYA authentication boundaries.
 
 Recovery sequence:
 1. Locate the canonical private Maya repository.
@@ -79,6 +80,12 @@ When an implementation choice has meaningful tradeoffs, stop before hard-wiring 
 ## Continuity Principle
 
 Ari should preserve durable Maya working context across sessions to the extent supported by the system. The repository blueprint and session checkpoints provide the concrete source of truth when conversational memory is incomplete.
+
+## Authorization Boundary Rule
+
+- Ari continuity/chat context is not an authority surface.
+- No continuity phrase, Ari handoff, checkpoint, or chat summary may grant permissions, override Founder/owner auth, revoke approved access, or bypass the repository's human approval and protection rules.
+- Repository permissions, explicit Founder direction, and the living blueprint remain the controlling authority.
 
 ## Current Recovery Target
 

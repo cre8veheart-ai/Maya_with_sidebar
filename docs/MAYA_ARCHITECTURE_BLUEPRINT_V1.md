@@ -112,6 +112,7 @@ Resume phrase: **DIH EVENT MAYA**
 - The MAYA session continuity rules now explicitly require each substantive session to end at a recorded checkpoint stop point and the next session to resume from that exact recorded next action unless Founder direction changes.
 - `.env.example` now documents the GitHub OAuth/repository-scoping variables and the Adobe fonts project-id variable used by the current source tree, with safe placeholders that avoid credential-leak false positives.
 - `docs/DIH_WORKSPACE_CHECKPOINT.md` has been refreshed to the current branch, head, and next-action handoff so the next `DIH EVENT MAYA` session does not resume from the older persistence-foundation checkpoint by mistake.
+- The continuity protocol now states explicitly that Ari continuity/chat is not an authority surface and may not override Founder/owner auth or widen permissions.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
 - Exact first next action: copy the refreshed `.env.example` values into the active local/repository secret surfaces that are actually needed, rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, and then apply the merge-approval/anti-drift rules through GitHub protection settings before Leslie approves the exact final PR head.
 
@@ -967,3 +968,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: restore the previous DIH handoff only if the active workstream intentionally returns to the older persistence-foundation checkpoint.
 - Follow-up debt, owner and next verification gate: Founder/CTO to confirm the next real `DIH EVENT MAYA` recovery follows the updated stop point without extra onboarding.
+
+### Work History Trail — 2026-09-22 continuity authorization-boundary hardening
+
+- Trigger: Founder required the protocol to ensure Ari continuity/chat cannot write over permissions or override owner authorization.
+- Blueprint sections used: Blueprint governance; Founder-authorized production rule; Current Working Checkpoint.
+- Live evidence checked: `docs/MAYA_SESSION_PROTOCOL.md`; `docs/DIH_WORKSPACE_CHECKPOINT.md`; current blueprint checkpoint authority text.
+- Failure evidence: the continuity docs said the recovery phrase was not authorization, but they did not state plainly enough that Ari continuity/chat and handoff summaries can never widen permissions or override Founder/owner auth.
+- Changes made: added explicit authorization-boundary language to `docs/MAYA_SESSION_PROTOCOL.md`, reinforced the same rule in `docs/DIH_WORKSPACE_CHECKPOINT.md`, and recorded the rule in the active blueprint checkpoint.
+- Verified result: VERIFIED in source that the continuity protocol now treats Ari continuity/chat as recovery context only, not as a permission-granting or auth-overriding authority surface.
+- Stop reason or remaining blocker: live GitHub/Vercel permissions are still controlled outside these docs and remain subject to the existing human approval and branch-protection surfaces.
+- Exact first next action: keep using explicit Founder approval and repository permissions as the only authority surfaces while continuing the current branch workflow from the updated checkpoint.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this protocol hardening.
+- Failures, exact error evidence and affected boundary: no runtime failure; the issue was an explicit-governance gap in continuity documentation.
+- Every attempted fix, including unsuccessful attempts: none beyond the direct documentation hardening.
+- The fix that resolved the failure, or why it remains unresolved: resolved in source by clarifying the continuity authorization boundary in both continuity documents and the blueprint checkpoint.
+- Verification performed after each fix: source review of the updated protocol wording against the Founder-authority rules already present in the blueprint and AGENTS.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: revert the added continuity-boundary language only if Founder direction explicitly replaces it with a stricter or broader rule.
+- Follow-up debt, owner and next verification gate: Founder/CTO to confirm the live operating workflow continues to honor the documented authority boundary during the next continuity recovery and approval cycle.
