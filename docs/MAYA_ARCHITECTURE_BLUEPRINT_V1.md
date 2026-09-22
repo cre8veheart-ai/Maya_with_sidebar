@@ -114,6 +114,7 @@ Resume phrase: **DIH EVENT MAYA**
 - `docs/DIH_WORKSPACE_CHECKPOINT.md` has been refreshed to the current branch, head, and next-action handoff so the next `DIH EVENT MAYA` session does not resume from the older persistence-foundation checkpoint by mistake.
 - The continuity protocol now states explicitly that Ari continuity/chat is not an authority surface and may not override Founder/owner auth or widen permissions.
 - Repository visibility alone is now treated as insufficient proof of connection; Actions, rulesets, secrets, preview, and approval surfaces remain UNVERIFIED until they are reachable and directly checked.
+- This branch now restores the live `main` founder-approval implementation shape so branch-local review no longer relies on the stale inline workflow copy that diverged from canonical `main`.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
 - Exact first next action: copy the refreshed `.env.example` values into the active local/repository secret surfaces that are actually needed, rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, and then apply the merge-approval/anti-drift rules through GitHub protection settings before Leslie approves the exact final PR head.
 
@@ -1007,3 +1008,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: revert this wording only if a future MAYA surface can itself prove live GitHub operational connectivity.
 - Follow-up debt, owner and next verification gate: Founder/CTO to verify actual reachable GitHub operational surfaces from the desired device/browser path.
+
+### Work History Trail — 2026-09-22 founder-gate branch-to-main reconciliation
+
+- Trigger: Founder approved replacing the stale founder approval workflow in this branch after live GitHub evidence showed canonical `main` had already moved to a script-backed implementation while the branch still carried the older inline workflow copy.
+- Blueprint sections used: Blueprint governance; Source of truth; Founder-authorized production rule; Current Working Checkpoint.
+- Live evidence checked: live `main` copies of `.github/workflows/founder-exact-head-approval.yml`, `scripts/founder-exact-head-approval.mjs`, and `lib/founder-approval-core.mjs`; GitHub Actions job logs for workflow run `35561256492`.
+- Failure evidence: branch-local review showed only the older inline curl/jq workflow, while the live `main` job log proved canonical execution had already switched to `node scripts/founder-exact-head-approval.mjs`. That mismatch made branch-level inspection misleading.
+- Changes made: replaced the branch-local inline workflow with the live script-backed wrapper, added `scripts/founder-exact-head-approval.mjs`, and added `lib/founder-approval-core.mjs` so the branch matches the canonical founder-gate shape.
+- Verified result: VERIFIED in source that this branch now contains the same founder-gate file set and logic shape as canonical `main`, including the unrelated-comment filter and the exact-head approval status posting path.
+- Stop reason or remaining blocker: live GitHub rulesets and live check attachment across all open PRs remain UNVERIFIED external conditions; this change only reconciles repository source.
+- Exact first next action: run repository verification on this branch, then open or update the branch PR and confirm the founder gate appears on the new PR event path.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this founder-gate reconciliation.
+- Failures, exact error evidence and affected boundary: branch-vs-main workflow drift only; no production runtime failure was introduced by the reconciliation itself.
+- Every attempted fix, including unsuccessful attempts: first inspected the stale branch file, then inspected the live `main` workflow/script/core and live Actions logs before replacing the branch copy with the canonical file set.
+- The fix that resolved the failure, or why it remains unresolved: source-level mismatch resolved by restoring the script-backed founder-gate implementation to this branch; live enforcement consistency remains a separate GitHub settings/event verification task.
+- Verification performed after each fix: source comparison against the live `main` file contents and workflow-log behavior.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: restore the older inline workflow only if Founder explicitly chooses to discard the canonical script-backed path.
+- Follow-up debt, owner and next verification gate: Founder/CTO to validate the founder gate on the next PR event and confirm required-check enforcement on `main`.
