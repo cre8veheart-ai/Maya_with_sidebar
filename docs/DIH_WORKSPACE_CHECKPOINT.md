@@ -85,6 +85,7 @@ On the next **DIH EVENT MAYA**:
 1. Read `AGENTS.md`.
 2. Read `docs/MAYA_SESSION_PROTOCOL.md`.
 3. Read `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md` and its Current Working Checkpoint.
-4. Read this checkpoint.
-5. Confirm the active branch, exact branch head, open PR state, and latest production deployment.
-6. Continue the activation + continuity verification path unless Leslie changes direction.
+4. Read `docs/MAYA_REPOSITORY_GOVERNANCE.md`.
+5. Read this checkpoint.
+6. Confirm the active branch, exact branch head, open PR state, and latest production deployment.
+7. Continue the activation + continuity verification path unless Leslie changes direction.

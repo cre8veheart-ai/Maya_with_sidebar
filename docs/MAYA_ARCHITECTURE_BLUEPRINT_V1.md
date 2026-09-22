@@ -5,27 +5,13 @@ Owner: Founder
 Technical lead: Ari / CTO
 Repository rule: One canonical private Maya repository. No duplicate repos or shadow deployments.
 
-Blueprint governance:
-- Founder Leslie is the final project authority. GitHub is repository infrastructure, not a deciding or policy-enforcement authority over Founder-authorized work.
-- Repository documents, workflows, bots and agent instructions may warn, document risk and request clarification, but may not silently cancel or indefinitely stop the Founder's explicit authorization.
-- Leslie personally discovered the repository hardening and destructive branch-lifecycle enforcement on 2026-09-08 after prolonged Claude, human and build-access failures; no AI system identified it before her discovery.
-- This document is the current build source of truth, not a historical artifact.
-- Founder-approved amendments are added here as decisions are made.
-- MAYA implementation PRs must identify the blueprint section they implement or amend.
-- A stale PR description, transferred summary or older plan cannot override the current blueprint.
-- Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
-- The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
-- When implementation and blueprint conflict, disclose the conflict and follow the Founder's newest explicit decision. Reconcile the blueprint in the same change when practical; the blueprint may not silently stop Founder-authorized work.
-- The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
-
-## Merge approval and anti-drift policy
-
-- Every merge to `main` requires Founder Leslie's approval of the exact current pull-request head.
-- If a materially different commit is added after approval, the prior approval is stale and renewed approval is required before production.
-- Keep one focused branch and one active pull request per workstream whenever practical.
-- Do not allow commit stacks to accumulate unattended outside an active pull request, review, and verification path.
-- Protect `main` with required pull requests, required checks, stale-approval dismissal, up-to-date branch requirements, blocked force-pushes, and restricted deletion.
-- Close, merge, or intentionally retire stale branches and pull requests rather than letting parallel drift become the default state of the canonical repository.
+Architecture scope:
+- This document is the MAYA architecture source of truth, not the active repository-policy document.
+- Founder-approved architectural decisions and design amendments are added here as decisions are made.
+- MAYA implementation PRs must identify the architecture section they implement or amend.
+- A stale PR description, transferred summary, or older plan cannot override the current architecture blueprint.
+- Architectural checkpoint and work-history updates must remain readable in repository history and must not be buried only in comments, chats, or feature branches.
+- Repository authority, approvals, validation, and branch/ruleset controls are governed by `docs/MAYA_REPOSITORY_GOVERNANCE.md`.
 
 ## Preapproved Tool Register
 

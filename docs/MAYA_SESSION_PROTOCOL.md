@@ -28,6 +28,10 @@ Primary blueprint:
 
 `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`
 
+Repository governance source:
+
+`docs/MAYA_REPOSITORY_GOVERNANCE.md`
+
 The architecture blueprint is the source of truth for:
 - Maya Core
 - Executive Suite
@@ -38,9 +42,10 @@ The architecture blueprint is the source of truth for:
 - Art Gallery / Viewing Room / Immersive Projection Room
 - Menu/navigation architecture
 - Shared object rules
-- Permission rules
 - Build order
 - Decision gates
+
+Repository approval, validation, protection, and authority rules are defined in `docs/MAYA_REPOSITORY_GOVERNANCE.md`.
 
 Related visual/product blueprints should remain associated with the Maya architecture rather than becoming independent competing specifications.
 

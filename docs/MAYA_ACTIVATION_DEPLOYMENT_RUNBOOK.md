@@ -1,8 +1,8 @@
 # MAYA Activation + Deployment Runbook
 
 Status: Printable operator runbook  
-Authority: `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`  
-Governing sections: Source of truth; Founder-authorized production rule; Required validation; Vercel; Current Working Checkpoint
+Authority: `docs/MAYA_REPOSITORY_GOVERNANCE.md`  
+Architecture reference: `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`
 
 Use this runbook while activating Claude Code, preparing local MAYA development, and moving approved work through the canonical `main` deployment path.
 
