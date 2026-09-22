@@ -35,6 +35,48 @@ Use this runbook while activating Claude Code, preparing local MAYA development,
 
 ## Part 1 — Activate Claude Code in GitHub Actions
 
+### Click-by-click Claude activation checklist
+
+Keep these pages open in separate tabs:
+
+- https://github.com/cre8veheart-ai/Maya_with_sidebar/settings/secrets/actions
+- https://github.com/cre8veheart-ai/Maya_with_sidebar/actions
+- https://github.com/cre8veheart-ai/Maya_with_sidebar/settings/rules
+
+Then follow this exact order:
+
+1. Open **Settings**
+2. Open **Secrets and variables**
+3. Open **Actions**
+4. Click **New repository secret**
+5. In **Name**, paste:
+
+   ```text
+   ANTHROPIC_API_KEY
+   ```
+
+6. In **Secret**, paste your Anthropic key
+7. Click **Add secret**
+8. Open **Actions**
+9. Click **Claude Code**
+10. Click **Run workflow**
+11. Leave the default smoke prompt in place
+12. Choose the branch you want to test
+13. Click **Run workflow**
+14. Open the new workflow run
+15. Confirm **Verify ANTHROPIC_API_KEY is configured** passes
+16. Confirm **Run read-only Claude model/API smoke test** passes
+17. Confirm the summary reports a successful smoke run
+18. Confirm no branch edits or pull requests were created
+19. Open **Settings**
+20. Open **Rules**
+21. Open **Rulesets**
+22. Open or create the `main` branch ruleset
+23. Confirm the required checks include:
+    - `npm run verify`
+    - `Founder exact-head approval`
+24. Save the ruleset if you changed anything
+
 ### A. Add the required secret
 
 Open: https://github.com/cre8veheart-ai/Maya_with_sidebar/settings/secrets/actions
@@ -140,6 +182,29 @@ Founder exact-head approval
 7. Merge the pull request into `main`
 8. Confirm the canonical Vercel project deploys production from `main`
 9. Verify production behavior in the browser
+
+### Click-by-click build and merge checklist
+
+1. Create or switch to your feature branch
+2. Make the change
+3. Run locally:
+
+   ```bash
+   npm ci
+   npm run verify
+   ```
+
+4. Push the branch
+5. Open or refresh the PR to `main`
+6. Open the PR checks tab
+7. Wait for `npm run verify`
+8. Wait for `Founder exact-head approval`
+9. Test the preview deployment in the browser
+10. Add the exact current-head Founder approval comment when ready
+11. Refresh checks until `Founder exact-head approval` turns successful
+12. Merge only when the PR is mergeable and all required checks are green
+13. Open the canonical Vercel deployment
+14. Verify production behavior in the browser after the `main` deploy finishes
 
 ## Required verification before merge
 

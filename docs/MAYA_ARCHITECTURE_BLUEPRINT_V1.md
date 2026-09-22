@@ -97,8 +97,9 @@ Resume phrase: **DIH EVENT MAYA**
 - VERIFIED through commit `c6f805c1704ab6bf5cfa2a0421640e7bada54d58`: MAYA Full Verification passed. The GitHub Deploy Preview workflow also appeared successful, but its actual Vercel deployment step was skipped because required Vercel secrets were unavailable; independent native Vercel Git integration created the previews.
 - GitHub repository rulesets currently return an empty collection. Branch-protection details remain UNKNOWN because the installed integration lacks administration read access.
 - Documentation now includes `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, a printable activation/deployment operator runbook derived from the current workflows, `.env.example`, README, and this blueprint.
+- The operator runbook now also contains click-by-click GitHub instructions for Claude activation, ruleset confirmation, local verification, PR checks, and canonical `main` deployment follow-through.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: apply the documented `main` ruleset and Actions secret configuration in GitHub, run the Claude smoke test, confirm the canonical native Vercel preview behavior on the active PR head, then obtain Leslie's approval for the exact final PR state before merge.
+- Exact first next action: follow the click-by-click runbook against the live GitHub repository — add `ANTHROPIC_API_KEY`, confirm the `main` ruleset, run the Claude smoke test, verify preview behavior on the active PR head, then obtain Leslie's approval for the exact final PR state before merge.
 
 ### What we were building
 
@@ -860,3 +861,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: revert `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, the README runbook link, and this history/checkpoint update if the operator guidance needs replacement.
 - Follow-up debt, owner and next verification gate: Founder/CTO to verify the live GitHub ruleset, Actions secret, Claude smoke test, preview behavior, and canonical production deployment path on the next operational pass.
+
+### Work History Trail — 2026-09-22 click-by-click Claude/build checklist refinement
+
+- Trigger: Founder confirmed the repository could build forward and requested implementation of the previously outlined Claude activation/build next steps in a more direct, follow-along form.
+- Blueprint sections used: Source of truth; Founder-authorized production rule; Required validation; Vercel; Current Working Checkpoint.
+- Live evidence checked: `.github/workflows/claude.yml`, `.github/workflows/founder-exact-head-approval.yml`, `package.json`, and `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`.
+- Changes made: expanded `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md` with a click-by-click Claude activation checklist and a click-by-click build/merge checklist tied to the existing MAYA verification and approval gates; refreshed the checkpoint to point operators at the new follow-along instructions.
+- Verified result: VERIFIED in source that the runbook now gives exact GitHub navigation steps for Actions secrets, Actions workflow execution, ruleset confirmation, local `npm ci` plus `npm run verify`, PR checks, and canonical `main` deployment follow-through.
+- Stop reason or remaining blocker: live GitHub secrets, rulesets, smoke-test runs, preview behavior, and production deployment remain UNVERIFIED because this slice only updates repository documentation.
+- Exact first next action: execute the new click-by-click runbook on the live repository, capture the smoke-test and preview results, then obtain Leslie's approval for the exact final PR state before merge/deploy.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this documentation refinement.
+- Failures, exact error evidence and affected boundary: none during this documentation refinement.
+- Every attempted fix, including unsuccessful attempts: none required.
+- The fix that resolved the failure, or why it remains unresolved: not applicable; the requested follow-along detail was satisfied by expanding the operator runbook.
+- Verification performed after each fix: source review of workflow names, secret requirement, required checks, and local verification commands against the updated runbook text.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: revert the new checklist sections and corresponding checkpoint/history text if a future operator flow supersedes them.
+- Follow-up debt, owner and next verification gate: Founder/CTO to execute the live GitHub/Vercel steps and record actual smoke-test, preview, and production evidence on the next operational pass.
