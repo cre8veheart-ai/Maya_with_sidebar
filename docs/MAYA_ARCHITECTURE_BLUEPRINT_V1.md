@@ -111,6 +111,7 @@ Resume phrase: **DIH EVENT MAYA**
 - Founder-approved repository policy now requires exact-head merge approval plus anti-drift branch discipline so merges cannot proceed on stale approval and unattended commit sprawl is not treated as normal operation.
 - The MAYA session continuity rules now explicitly require each substantive session to end at a recorded checkpoint stop point and the next session to resume from that exact recorded next action unless Founder direction changes.
 - `.env.example` now documents the GitHub OAuth/repository-scoping variables and the Adobe fonts project-id variable used by the current source tree, with safe placeholders that avoid credential-leak false positives.
+- `docs/DIH_WORKSPACE_CHECKPOINT.md` has been refreshed to the current branch, head, and next-action handoff so the next `DIH EVENT MAYA` session does not resume from the older persistence-foundation checkpoint by mistake.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
 - Exact first next action: copy the refreshed `.env.example` values into the active local/repository secret surfaces that are actually needed, rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, and then apply the merge-approval/anti-drift rules through GitHub protection settings before Leslie approves the exact final PR head.
 
@@ -947,3 +948,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: restore the previous placeholder text or remove the added env sections only if the underlying GitHub/Adobe integrations are intentionally removed from source.
 - Follow-up debt, owner and next verification gate: Founder/CTO to validate populated env surfaces with local verification and the next GitHub smoke run.
+
+### Work History Trail — 2026-09-22 continuity handoff refresh
+
+- Trigger: Founder required work to return to a session end point, requested a continuity evaluation, and the current continuity handoff was found to still point at an older persistence-foundation stop point.
+- Blueprint sections used: Blueprint governance; Current Working Checkpoint; Merge approval and anti-drift policy.
+- Live evidence checked: `docs/DIH_WORKSPACE_CHECKPOINT.md`; `docs/MAYA_SESSION_PROTOCOL.md`; `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`; current branch `copilot/make-rulesets-for-maya`; head `774120c01c4235d4341453f13eb66b17e78ad0dc`.
+- Failure evidence: the DIH workspace checkpoint still directed the next session toward the older Persistent Workspace Foundation package and still described `/api/chat` with stale boundary wording, so a future `DIH EVENT MAYA` recovery could resume from the wrong work edge.
+- Changes made: refreshed `docs/DIH_WORKSPACE_CHECKPOINT.md` to the current activation/continuity workstream, current branch/head, current hard-boundary wording, and the current next-step resume path.
+- Verified result: VERIFIED in source that the session protocol, active blueprint checkpoint, and DIH workspace checkpoint now point the next continuity recovery at the same current stop point and next action family.
+- Stop reason or remaining blocker: live PR state, live GitHub rulesets, and the rerun of the Claude smoke workflow remain UNVERIFIED external checks.
+- Exact first next action: resume from the updated blueprint checkpoint, apply only needed env values, rerun local verification if the env surface changes, then rerun the updated Claude smoke workflow from the active branch.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; head `774120c01c4235d4341453f13eb66b17e78ad0dc`; no deployment invoked during this continuity refresh.
+- Failures, exact error evidence and affected boundary: continuity drift only; no runtime failure occurred in the application.
+- Every attempted fix, including unsuccessful attempts: first attempted to read older continuity source paths, confirmed they no longer exist in the repository, then identified `docs/DIH_WORKSPACE_CHECKPOINT.md` as the active stale handoff and refreshed it directly.
+- The fix that resolved the failure, or why it remains unresolved: source-level continuity mismatch resolved by aligning the DIH handoff document with the living blueprint and session protocol.
+- Verification performed after each fix: source review of the updated checkpoint text against the current blueprint checkpoint and session protocol.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: restore the previous DIH handoff only if the active workstream intentionally returns to the older persistence-foundation checkpoint.
+- Follow-up debt, owner and next verification gate: Founder/CTO to confirm the next real `DIH EVENT MAYA` recovery follows the updated stop point without extra onboarding.

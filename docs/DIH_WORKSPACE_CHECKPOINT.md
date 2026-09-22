@@ -1,7 +1,7 @@
 # DIH CODING WORKSPACE CHECKPOINT
 
 Status: Active handoff
-Recorded: 2026-08-31 UTC
+Recorded: 2026-09-22 UTC
 Owner: Leslie / Founder
 Technical lead: Ari / Acting CTO
 
@@ -47,7 +47,7 @@ MAYA is the orchestration and intelligence platform, not an executive persona.
 - Use a focused branch and pull request for changes.
 - Production deploys originate from `main` only.
 - Keep credentials and secrets server-only.
-- `/api/chat` remains protected by an authorized beta session.
+- `/api/chat` must preserve the current server-side auth boundary and fail safely.
 - External actions require explicit human approval.
 - Do not use Copilot legacy branches as architectural authority.
 - Do not create duplicate repositories or shadow production projects.
@@ -56,34 +56,34 @@ MAYA is the orchestration and intelligence platform, not an executive persona.
 ## Current build edge
 
 Completed:
-- Max / CEO standalone chassis and adversarial evaluation gates
-- Ari / CTO standalone operating clone and delivery command center
-- Erica / CMO and Dana / CFO chassis gates
-- CEO + CTO adjudication fixtures
-- Security, beta-hardening, and permissions verification
-- Protected beta session boundary for `/api/chat`
-- Canonical private repository and canonical Vercel project
+- Printable MAYA activation/deployment runbook added and linked from the repository docs.
+- Claude GitHub Actions smoke workflow isolated from project MCP and expanded for fuller diagnostics.
+- Founder exact-head merge approval plus anti-drift branch discipline recorded in `AGENTS.md`, the runbook, and the living blueprint.
+- `.env.example` refreshed to cover the active GitHub OAuth/repository-scoping variables and the Adobe fonts project-id variable with safe placeholders.
+- Session continuity rules now explicitly require every substantive session to end at a recorded stop point and the next session to resume from that exact next action.
 
-Production limitation still visible in `README.md`:
-- Profiles, sessions, executive work, saved activity, documents, vaults, campaigns, and connector state are not yet durably persisted through server APIs.
+Current working branch:
+- `copilot/make-rulesets-for-maya`
+
+Current branch head at checkpoint:
+- `774120c01c4235d4341453f13eb66b17e78ad0dc`
 
 ## Next build package
 
-**Persistent Workspace Foundation**
+**Activation + continuity verification**
 
-1. Define a server-owned persistence contract.
-2. Implement authenticated `/api/user/*` routes used by the existing cloud storage adapter.
-3. Persist profiles, named sessions, executive participation, messages, and saved activity.
-4. Keep invite/session controls in their existing security boundary.
-5. Place durable memory/vault storage behind an adapter suitable for Supabase.
-6. Add migration-safe schemas and verification gates.
-7. Merge only after `npm run verify` and preview verification pass.
+1. Populate only the actually needed local/repository env values from the refreshed `.env.example`.
+2. Rerun the updated Claude smoke workflow from the active branch and capture the fuller diagnostics.
+3. Confirm the `main` protection settings enforce `npm run verify` plus `Founder exact-head approval`.
+4. Keep the PR branch focused and prevent unattended commit drift.
+5. Resume from the recorded blueprint checkpoint unless Leslie changes direction.
 
 ## Resume sequence
 
 On the next **DIH EVENT MAYA**:
 1. Read `AGENTS.md`.
 2. Read `docs/MAYA_SESSION_PROTOCOL.md`.
-3. Read this checkpoint.
-4. Confirm current `main`, open PRs, and latest production deployment.
-5. Continue the Persistent Workspace Foundation unless Leslie changes direction.
+3. Read `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md` and its Current Working Checkpoint.
+4. Read this checkpoint.
+5. Confirm the active branch, exact branch head, open PR state, and latest production deployment.
+6. Continue the activation + continuity verification path unless Leslie changes direction.
