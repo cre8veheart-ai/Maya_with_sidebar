@@ -81,6 +81,32 @@ jobs:
             --max-turns 3
             --allowedTools Read
 
+      - name: Debug Claude smoke test failure
+        if: always()
+        shell: bash
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "## Claude Smoke Test Diagnostics"
+          echo "Outcome: ${{ steps.claude_smoke.outcome }}"
+          echo
+          
+          # Extract and display the actual error from Claude's execution log
+          if [ -f "/home/runner/work/_temp/claude-execution-output.json" ]; then
+            echo "### Claude Execution Output:"
+            echo '```json'
+            cat /home/runner/work/_temp/claude-execution-output.json | jq . 2>/dev/null || cat /home/runner/work/_temp/claude-execution-output.json
+            echo '```'
+          else
+            echo "⚠️ Claude execution log not found"
+          fi
+          
+          # Verify prerequisites
+          echo
+          echo "### Prerequisites Check:"
+          [ -f "README.md" ] && echo "✓ README.md exists" || echo "✗ README.md missing"
+          [ -n "$ANTHROPIC_API_KEY" ] && echo "✓ ANTHROPIC_API_KEY configured" || echo "✗ ANTHROPIC_API_KEY missing"
+
       - name: Record smoke-test result
         if: always()
         shell: bash
