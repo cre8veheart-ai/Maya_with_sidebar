@@ -76,6 +76,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: claude-sonnet-4-5
           prompt: ${{ inputs.smoke_prompt }}
           claude_args: |
             --max-turns 3

@@ -86,18 +86,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-19 UTC
+Last updated: 2026-09-22 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
-- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
-- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
-- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
-- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
+- Active repair: Claude workflow-dispatch smoke job failure on run `35792621767`, job `106964469796`.
+- VERIFIED in live GitHub Actions evidence: the smoke step logged model `claude-opus-5` and returned `result.subtype=success` with `is_error:true`, `modelUsage:{}`, and `total_cost_usd: 0`, then failed the workflow in the summary gate.
+- VERIFIED in source on this branch: `.github/workflows/claude.yml` now pins the smoke action to `model: claude-sonnet-4-5`, matching the repository's configured Anthropic baseline model.
+- VERIFIED locally on this branch: `npm ci` and `npm run verify` passed after the workflow change.
+- Remaining blocker: post-merge execution of the updated smoke workflow from `main` is still UNVERIFIED.
+- Exact first next action: trigger the Claude `workflow_dispatch` smoke run after merge and confirm the model/API check reports `success` without `is_error:true`.
 
 ### What we were building
 
@@ -855,3 +855,17 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
 - Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
 - Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
+
+### Work History Trail — 2026-09-22 Claude smoke workflow failure repair
+
+- Trigger or task: fix failing GitHub Actions job `106964469796` on run `35792621767` (`Claude Code` workflow_dispatch smoke run).
+- Blueprint sections used: Blueprint governance; Current Working Checkpoint; Required validation; Engineering discipline.
+- Live evidence checked: `list_workflow_runs` confirmed run `35792621767` failed; `get_job_logs` for job `106964469796` showed the action initialized with model `claude-opus-5` and then returned `subtype: success` with `is_error:true`, `modelUsage:{}`, and `total_cost_usd: 0`, followed by workflow failure at the smoke result gate.
+- Root cause classification: VERIFIED — the smoke workflow did not pin a model and therefore ran on the action default model (`claude-opus-5`) instead of the repository baseline model (`claude-sonnet-4-5`), producing repeated `is_error:true` smoke failures.
+- Changes made: updated `.github/workflows/claude.yml` to set `model: claude-sonnet-4-5` for the `claude-smoke` action step.
+- Attempted fixes and failures: none before this fix; this was a one-change repair.
+- Verification performed after fixes: `npm ci` PASSED; `npm run verify` PASSED (lint, credential audit, tests, focused verification scripts, and production build).
+- Verified result: repository validation is green with the workflow update committed; live post-merge smoke execution remains UNVERIFIED until the updated workflow runs from `main`.
+- Remaining blocker or unknown: provider-side sub-error text is not printed by the action in this log mode, so only the `is_error:true` failure signature is visible in logs.
+- Exact first next action: after merge, manually run the `Claude Code` workflow via `workflow_dispatch` and confirm the smoke step completes with overall success.
+- Relevant PR, branch and commit identifiers: current fix branch (PR number pending in this session); failing run `35792621767`, failing job `106964469796`.
