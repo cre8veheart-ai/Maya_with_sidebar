@@ -33,6 +33,14 @@ Use this runbook while activating Claude Code, preparing local MAYA development,
 - Use the canonical native Vercel integration for preview and production behavior.
 - Merge to `main` only after Founder approval for the exact final PR state.
 
+## Mobile reachability and approval fallback
+
+- Do not assume the GitHub mobile app exposes Actions, rulesets, secrets, or merge controls needed for MAYA operations.
+- If a required control is not reachable in the GitHub mobile app, use the direct GitHub links in this runbook from a mobile browser or desktop browser instead.
+- A repository being visible in GitHub does not prove it is connected to the needed Actions, rulesets, secrets, preview, or approval surfaces.
+- Treat anything not directly verified through the reachable browser surface as UNVERIFIED.
+- Surface required approval requests in the active MAYA session first with the exact branch, PR, and head SHA before relying on any external merge action.
+
 ## Part 1 — Activate Claude Code in GitHub Actions
 
 ### Click-by-click Claude activation checklist
@@ -267,6 +275,13 @@ Meaning:
 - old approvals do not count after new commits
 - approval must match the current PR head exactly
 - merge authority still belongs to the Founder for the exact final PR state
+
+Before any approval-dependent action, bring the approval request into the active MAYA session with:
+
+- branch name
+- PR number or status
+- exact current head SHA
+- the specific approval being requested
 
 ## Fast activation order
 

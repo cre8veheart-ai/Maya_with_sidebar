@@ -113,6 +113,7 @@ Resume phrase: **DIH EVENT MAYA**
 - `.env.example` now documents the GitHub OAuth/repository-scoping variables and the Adobe fonts project-id variable used by the current source tree, with safe placeholders that avoid credential-leak false positives.
 - `docs/DIH_WORKSPACE_CHECKPOINT.md` has been refreshed to the current branch, head, and next-action handoff so the next `DIH EVENT MAYA` session does not resume from the older persistence-foundation checkpoint by mistake.
 - The continuity protocol now states explicitly that Ari continuity/chat is not an authority surface and may not override Founder/owner auth or widen permissions.
+- Repository visibility alone is now treated as insufficient proof of connection; Actions, rulesets, secrets, preview, and approval surfaces remain UNVERIFIED until they are reachable and directly checked.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
 - Exact first next action: copy the refreshed `.env.example` values into the active local/repository secret surfaces that are actually needed, rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, and then apply the merge-approval/anti-drift rules through GitHub protection settings before Leslie approves the exact final PR head.
 
@@ -987,3 +988,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: revert the added continuity-boundary language only if Founder direction explicitly replaces it with a stricter or broader rule.
 - Follow-up debt, owner and next verification gate: Founder/CTO to confirm the live operating workflow continues to honor the documented authority boundary during the next continuity recovery and approval cycle.
+
+### Work History Trail — 2026-09-22 repository-visibility-is-not-connection rule
+
+- Trigger: Founder clarified that the repository may be present in GitHub but not actually connected to the required operational surfaces.
+- Blueprint sections used: Blueprint governance; Founder-authorized production rule; Current Working Checkpoint.
+- Live evidence checked: `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`; active checkpoint language about remaining UNVERIFIED external GitHub surfaces.
+- Failure evidence: prior guidance assumed direct links were sufficient navigation help, but did not state plainly enough that visible repository presence is not proof that Actions, rulesets, secrets, previews, or approvals are actually reachable and connected.
+- Changes made: added an explicit rule in the runbook and checkpoint that repository visibility alone is not connection proof and that those external surfaces remain UNVERIFIED until directly reachable and checked.
+- Verified result: VERIFIED in source that MAYA documentation now distinguishes repository existence from operational connection and prevents false confidence from a visible-but-disconnected GitHub surface.
+- Stop reason or remaining blocker: the actual live GitHub connectivity state still depends on external browser/account surfaces and remains UNVERIFIED until directly checked.
+- Exact first next action: when an approval or verification step is needed, first surface it in-session with branch/PR/head SHA, then verify the reachable browser surface before treating that GitHub control as connected.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this documentation update.
+- Failures, exact error evidence and affected boundary: no runtime failure; this was an operational-truth gap in the docs.
+- Every attempted fix, including unsuccessful attempts: none beyond the direct wording update.
+- The fix that resolved the failure, or why it remains unresolved: source-level policy gap resolved; live connection status remains an external verification step.
+- Verification performed after each fix: source review of the runbook and checkpoint wording.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: revert this wording only if a future MAYA surface can itself prove live GitHub operational connectivity.
+- Follow-up debt, owner and next verification gate: Founder/CTO to verify actual reachable GitHub operational surfaces from the desired device/browser path.
