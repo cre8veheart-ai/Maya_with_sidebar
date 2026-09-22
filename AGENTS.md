@@ -46,6 +46,15 @@ This rule applies to every engineering agent, including Ari/Codex, Claude, Copil
 - Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
 - Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
 
+## Merge approval and anti-drift rule — REQUIRED
+
+- Every merge to `main` requires Leslie's approval of the exact current pull-request head.
+- If a new commit is pushed after approval, the prior approval is stale and must not be treated as merge permission.
+- Keep work on focused branches with one active pull request per branch whenever practical.
+- Do not let commits accumulate unattended outside an active pull request and review path.
+- Use branch protection/rulesets to require pull requests, required checks, stale-approval dismissal, up-to-date branches, blocked force-pushes, and protected branch deletion settings on `main`.
+- Close, merge, or intentionally retire stale branches and pull requests rather than letting parallel drift become the default operating state.
+
 ## Required validation
 
 Before a pull request is considered mergeable, run:

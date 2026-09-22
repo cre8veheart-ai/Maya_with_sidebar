@@ -18,6 +18,15 @@ Blueprint governance:
 - When implementation and blueprint conflict, disclose the conflict and follow the Founder's newest explicit decision. Reconcile the blueprint in the same change when practical; the blueprint may not silently stop Founder-authorized work.
 - The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
 
+## Merge approval and anti-drift policy
+
+- Every merge to `main` requires Founder Leslie's approval of the exact current pull-request head.
+- If a materially different commit is added after approval, the prior approval is stale and renewed approval is required before production.
+- Keep one focused branch and one active pull request per workstream whenever practical.
+- Do not allow commit stacks to accumulate unattended outside an active pull request, review, and verification path.
+- Protect `main` with required pull requests, required checks, stale-approval dismissal, up-to-date branch requirements, blocked force-pushes, and restricted deletion.
+- Close, merge, or intentionally retire stale branches and pull requests rather than letting parallel drift become the default state of the canonical repository.
+
 ## Preapproved Tool Register
 
 This register authorizes categories, not unlimited access. Every actual addition, upgrade, configuration change or removal still receives a dated Work History entry with the affected PR, commit and deployment.
@@ -99,8 +108,9 @@ Resume phrase: **DIH EVENT MAYA**
 - Documentation now includes `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`, a printable activation/deployment operator runbook derived from the current workflows, `.env.example`, README, and this blueprint.
 - The operator runbook now also contains click-by-click GitHub instructions for Claude activation, ruleset confirmation, local verification, PR checks, and canonical `main` deployment follow-through.
 - VERIFIED from GitHub Actions history: recent Claude smoke runs reached the configured Anthropic secret but failed with `is_error: true` before useful model work. The repository `.mcp.json` points at Vercel MCP, so the smoke workflow is now being scoped to a zero-server MCP config plus fuller output to avoid project-MCP/OAuth interference and preserve diagnostics.
+- Founder-approved repository policy now requires exact-head merge approval plus anti-drift branch discipline so merges cannot proceed on stale approval and unattended commit sprawl is not treated as normal operation.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, confirm the run succeeds with full diagnostics retained, then continue the click-by-click runbook for ruleset confirmation, preview verification, and Leslie's approval on the exact final PR state before merge.
+- Exact first next action: rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, confirm the run succeeds with full diagnostics retained, then apply the merge-approval/anti-drift rules through GitHub protection settings and Leslie's approval on the exact final PR head before merge.
 
 ### What we were building
 
@@ -898,3 +908,21 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review; non-smoke Claude workflow behavior remains unchanged.
 - Rollbacks, reversals, removals and superseded approaches: restore the previous smoke prompt/args and remove the explicit `mcp_config` override if a future verified Claude action release fixes the underlying issue without repository-specific isolation.
 - Follow-up debt, owner and next verification gate: Founder/CTO to rerun the smoke workflow and capture post-fix evidence; if failure persists, inspect the full output retained by `show_full_output: true` before changing broader repository permissions or connectors.
+
+### Work History Trail — 2026-09-22 founder merge-approval and anti-drift repository policy
+
+- Trigger: Founder directed that every merge must keep Leslie's approval in the loop and that unattended commit buildup, branch sprawl, and stale drift must not become normal MAYA operation.
+- Blueprint sections used: Blueprint governance; Founder-authorized production rule; Required validation; Current Working Checkpoint.
+- Live evidence checked: `AGENTS.md`; existing blueprint governance and checkpoint text; founder-approval workflow expectations already recorded in the active checkpoint.
+- Changes made: added an explicit merge-approval and anti-drift policy to this blueprint; mirrored the rule in `AGENTS.md`; added the same operational rule to `docs/MAYA_ACTIVATION_DEPLOYMENT_RUNBOOK.md`.
+- Verified result: VERIFIED in source that MAYA repository policy now requires exact-head Founder approval for `main`, stale-approval invalidation after new commits, focused branch/PR discipline, and active cleanup of stale branch/PR drift.
+- Stop reason or remaining blocker: live GitHub rulesets and branch-protection settings remain UNVERIFIED in this documentation-only slice until they are applied on the repository settings page.
+- Exact first next action: apply the same merge-approval and anti-drift protections in GitHub branch rulesets for `main`, then rerun the updated Claude smoke workflow and continue PR verification from the active branch.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this repository-policy update.
+- Failures, exact error evidence and affected boundary: none during this documentation slice.
+- Every attempted fix, including unsuccessful attempts: none required.
+- The fix that resolved the failure, or why it remains unresolved: not applicable; the requested repository policy was satisfied by codifying it in the governing docs.
+- Verification performed after each fix: source review of the new policy language across `AGENTS.md`, the runbook, and this blueprint.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: revert the new merge-approval/anti-drift text in the blueprint, runbook, and `AGENTS.md` only if Founder direction changes.
+- Follow-up debt, owner and next verification gate: Founder/CTO to enforce the documented policy in live GitHub rulesets and verify that merges remain blocked until exact-head approval plus required checks are satisfied.

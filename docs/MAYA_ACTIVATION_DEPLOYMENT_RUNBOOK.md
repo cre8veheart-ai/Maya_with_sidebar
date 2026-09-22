@@ -196,6 +196,15 @@ Founder exact-head approval
 8. Confirm the canonical Vercel project deploys production from `main`
 9. Verify production behavior in the browser
 
+## Merge approval and anti-drift rules
+
+- Every merge to `main` requires Leslie's approval of the exact current PR head.
+- If any new commit lands after approval, treat the prior approval as stale.
+- Keep one focused branch and one active PR per workstream whenever practical.
+- Do not let commits pile up outside an active PR/review path.
+- Close, merge, or intentionally retire stale branches and PRs instead of leaving them to drift unattended.
+- Keep `main` protected with required PRs, stale-approval dismissal, required checks, up-to-date branch enforcement, blocked force-pushes, and restricted deletion.
+
 ### Click-by-click build and merge checklist
 
 1. Create or switch to your feature branch
