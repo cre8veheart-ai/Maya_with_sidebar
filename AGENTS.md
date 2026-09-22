@@ -19,6 +19,7 @@ Rules:
 - Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
 - Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
 - At the end of substantive MAYA work, update the Current Working Checkpoint with the verified stop point and exact first next action.
+- The next session must resume from that recorded stop point unless the Founder changes direction.
 - Append a Work History Trail entry with evidence, changes, result, blocker and relevant PR/branch/commit/deployment identifiers.
 - The history trail is append-only. Correct prior entries with a new entry; never silently rewrite or delete completed history.
 - Record all substantive work: successful changes, failures, exact errors, attempted fixes, failed fixes, verified fixes, regressions, rollbacks, reversals, removals and unresolved debt.

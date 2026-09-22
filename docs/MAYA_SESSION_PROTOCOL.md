@@ -57,6 +57,13 @@ Before a Maya build session ends, record:
 
 A chat session ending must not be treated as the end of Maya's working state.
 
+## Session End-Point and Resume Rule
+
+- End every substantive session by bringing the recorded work back to a clear stop point in the living checkpoint and work history.
+- The stop point must say exactly what was finished, what remains unresolved, and the exact first next action for the next session.
+- The next session should resume from that recorded end point instead of reinterpreting the work from scratch unless the Founder changes direction.
+- Do not leave active work in a state that depends on chat memory alone.
+
 ## Working Branch Rule
 
 Use one canonical Maya working branch/PR for the active architecture work whenever practical. Do not create duplicate Maya repositories or shadow deployments merely to continue work.
