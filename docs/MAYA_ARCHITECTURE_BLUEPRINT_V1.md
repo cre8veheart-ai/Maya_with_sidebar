@@ -95,7 +95,7 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-19 UTC
+Last updated: 2026-09-22 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
@@ -109,8 +109,10 @@ Resume phrase: **DIH EVENT MAYA**
 - The operator runbook now also contains click-by-click GitHub instructions for Claude activation, ruleset confirmation, local verification, PR checks, and canonical `main` deployment follow-through.
 - VERIFIED from GitHub Actions history: recent Claude smoke runs reached the configured Anthropic secret but failed with `is_error: true` before useful model work. The repository `.mcp.json` points at Vercel MCP, so the smoke workflow is now being scoped to a zero-server MCP config plus fuller output to avoid project-MCP/OAuth interference and preserve diagnostics.
 - Founder-approved repository policy now requires exact-head merge approval plus anti-drift branch discipline so merges cannot proceed on stale approval and unattended commit sprawl is not treated as normal operation.
+- The MAYA session continuity rules now explicitly require each substantive session to end at a recorded checkpoint stop point and the next session to resume from that exact recorded next action unless Founder direction changes.
+- `.env.example` now documents the GitHub OAuth/repository-scoping variables and the Adobe fonts project-id variable used by the current source tree, with safe placeholders that avoid credential-leak false positives.
 - External cleanup remaining: remove the separate Vercel `maya-claude-mcp` project after recording its identity and obtaining the action-time deletion confirmation required by the management surface.
-- Exact first next action: rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, confirm the run succeeds with full diagnostics retained, then apply the merge-approval/anti-drift rules through GitHub protection settings and Leslie's approval on the exact final PR head before merge.
+- Exact first next action: copy the refreshed `.env.example` values into the active local/repository secret surfaces that are actually needed, rerun the Claude smoke workflow after the MCP-isolated smoke fix lands, and then apply the merge-approval/anti-drift rules through GitHub protection settings before Leslie approves the exact final PR head.
 
 ### What we were building
 
@@ -926,3 +928,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Regressions introduced or discovered: none identified in source review.
 - Rollbacks, reversals, removals and superseded approaches: revert the new merge-approval/anti-drift text in the blueprint, runbook, and `AGENTS.md` only if Founder direction changes.
 - Follow-up debt, owner and next verification gate: Founder/CTO to enforce the documented policy in live GitHub rulesets and verify that merges remain blocked until exact-head approval plus required checks are satisfied.
+
+### Work History Trail — 2026-09-22 env-example coverage and session resume checkpointing
+
+- Trigger: Founder required an env patch, asked to find the missing documentation section bars, and required work to return to a session end point so the next session can pick up exactly where it stopped.
+- Blueprint sections used: Blueprint governance; Merge approval and anti-drift policy; Required validation; Current Working Checkpoint.
+- Live evidence checked: `.env.example`; `lib/github/config.ts`; `app/api/github/connect/route.ts`; `app/api/github/callback/route.ts`; `app/api/github/status/route.ts`; `app/white-boardroom/page.tsx`; `AGENTS.md`; `docs/MAYA_SESSION_PROTOCOL.md`.
+- Failure evidence: `.env.example` did not document the GitHub OAuth/repository-scoping variables or the Adobe fonts project-id variable that are used in the current source tree, and its Anthropic placeholder used the `sk-ant-` prefix pattern that the credential audit flags as a possible embedded provider key.
+- Changes made: patched `.env.example` with missing GitHub and Adobe env sections/bars, replaced provider key placeholders with safe non-key text, and refreshed the working checkpoint to record the explicit session-endpoint resume rule.
+- Verified result: VERIFIED in source that `.env.example` now covers the active GitHub OAuth settings, repository allowlist/default-target settings, and `NEXT_PUBLIC_ADOBE_FONTS_PROJECT_ID`, while avoiding provider-key leak signatures in placeholders.
+- Stop reason or remaining blocker: live repository secrets, local `.env.local`, and GitHub Actions/Vercel settings remain UNVERIFIED because this slice updates documentation and checkpoint truth only.
+- Exact first next action: apply only the actually needed env values in the active environment surfaces, rerun `npm ci` and `npm run verify`, then rerun the updated Claude smoke workflow from the current branch.
+- Relevant PR, branch, commit and deployment identifiers: branch `copilot/make-rulesets-for-maya`; no deployment invoked during this env/documentation update.
+- Failures, exact error evidence and affected boundary: no runtime failure occurred during the patch; the issue was documentation drift and a secret-scan false-positive pattern in source-controlled placeholders.
+- Every attempted fix, including unsuccessful attempts: first diffed used env vars against `.env.example`, then added the missing documented variables and safe placeholder values in one patch.
+- The fix that resolved the failure, or why it remains unresolved: source-level documentation gap resolved; live environment population remains an external operational step.
+- Verification performed after each fix: source review against the env-usage sites plus credential-audit pattern review.
+- Regressions introduced or discovered: none identified in source review.
+- Rollbacks, reversals, removals and superseded approaches: restore the previous placeholder text or remove the added env sections only if the underlying GitHub/Adobe integrations are intentionally removed from source.
+- Follow-up debt, owner and next verification gate: Founder/CTO to validate populated env surfaces with local verification and the next GitHub smoke run.
