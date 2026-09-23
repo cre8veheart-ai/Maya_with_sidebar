@@ -78,6 +78,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: ${{ inputs.smoke_prompt }}
           claude_args: |
+            --model claude-sonnet-4-5
             --max-turns 3
             --allowedTools Read
 
