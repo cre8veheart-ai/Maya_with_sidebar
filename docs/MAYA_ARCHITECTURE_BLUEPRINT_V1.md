@@ -102,19 +102,18 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-21 UTC
+Last updated: 2026-09-24 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
-- PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
-- `main` also carries PR #139 (Adobe connector authorization links) and PR #141 (Copilot repo-scan pass), both merged after #134/#135.
-- Audit finding, this session: `AGENTS.md`'s "Founder-authorized production rule" still carried PR #123's looser language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate actually installed by PR #133 and still enforcing on every PR. A full revert of PR #123 was evaluated and rejected — most of what #123 removed turned out to be genuine bug fixes (GitHub repo-allowlist fail-open bug, session killed on non-401 errors) or security improvements (credential-leak audit) or duplicate infrastructure (`services/claude-mcp`, duplicate Vercel Action workflows) that should stay removed.
-- Change made in this branch: rewrote the `AGENTS.md` rule to name the live `founder-exact-head-approval.yml` / `APPROVE <head_sha>` mechanism explicitly, instead of the superseded looser text. No code, workflow, or runtime behavior changed — documentation-only correction.
-- Exact first next action: PR #142 is open with `npm run verify` VERIFIED passing on head `fa6a6aec27e440ec523c2a22078a58eede4a154b`; wait for Leslie's `APPROVE fa6a6aec27e440ec523c2a22078a58eede4a154b` comment to clear the `founder-exact-head-approval` check, then merge.
-
+- Founder decision (2026-09-24): remove the unpredictable custom exact-head approval workflow and replace it with ordinary GitHub governance.
+- This branch removes the custom approval workflow, validator, and tests; adds founder CODEOWNERS; updates first-party Actions to Node-24-compatible major versions; and documents the standard ruleset.
+- VERIFIED before this change: GitHub reports `main` is unprotected and the repository has zero active rulesets.
+- Therefore the new governance is not technically enforced until a repository administrator activates the documented `main` ruleset in GitHub Settings.
+- Required standard controls: pull request; one approving CODEOWNER review from `@cre8veheart-ai`; dismiss stale approvals; resolve conversations; require `npm run verify`; block force pushes and deletion; no administrator, bot, app, or agent bypass.
+- Exact first next action: review this PR, activate and test the `main` ruleset, then approve and merge only after GitHub proves an unapproved or failing PR cannot merge.
 
 ### Resume protocol
 
