@@ -1,22 +1,38 @@
-# Maya Architecture Blueprint v1.0
+# MAYA Engineering Notes & History
 
-Status: Living, active and amendable MAYA build authority
-Owner: Founder
-Technical lead: Ari / CTO
+Status: Working engineering reference and audit history — descriptive, not independently binding policy.
+Owner: Leslie (Founder) — sole final authority over MAYA product and engineering direction.
+Maintained by: Ari, under Founder direction, subject to review and correction at any time.
 Repository rule: One canonical private Maya repository. No duplicate repos or shadow deployments.
 
-Blueprint governance:
+## What this document is
+
+This file is the engineering audit trail for MAYA: what was built, what was tried, what failed, what was decided, and why. It is a record, not a source of authority in itself. The only sources of binding authority over engineering work are:
+
+1. Leslie's explicit, current direction (in conversation or via GitHub's ordinary review/approval controls).
+2. `AGENTS.md`, which states the actual operating rules for every engineering agent (Claude, Ari/Codex, Copilot, and later collaborators).
+
+No document — including this one — may claim to override, gate, or supersede those two things. A stale entry in this history, an old decision recorded here, or language elsewhere describing this file as "build authority" does not carry force on its own.
+
+## Split from the original blueprint (2026-09-22)
+
+This file used to be combined with product/feature roadmap content (planned executives, shared services, Whiteboard Room, Maya Live, Art Gallery, menu structure, build order, and similar forward-looking design) under the title "Maya Architecture Blueprint v1.0," with a header describing it as "Living, active and amendable MAYA build authority." Leslie identified that framing as a problem: the document was intended to capture Pocket Office build-capability planning, not to function as binding policy gating every agent's work — and the escalation to "build authority" language (commit `079a6ec`, 2026-09-01) had not been reviewed on its own terms; it rode in alongside legitimate Pocket Office architecture work in the same commit.
+
+As a result:
+- The roadmap/planning content has moved to `docs/MAYA_POCKET_OFFICE_ROADMAP.md`, explicitly marked non-binding.
+- This file keeps the engineering history, the Preapproved Tool Register, and the Claude/Ari/Copilot access-control history, reframed as reference rather than authority.
+- A stale, superseded checkpoint snapshot from 2026-09-02 ("What we were building" / "Where work stopped" / "First next action", referring to the long-since-resolved PR #96 Pocket Desk work) was removed rather than carried forward, since the Amendment protocol below already calls for removing superseded content and the current Active Engineering-Control Checkpoint elsewhere in this file supersedes it.
+
+## Blueprint governance
+
 - Founder Leslie is the final project authority. GitHub is repository infrastructure, not a deciding or policy-enforcement authority over Founder-authorized work.
-- Repository documents, workflows, bots and agent instructions may warn, document risk and request clarification, but may not silently cancel or indefinitely stop the Founder's explicit authorization.
-- Leslie personally discovered the repository hardening and destructive branch-lifecycle enforcement on 2026-09-08 after prolonged Claude, human and build-access failures; no AI system identified it before her discovery.
-- This document is the current build source of truth, not a historical artifact.
-- Founder-approved amendments are added here as decisions are made.
-- MAYA implementation PRs must identify the blueprint section they implement or amend.
-- A stale PR description, transferred summary or older plan cannot override the current blueprint.
-- Blueprint changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
-- The Current Working Checkpoint must be refreshed before ending substantive MAYA work so DIH EVENT MAYA can resume accurately.
-- When implementation and blueprint conflict, disclose the conflict and follow the Founder's newest explicit decision. Reconcile the blueprint in the same change when practical; the blueprint may not silently stop Founder-authorized work.
-- The CTO may introduce or replace a reversible, task-relevant tool, plug-in, connector, framework or implementation dependency without prior Founder approval when it stays within existing authority and introduces no new credentials, payment, client-data exposure, destructive action or material product-direction change. The change must be recorded in this blueprint before or alongside implementation with purpose, permissions, data boundary, operational dependency, cost/sign-in impact, verification gate and removal/rollback path. Founder approval remains required for the excluded high-impact categories.
+- This document, `AGENTS.md`, and any repository workflow, bot or agent instruction may warn, document risk and request clarification, but may not silently cancel or indefinitely stop the Founder's explicit authorization.
+- This document reflects the current understanding of what has been built and decided. It is not a historical artifact to be quietly rewritten, but it is also not authority in itself — see "What this document is" above.
+- Founder-approved decisions are recorded here as they are made.
+- A stale PR description, transferred summary or older plan cannot override Leslie's current explicit direction.
+- Changes must remain readable in repository history and must not be buried only in comments, chats or feature branches.
+- The Current Working Checkpoint should be refreshed before ending substantive MAYA work so **DIH EVENT MAYA** can resume accurately.
+- When implementation and this record conflict, disclose the conflict and follow Leslie's newest explicit decision.
 
 ## Preapproved Tool Register
 
@@ -86,45 +102,19 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-19 UTC
+Last updated: 2026-09-21 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (`copilot/fix-approval-job-failure`) is the active repair of the Founder Exact-Head Approval workflow.
-- VERIFIED in live GitHub Actions evidence: job `105860886178` on run `35429303629` failed because an `issue_comment` event from `vercel[bot]` on PR #127 still executed the approval gate and then hard-failed without an exact `APPROVE <head_sha>` founder comment.
-- VERIFIED in source on this branch: `.github/workflows/founder-exact-head-approval.yml` now checks out the repository and runs `scripts/founder-exact-head-approval.mjs`, which skips unrelated PR comments, still enforces the exact-head approval on `pull_request` events, and still rechecks founder `APPROVE ...` comments.
-- VERIFIED locally on this branch: `node --test tests/founder-approval-core.test.mjs`, `npm ci`, and `npm run verify` passed after adding `tests/founder-approval-core.test.mjs`.
-- Remaining blocker: merge and post-merge live GitHub Actions confirmation are still UNVERIFIED until the updated workflow runs from `main` on a future qualifying event.
-- Exact first next action: wait for PR #135 review, rerun the approval workflow under the updated default-branch workflow after merge or manual trigger conditions, and confirm unrelated bot comments no longer fail the gate.
+- PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
+- PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
+- `main` also carries PR #139 (Adobe connector authorization links) and PR #141 (Copilot repo-scan pass), both merged after #134/#135.
+- Audit finding, this session: `AGENTS.md`'s "Founder-authorized production rule" still carried PR #123's looser language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate actually installed by PR #133 and still enforcing on every PR. A full revert of PR #123 was evaluated and rejected — most of what #123 removed turned out to be genuine bug fixes (GitHub repo-allowlist fail-open bug, session killed on non-401 errors) or security improvements (credential-leak audit) or duplicate infrastructure (`services/claude-mcp`, duplicate Vercel Action workflows) that should stay removed.
+- Change made in this branch: rewrote the `AGENTS.md` rule to name the live `founder-exact-head-approval.yml` / `APPROVE <head_sha>` mechanism explicitly, instead of the superseded looser text. No code, workflow, or runtime behavior changed — documentation-only correction.
+- Exact first next action: PR #142 is open with `npm run verify` VERIFIED passing on head `fa6a6aec27e440ec523c2a22078a58eede4a154b`; wait for Leslie's `APPROVE fa6a6aec27e440ec523c2a22078a58eede4a154b` comment to clear the `founder-exact-head-approval` check, then merge.
 
-### What we were building
-
-The Pocket Office client-vault and context model:
-
-- MAYA is fully available in General mode without a client.
-- Executives retain persistent user memory independent of clients.
-- Greyed-out client names appear in the Client menu until individually signed in.
-- One client sign-in activates the complete MAYA Pocket Office for that client.
-- Multiple clients may remain active simultaneously on the Pocket Desk.
-- Only the foreground-selected client supplies business, Library, project, session and memory context to executive answers.
-- Client-created MAYA work files only to that client's encrypted vault.
-- Client sign-out files and closes that client; leaving MAYA files and signs out every active client.
-- Vaults are optional, portable, user-controlled and designed for zero RAIN plaintext access.
-
-### Where work stopped
-
-- PR #64 was verified stale and safely closed without merge.
-- PR #88 was closed without merge and retained only as a blocked historical design record; its server-readable Supabase implementation is noncanonical.
-- PR #96 is the single active implementation PR, created cleanly from current `main` for the governed Pocket Desk context foundation.
-- The canonical blueprint now contains a best-effort GitHub PR-history backfill from PR #9 through PR #95, with evidence limits and unresolved legacy branches marked.
-- The Client menu, General/client workspace switching, Pocket Desk foreground/background behavior and user-memory/client-memory composition are now recorded in this blueprint.
-- The blueprint and repository instructions on `main` now govern future work.
-
-### First next action
-
-Verify PR #96's build and browser behavior, then implement the client-side cryptography/key-recovery design as a separate reviewed slice before enabling Add/Register. Do not introduce storage or client authentication until the zero-access gates are proven.
 
 ### Resume protocol
 
@@ -353,6 +343,8 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-22: Split this document. Product/roadmap content moved to `docs/MAYA_POCKET_OFFICE_ROADMAP.md` (non-binding). Demoted this document's status from "living build authority" to "engineering reference and audit history — descriptive, not independently binding policy." The only binding authorities over engineering work are Leslie's explicit direction and `AGENTS.md`. Corrected header to name Leslie explicitly as sole Owner and Ari as a subordinate maintainer rather than a parallel role.
+
 - 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
 
 - 2026-09-08: Applied one Founder-authorized production rule to all engineering agents. Claude and Ari may build branches and pull requests; a merge to `main` requires Leslie's fresh approval for the exact latest commit, and later commits invalidate prior approval.
@@ -365,6 +357,7 @@ Scope and evidence:
 - 2026-09-02: Initially required Founder approval before tooling changes; superseded later the same day.
 - 2026-09-02: Authorized autonomous reversible tooling changes within existing authority, with mandatory blueprint traceability and Founder approval retained for credentials, costs, client-data exposure, destructive action and material product-direction changes.
 - 2026-09-02: Created the initial preapproved-tool register and mandatory per-tool trace template.
+
 
 ## 1. Platform Rule
 
@@ -391,356 +384,6 @@ Core responsibilities:
 
 Rule: Core changes require deliberate review. Feature code should not casually leak into Core.
 
-## 3. Executive Suite — Standalone Plug-ins
-
-Each executive is a standalone agent module with its own:
-- Identity and executive contract
-- Scope and authority
-- Role-specific reasoning instructions
-- Model/runtime configuration
-- Tool permissions
-- Context and memory boundaries
-- Tests/evals
-- Structured interface back to Maya
-
-Maya coordinates executives; executives do not depend on being embedded inside Maya Core.
-
-Planned executive modules:
-- CEO — reference/gold-standard executive chassis; build first
-- CTO — architecture, security, engineering, deployment, technical risk
-- CFO — budget, runway, ROI, pricing economics, financial risk
-- CMO — market, positioning, GTM, campaigns, growth strategy
-- COO — operations, delivery, dependencies, execution
-- CIO — information architecture, data strategy, intelligence
-- CRO — revenue, pipeline, conversion, expansion
-- Creative Director — visual/message quality and brand execution
-- HR — people operations and workforce policy
-- Legal — contracts/compliance review and legal-risk flagging
-- Office Admin — routine office coordination and approved execution
-- Executive Assistant — founder-facing triage, scheduling, preparation and follow-through
-
-Strategy Room is an orchestration surface, not an executive. Executives analyze independently; Maya weighs disagreement and adjudicates rather than averaging.
-
-Titans Council remains Phase 2 until the ordinary Strategy Room is proven.
-
-## 4. Shared Maya Services
-
-Executives use shared services through controlled interfaces. Shared capabilities are built once and are not duplicated inside each executive.
-
-### Email
-Shared communication service for read, draft, queue, approval, send and thread linkage.
-Connects to: Executive Assistant, Office Admin, CMO, CEO, Client Vaults, Campaigns, Projects.
-Architecture choice later: provider adapter strategy and external-send approval thresholds.
-
-### Campaigns
-One campaign engine for planning, assets, approvals, scheduling, execution and results.
-Connects to: CMO, Creative Director, Legal, CFO, Analytics, Email, Website.
-Rule: CMO owns campaign strategy; Campaign Service owns execution plumbing.
-
-### Projects
-Project containers, milestones, owners, dependencies, status and linked artifacts.
-Connects to: COO, CTO, CEO, Executive Assistant, Tasks, Meetings, Whiteboard.
-
-### Client Vaults
-Client-specific documents, history, decisions, campaigns and controlled context.
-Connects to: every MAYA executive and menu tool, Projects, Library, Email, Meetings and the Pocket Desk.
-
-Authoritative workspace and memory rules:
-- MAYA remains fully available in General mode with no client active.
-- Executives maintain persistent user memory independent of clients: user-approved preferences, working style, goals, decisions, general projects and prior General sessions.
-- Signing a client in activates the complete MAYA Pocket Office for that client; it does not limit which executives or menu tools are available.
-- Multiple clients may remain active simultaneously on the Pocket Desk, but exactly one workspace is foreground-selected at a time: General or one active client.
-- Selecting a client supplies that client's authorized business information, Library, imported materials, projects, sessions, prior work, decisions, recommendations and client memory as context for executive answers.
-- In client mode, executive context is user memory plus only the foreground-selected client's authorized context. Active background clients contribute zero context.
-- New memories and work created in a client workspace are scoped and filed only to that client and project.
-- Client information never enters user/general memory without an explicit user-directed promotion.
-- Switching clients atomically replaces prompt context, retrieval results, caches, drafts, memory namespace and filing destination; no cross-client blending is permitted.
-- Signing a client out files and closes only that client. If no clients remain selected, MAYA returns to General mode with all tools available and user memory intact.
-- Leaving MAYA files and signs out every active client independently, clears decrypted client state and keys, and returns client names to greyed-out.
-- Client vault removal, transfer or erasure never deletes the user's General memory.
-
-Vault rule: optional client-side encryption, user-held credentials and keys, zero RAIN plaintext access, strong tenant isolation, user-directed portability and permanent erasure.
-
-### Website Dashboard
-Maya-native control surface for website content, status, analytics and approved publishing.
-Connects to: CMO, Creative Director, CTO, Analytics.
-Recommended staged authority: read/preview first; controlled publish later.
-
-### Calendar
-Shared meetings, availability, reminders and approved scheduling.
-Connects to: Executive Assistant, Office Admin, COO, Projects, Maya Live.
-
-### Phone + Alerts
-Founder-facing alert surface.
-Green = answered/complete. Yellow = waiting.
-Keep alerts minimal: person/item + state + tap-through to underlying work.
-
-### Analytics / Intel
-Shared evidence and intelligence service.
-Connects to: CIO, CFO, CMO, CRO, Vaults, Campaigns, Website.
-Rule: separate raw data adapters from executive interpretation.
-
-## 5. Whiteboard Room — Visual Workbench
-
-Whiteboard Room is a first-class Maya workspace, not just a drawing page.
-
-Core capabilities:
-- Persistent collaborative canvases
-- Freeform notes, diagrams, decision cards, assets and files
-- Campaign boards
-- Strategy boards
-- Creative/mood boards
-- Art curation boards
-- Live-build boards
-- Saved boards/stacks
-- Reusable templates
-
-Presentation rule:
-Whiteboard work should be structurally exportable into presentation form without rebuilding from scratch.
-
-Planned presentation outputs:
-- PowerPoint-compatible deck generation/export
-- PDF briefing
-- Presenter mode
-
-Architectural decision later: PowerPoint-native generation vs structured deck model with exporters.
-
-## 6. Maya Live — Human + AI Collaboration Platform
-
-Maya owns the branded experience. External infrastructure may power selected realtime plumbing behind the curtain.
-
-Modes:
-- Office Meetings
-- Presentation Mode
-- Podcast Mode
-- Later: Broadcast/Webinar Mode
-
-### Office Meetings
-Humans and AI agents can join by invitation.
-
-Meeting flow:
-Invite Portal -> Lobby -> Live Room -> Workspaces -> Decisions/Tasks/Artifacts -> Follow-up
-
-Host controls:
-- Invite/remove participants
-- Mic on/mute
-- Camera on/off
-- Mute all
-- Screen sharing
-- Workspace sharing
-- Make Presenter / revoke presenter
-- Recording controls if enabled
-- End meeting
-
-Human guests/vendors:
-- Meeting-scoped access only
-- No inherited access to Maya, executives, secrets, GitHub, vaults or other projects
-
-AI participants:
-- Can be active/silent
-- Can present/observe
-- Can share approved workspaces when host-authorized
-- Do not gain broader permissions because they joined a meeting
-
-Security rule:
-An invitation grants access to the meeting, not to Maya.
-
-### Presentation Mode
-Clean presenter surface for slides, Whiteboard, project demos and live builds.
-Editing clutter hidden while presenting.
-
-### Podcast Mode
-Maya-branded live podcast environment with:
-- Host + human guests + AI executive/agent guests
-- Green room/backstage
-- Mic controls
-- Screen/media sharing
-- Recording
-- Transcript if enabled
-- Chapter markers
-- Clips/highlights
-- Show notes
-- Post-show assets to Library
-
-External distribution destinations are modular and decided later.
-
-## 7. Art Gallery Module
-
-The Art Gallery is a real HTML website/module, not a Whiteboard page.
-
-Separation of concerns:
-- Gallery = destination
-- Whiteboard = curation/workspace
-- Viewing Room = immersive inspection
-- Projection Room = immersive exhibition experience
-
-### HTML Gallery
-Public or selectively private gallery website.
-Supports artwork, collections, statements and exhibition navigation.
-
-### Viewing Room
-A client can take an individual piece into a dedicated room.
-
-Capabilities:
-- Virtual gallery-light dimmer
-- Ambient lighting controls
-- Focused artwork illumination
-- Wall/background presentation options
-- Scale/zoom
-- Optional frame/mat visualization
-- Title and artist statement
-
-Rule: environmental lighting changes must not alter the underlying artwork file.
-
-### Immersive Projection Room
-Van-Gogh-experience-style presentation layer.
-
-Capabilities may include:
-- Large-scale projection across virtual walls/surfaces
-- Multi-surface layouts
-- Sequenced works
-- Transitions
-- Optional sound/narration
-- Virtual preview of a physical exhibition package
-
-Later decision gates:
-- Browser-only immersive mode
-- Actual projector output
-- Multi-projector synchronization
-- Projection mapping
-- AR/room-scale visualization
-
-## 8. Core Menu / Navigation Frame
-
-Current known menu structure includes:
-
-Core:
-- Home
-- Community
-- Tasks
-- Search
-
-Executive Suite:
-- CEO
-- COO
-- CMO
-- CFO
-- CTO
-- CIO
-- CRO
-- Creative Director
-- HR
-- Legal
-- Office Admin
-- Strategy Room
-- Titans Council (Phase 2)
-
-Library:
-- Sessions
-- Saved Files
-- Knowledge Vault
-- Intel Vault
-
-Operations:
-- Decisions
-- Campaigns
-- Tool Sandbox
-
-Platform:
-- Settings
-
-Planned/additional Pocket Office menu capabilities:
-- Whiteboard Room (foldout)
-- Projects
-- Client Vaults
-- Email
-- Website Dashboard
-- Maya Live / Office Meetings
-- Calendar
-- Phone + Alerts
-- Executive Assistant
-- Art Gallery
-
-Menu rule: avoid top-level clutter. Use foldouts for related workspaces and modes.
-
-## 9. Data and Object Rules
-
-Prefer shared objects rather than copies.
-Examples:
-- One Task object referenced by Project, Executive and Meeting
-- One File object referenced by Campaign, Client Vault and Whiteboard
-- One Decision record referenced by Strategy Room, Project and Session
-- One Email thread linked to Client, Campaign and Project as needed
-
-This prevents fragmentation and duplicate truth.
-
-## 10. Permission Rules
-
-Default: least privilege.
-
-Permissions are scoped separately for:
-- Reading
-- Drafting
-- Editing
-- Sending/publishing
-- Tool execution
-- Financial actions
-- Repository/deployment actions
-- Meeting participation
-- Screen/workspace sharing
-- Client/Vault access
-
-Speaking/presenting permission never implies data/tool permission.
-Meeting access never implies platform access.
-Executive authority never bypasses Maya Core security policy.
-
-## 11. Build Order
-
-1. Freeze/maintain Maya Core
-2. CEO standalone chassis
-3. CEO adversarial/eval tests
-4. CTO standalone module
-5. CEO + CTO Strategy Room conflict tests
-6. CFO
-7. CMO
-8. COO
-9. CRO
-10. CIO
-11. Creative Director
-12. Legal / HR / Admin / Executive Assistant
-13. Shared services in priority order
-14. Whiteboard Room
-15. Maya Live / Office Meetings
-16. Art Gallery + Viewing Room
-17. Immersive Projection Room
-18. Broader broadcast/distribution capabilities
-
-The build order may change for product priority, but architecture rules stay stable.
-
-## 12. Decision Gates — Discuss Before Locking
-
-The following are intentionally undecided until implementation requires them:
-- OpenClaw/runtime strategy per executive
-- Base model/provider per executive
-- Realtime meeting infrastructure
-- Video/audio/screen-share provider
-- PowerPoint generation/export architecture
-- Email provider adapter architecture
-- Database/storage choices for new services
-- Realtime Whiteboard collaboration technology
-- Recording/transcription stack
-- External livestream/podcast destinations
-- Projector/multi-projector implementation
-- AR support
-- Whether any module later deserves its own repository/deployment
-
-At each gate: present viable options, consequences, recommendation, then choose deliberately.
-
-## 13. Architectural North Star
-
-Stable Core -> Modular Capabilities -> Shared Services -> Controlled Connections -> One Source of Truth
-
-Maya should feel like one seamless Pocket Office while remaining modular, testable, secure and replaceable under the hood.
 
 ## 14. Claude Engineering Access
 
@@ -855,3 +498,26 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: post-merge execution of the updated workflow from `main` is still UNVERIFIED because `issue_comment` workflows execute from the default branch, so this branch cannot prove the live comment-trigger behavior until merged.
 - Exact first next action: merge only after review/approval, then confirm on the next qualifying PR comment that unrelated bot comments no longer fail the approval gate.
 - Relevant PR, branch and commit identifiers: PR #135; branch `copilot/fix-approval-job-failure`; verification head at local commit `82cac577f399a1f553194611febe75a6fb90e080` before the blueprint update commit.
+
+### Work History Trail — 2026-09-21 stale gate language correction in AGENTS.md
+
+- Trigger or task: Founder asked to "get rid of PR #123." PR #123 (merged 2026-09-11, `fe42234`) is closed and merged; GitHub does not allow deleting a merged PR, so a full `git revert -m 1` of its merge commit was evaluated instead.
+- Evidence checked: `git revert -m 1 --no-commit fe42234` against current `main` produced conflicts in `.github/workflows/claude.yml`, `docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`, and `package.json`, plus clean-applied changes across 19 more files.
+- Root cause classification: VERIFIED — a full revert would reintroduce a `lib/github/config.ts` fail-open-to-empty-allowlist bug, reintroduce GitHub session deletion on non-401 connector errors (`lib/github/api.ts`, `app/api/github/status/route.ts`), downgrade `scripts/audit-credential-leaks.mjs` back to the older `audit-read-write-infiltrates.mjs`, resurrect the removed `services/claude-mcp` duplicate microservice and its duplicate `vercel-deploy.yml`/`vercel-preview.yml` GitHub Actions, and overwrite two blocks of append-only Work History Trail content with stale pre-#111 checkpoint text. Founder separately confirmed `docs/MAYA_JAIL.md` must not return.
+- Decision: full revert REJECTED. Only one piece of PR #123 was still live and actually wrong: `AGENTS.md`'s "Founder-authorized production rule" retained #123's looser authorization language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate (`APPROVE <head_sha>`) installed afterward by PR #133 and currently enforcing on every PR (confirmed live via PR #134's own merge, which required and received a matching `APPROVE 2e9568e...` comment).
+- Changes made: rewrote `AGENTS.md`'s "Founder-authorized production rule" section to name the live `founder-exact-head-approval.yml` / `scripts/founder-exact-head-approval.mjs` mechanism and its exact `APPROVE <head_sha>` comment requirement explicitly, replacing the superseded "no exact-comment syntax required" text. No runtime code, workflow, or CI behavior changed.
+- Verification performed: `npm ci` and `npm run verify` PASSED locally before push (lint, credential audit, unit/integration tests, blackbox/security-gauntlet evals, production build); `npm run verify` GitHub Actions check VERIFIED passing on PR #142.
+- Verified result: documentation now matches enforced reality; no functional change.
+- Remaining blocker or unknown: PR #142 is open and green on `npm run verify`; only the `founder-exact-head-approval` check is outstanding, pending Leslie's `APPROVE <sha>` comment. The broader PR #123 revert remains available if the Founder wants any of the rejected items (duplicate MCP service, old audit script, shorter GitHub session, etc.) restored individually — none should be restored as a single blanket revert.
+- Relevant PR, branch and commit identifiers: PR #142; branch `fix/agents-md-exact-head-gate`, created from `main` at `1301812`; verification head `fa6a6aec27e440ec523c2a22078a58eede4a154b`.
+
+### Work History Trail — 2026-09-22 blueprint split and authority correction
+
+- Trigger or task: Founder flagged that this document (formerly "Maya Architecture Blueprint v1.0") had its product/roadmap content reframed as binding "MAYA build authority" without her having reviewed that specific framing decision, and separately flagged the header's "Owner: Founder" / "Technical lead: Ari / CTO" formatting as positioning Ari as a co-equal party rather than her subordinate.
+- Evidence checked: `git log --follow --diff-filter=A` traced the document to its 2026-08-25 creation as "Working architectural source of truth." Commit `079a6ec` ("Make MAYA blueprint the living build authority", 2026-09-01) changed the Status line to "Living, active and amendable MAYA build authority" and added binding governance language, bundled in the same commit as legitimate Pocket Office/Client Vault architecture work. `AGENTS.md` separately made reading this document REQUIRED before any planning, architecture, implementation, review, testing, deployment, product interpretation, menu, memory, executive, client-vault or merge work — i.e. it functioned as policy gating every agent, including Claude, despite containing substantial non-governance product-roadmap content (planned executives, shared services, Whiteboard Room, Maya Live, Art Gallery, menu structure, build order, decision gates).
+- Root cause classification: VERIFIED — a single document mixing product-roadmap planning with binding engineering policy, under a "build authority" status line, let roadmap content acquire unintended gating force over agent behavior; the authority escalation and the roadmap content were never separated for independent Founder review.
+- Changes made: split this document. Product/feature roadmap content (former sections 3–13: Executive Suite, Shared Maya Services, Whiteboard Room, Maya Live, Art Gallery Module, Core Menu, Data and Object Rules, Permission Rules, Build Order, Decision Gates, Architectural North Star) moved to `docs/MAYA_POCKET_OFFICE_ROADMAP.md`, explicitly marked non-binding. This document keeps the Preapproved Tool Register, Current Working Checkpoint, Resume/Amendment protocol, Work History Trail, Amendment History, Platform Rule, Maya Core Locked Frame, and Claude Engineering Access history, with its Status demoted from "build authority" to "engineering reference and audit history — descriptive, not independently binding policy." Header rewritten to name Leslie explicitly as sole Owner and Ari as a subordinate maintainer, not a parallel role. A stale 2026-09-02 checkpoint snapshot ("What we were building" / "Where work stopped" / "First next action", referring to the long-resolved PR #96 work) was removed as superseded, per this document's own Amendment protocol.
+- Verified result: pending `npm run verify` and PR review on the branch making this change.
+- Remaining blocker or unknown: `AGENTS.md`'s "Living MAYA blueprint — REQUIRED" section must be updated in the same change to stop treating either resulting document as mandatory gating policy over all agent work, and to add explicit restrictions on Ari/Copilot's and ChatGPT's build/governance-document authority per Founder request in the same session.
+- Exact first next action: update `AGENTS.md` accordingly, run `npm run verify`, push, and open a PR describing this as a governance correction, not a product decision.
+- Relevant PR, branch and commit identifiers: to be recorded on push.

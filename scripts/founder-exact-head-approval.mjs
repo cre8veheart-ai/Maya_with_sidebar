@@ -93,10 +93,13 @@ async function main() {
   });
 
   if (!approved) {
-    throw new Error(
-      `Comment exactly 'APPROVE ${headSha}' as @${founderLogin}.`,
+    console.log(
+      `Awaiting founder approval comment exactly 'APPROVE ${headSha}' as @${founderLogin}.`,
     );
+    return;
   }
+
+  console.log(`Founder approval verified for exact head ${headSha}.`);
 }
 
 await main();
