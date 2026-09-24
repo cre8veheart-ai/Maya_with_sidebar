@@ -38,15 +38,15 @@ Rules:
 
 This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
 
-- `main` must be protected by a no-bypass GitHub ruleset before standard GitHub governance is described as enforced.
-- The required settings are: pull request required; one approving review from Founder Leslie via `@cre8veheart-ai`/CODEOWNERS; stale approvals dismissed after every new commit; required conversations resolved; required status checks passing; force pushes blocked; branch deletion blocked; and no administrator, app, bot, or agent bypass.
+- `main` must be protected by GitHub's standard branch rules or repository ruleset.
+- Require a pull request, one approving CODEOWNER review from `@cre8veheart-ai`, dismissal of stale approvals after new commits, resolution of review conversations, and the `npm run verify` status check.
+- Block force pushes and branch deletion, and allow no administrator, app, bot, or agent bypass.
 - Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
-- No agent may merge into `main`, promote production, or trigger production unless Founder Leslie approves the exact current PR head after its latest commit and all required checks pass.
-- Until the GitHub ruleset is active and independently verified, the existing `Founder Exact-Head Approval` workflow remains a transitional defense-in-depth check. It is not a substitute for branch protection and must not be removed merely because standard governance is planned.
-- Any commit after Leslie's approval invalidates that approval. A fresh approval is required for the new head.
+- No agent may merge into `main`, promote production, or trigger production unless Founder Leslie approves the current PR head and all required checks pass.
+- Any commit after approval invalidates that approval through GitHub's stale-review dismissal.
 - Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger production.
 - Founder authorization never permits bypassing failing checks, exposing secrets, or weakening the zero-access client-vault boundary.
-- Repository documentation must distinguish the desired governance configuration from verified live enforcement.
+- Repository documentation must distinguish desired settings from verified live enforcement.
 
 See `docs/STANDARD_GITHUB_GOVERNANCE.md` for the activation and verification checklist.
 
