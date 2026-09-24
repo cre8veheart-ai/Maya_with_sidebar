@@ -2,30 +2,14 @@
 
 This repository is the source code for MAYA. Treat it as a production application, not a playground.
 
-## Living MAYA blueprint — REQUIRED
+## Architecture reference
 
-Before planning, architecture, implementation, review, testing, deployment, product interpretation, menu work, memory work, executive work, client-vault work, or merge decisions, every assistant or engineering agent must read and apply:
+`docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md` is optional product and engineering history. It is not a policy, permission, approval, authentication, CI, deployment, or agent-control mechanism.
 
-`docs/MAYA_ARCHITECTURE_BLUEPRINT_V1.md`
-
-Rules:
-- The blueprint on `main` is the living, active, amendable MAYA build authority.
-- State which blueprint section(s) govern the task before making substantive changes.
-- Every PR must identify the blueprint section it implements, preserves, or proposes to amend.
-- Founder-approved architectural decisions must be added to the blueprint on `main`; they must not remain only in chat, comments, transferred summaries, or feature branches.
-- A stale PR description, old branch, bot summary, or legacy implementation cannot override the current blueprint.
-- If code, a request, or another instruction conflicts with the blueprint, disclose the conflict and follow the Founder's newest explicit decision. Update the blueprint in the same change when practical; an outdated repository document is not an automatic stop condition.
-- Mechanical tasks may be scoped narrowly, but they may not redefine MAYA architecture implicitly.
-- Completion reports must state whether the work conforms to the blueprint and identify any unresolved gap.
-- Exact trigger **DIH EVENT MAYA** requires reading the blueprint from `main` and presenting its Current Working Checkpoint before substantive work.
-- At the end of substantive MAYA work, update the Current Working Checkpoint with the verified stop point and exact first next action.
-- Append a Work History Trail entry with evidence, changes, result, blocker and relevant PR/branch/commit/deployment identifiers.
-- The history trail is append-only. Correct prior entries with a new entry; never silently rewrite or delete completed history.
-- Record all substantive work: successful changes, failures, exact errors, attempted fixes, failed fixes, verified fixes, regressions, rollbacks, reversals, removals and unresolved debt.
-- Link failures to fixes and fixes to post-fix verification evidence.
-- Use VERIFIED, CONTRADICTED, UNVERIFIED and UNKNOWN classifications; never convert a claim into proof merely because a build or check is green.
-- A later fix does not erase the failed attempt that led to it.
-- Apply founder-approved blueprint amendments before dependent implementation. Remove superseded rules from the active design and record the replacement in Amendment History.
+- Do not require reading or editing it before ordinary engineering work.
+- Do not use it to grant, restrict, redirect, or revoke GitHub, Vercel, Claude, Copilot, or other provider access.
+- Do not make checkpoint, history, trigger-phrase, or documentation updates a condition of building, testing, reviewing, merging, or deploying.
+- Current Founder direction and the actual GitHub/Vercel settings take precedence over repository prose.
 
 ## Source of truth
 
@@ -47,8 +31,6 @@ This rule applies to every engineering agent, including Ari/Codex, Claude, Copil
 - Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger production.
 - Founder authorization never permits bypassing failing checks, exposing secrets, or weakening the zero-access client-vault boundary.
 - Repository documentation must distinguish desired settings from verified live enforcement.
-
-See `docs/STANDARD_GITHUB_GOVERNANCE.md` for the activation and verification checklist.
 
 ## Required validation
 
