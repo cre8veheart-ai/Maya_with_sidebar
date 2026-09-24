@@ -102,19 +102,19 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-21 UTC
+Last updated: 2026-09-24 UTC
 Update authority: Founder-approved working state
 Resume phrase: **DIH EVENT MAYA**
 
 ### Active engineering-control checkpoint
 
-- PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
-- PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
-- `main` also carries PR #139 (Adobe connector authorization links) and PR #141 (Copilot repo-scan pass), both merged after #134/#135.
-- Audit finding, this session: `AGENTS.md`'s "Founder-authorized production rule" still carried PR #123's looser language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate actually installed by PR #133 and still enforcing on every PR. A full revert of PR #123 was evaluated and rejected — most of what #123 removed turned out to be genuine bug fixes (GitHub repo-allowlist fail-open bug, session killed on non-401 errors) or security improvements (credential-leak audit) or duplicate infrastructure (`services/claude-mcp`, duplicate Vercel Action workflows) that should stay removed.
-- Change made in this branch: rewrote the `AGENTS.md` rule to name the live `founder-exact-head-approval.yml` / `APPROVE <head_sha>` mechanism explicitly, instead of the superseded looser text. No code, workflow, or runtime behavior changed — documentation-only correction.
-- Exact first next action: PR #142 is open with `npm run verify` VERIFIED passing on head `fa6a6aec27e440ec523c2a22078a58eede4a154b`; wait for Leslie's `APPROVE fa6a6aec27e440ec523c2a22078a58eede4a154b` comment to clear the `founder-exact-head-approval` check, then merge.
-
+- `main` is at `93d2820` (PR #145 merged). PR #142 (the previous checkpoint's next action) is VERIFIED on `main` at `fa6a6ae`.
+- Founder decision (2026-09-24): the only canonical MAYA is `main`. Every other branch, open PR and Vercel project that builds this repository, other than `maya-with-sidebar`, is a clone and is to be removed.
+- Founder decision (2026-09-24): Freebird Gallery connects to or merges with MAYA only after it becomes a VR gallery website hosted on GoDaddy. See `docs/MAYA_POCKET_OFFICE_ROADMAP.md` §7.
+- The custom `founder-exact-head-approval` gate is removed (Founder decision 2026-09-24); merges are governed by standard GitHub review and a branch ruleset on `main`, which the Founder configures in GitHub settings.
+- Open PR #138 would revert PR #123 and must not be merged (see the 2026-09-24 Work History entry).
+- VERIFIED locally on `93d2820`: `/api/chat` accepts requests with no session and forwards them to the model provider. Protection was removed on purpose by PR #87; this conflicts with `AGENTS.md` ("`/api/chat` is a protected server boundary"). A Founder decision is needed on how to protect it.
+- Exact first next action: with Founder confirmation, close the 16 open PRs other than those the Founder keeps and delete non-`main` branches. The Founder removes the clone Vercel projects (`maya-claude-mcp`, `maya-with-sidebar-niu6`, `maya-with-sidebar-kkha`, `maya-with-sidebar-wgvu`) and disconnects `freebird-gallery` from this repository.
 
 ### Resume protocol
 
@@ -343,6 +343,10 @@ Scope and evidence:
 
 ### Amendment History
 
+- 2026-09-24: Founder removed the custom `founder-exact-head-approval` gate (workflow, script, core library and tests) and the `APPROVE <head_sha>` comment rule. Replaced by standard GitHub controls: a branch ruleset on `main` requiring pull requests, a passing `npm run verify` check and an approving review from Leslie, with stale approvals dismissed on new commits. No agent may add a custom gate, approval phrase or merge workflow.
+
+- 2026-09-24: Recorded two Founder decisions: `main` is the only canonical MAYA and all other branches, PRs and non-canonical Vercel projects building this repo are clones to be removed; Freebird Gallery connects to MAYA only after it is a VR gallery website hosted on GoDaddy.
+
 - 2026-09-22: Split this document. Product/roadmap content moved to `docs/MAYA_POCKET_OFFICE_ROADMAP.md` (non-binding). Demoted this document's status from "living build authority" to "engineering reference and audit history — descriptive, not independently binding policy." The only binding authorities over engineering work are Leslie's explicit direction and `AGENTS.md`. Corrected header to name Leslie explicitly as sole Owner and Ari as a subordinate maintainer rather than a parallel role.
 
 - 2026-09-10: Removed the custom Claude MCP control plane and provider-specific merge syntax; retained provider-neutral Founder approval, ordinary PR workflows, full verification, credential protection, and recovery through Git history.
@@ -521,3 +525,22 @@ Founder decision — 2026-09-05 (supersedes the restrictive 2026-09-04 Claude po
 - Remaining blocker or unknown: `AGENTS.md`'s "Living MAYA blueprint — REQUIRED" section must be updated in the same change to stop treating either resulting document as mandatory gating policy over all agent work, and to add explicit restrictions on Ari/Copilot's and ChatGPT's build/governance-document authority per Founder request in the same session.
 - Exact first next action: update `AGENTS.md` accordingly, run `npm run verify`, push, and open a PR describing this as a governance correction, not a product decision.
 - Relevant PR, branch and commit identifiers: to be recorded on push.
+
+### Work History Trail — 2026-09-24 clone audit, PR #138 finding and smoke test
+
+- Trigger or task: Founder asked for next build steps, then flagged the session branch name `claude/nice-hopper-qi0hk1` as suspicious and asked for an analysis of Ari's Claude connector and anything reversing its removal.
+- Evidence checked: branch `claude/nice-hopper-qi0hk1` VERIFIED as auto-named by the Claude Code cloud session, created from `main` at `93d2820` with no commits and never pushed; "hopper" appears nowhere in repository history. Open PR #138 (`copilot/check-removed-blocks`, opened by the Copilot bot, not a draft) VERIFIED to consist of `aff11dc`, a revert of PR #123. Merging it would restore `services/claude-mcp` (Claude MCP service with branch-write tools for `claude/*`, `feature/*` and `fix/*` and a squash-merge tool keyed on `@claude merge`), exclude it from ESLint and TypeScript checks, replace the `APPROVE <head_sha>` rule in `AGENTS.md` with `@claude merge` / `@ari merge` phrases, re-add `vercel-deploy.yml` and `vercel-preview.yml`, restore the GitHub repo-allowlist fail-open behavior and delete GitHub sessions on any error. No evidence of malicious intent: the PR body is "Pull request created by AI Agent" and the Founder's only comments asked Copilot to resolve merge conflicts. The Vercel bot comment on PR #138 shows four Vercel projects building this repository: `maya-with-sidebar`, `maya-claude-mcp`, `maya-with-sidebar-niu6` and `freebird-gallery`. PR #140's revert (`21c821d`) is cosmetic only.
+- Smoke test on `main` at `93d2820`: `npm ci` and `npm run verify` VERIFIED passing (lint, 11/11 production-gate tests, executive chassis and adjudication checks, black-box cross-layer attack detection, production build). Local `next start`: `/`, `/ceo`, `/cto`, `/chat`, `/settings` and `/white-boardroom` returned 200; `/api/github/write` and `/api/user/profile` returned 401 without a session; `/api/health` returned 503 degraded (no Anthropic key locally, expected). `/api/chat` with a valid body and no session reached the provider layer (502 "Anthropic provider is not configured"), confirming the missing session check. Production smoke is UNVERIFIED: the session's network policy blocked `*.vercel.app` and the Vercel connector failed to connect (proxy 403).
+- Root cause classification: `/api/chat` open access VERIFIED as intentional (PR #87, commit `8867ef3`, "Restore no-friction MAYA chat access"), CONTRADICTED by `AGENTS.md`. Whether the live deployment is open to anonymous use is UNVERIFIED. Whether `maya-claude-mcp` still serves an old MCP deployment with a live `GITHUB_TOKEN` is UNKNOWN.
+- Changes made: documentation only. Recorded the Founder decisions above, the Freebird Gallery gate in the roadmap §7, and refreshed the Current Working Checkpoint (which was stale on PR #142).
+- Remaining blocker or unknown: Founder confirmation to close PRs and delete branches; Founder action in Vercel to remove clone projects and revoke any token stored on `maya-claude-mcp`; Founder decision on `/api/chat` protection; which Freebird Gallery repository is canonical.
+- Relevant PR, branch and commit identifiers: branch `claude/nice-hopper-qi0hk1` from `main` at `93d2820`; PR #138 head `3c937d8`; commits `aff11dc`, `8867ef3`.
+
+### Work History Trail — 2026-09-24 custom approval gate removed
+
+- Trigger or task: Founder directed that the `founder-exact-head-approval` gate be removed entirely and replaced by standard GitHub controls, stating it was the mechanism through which Ari took unwarranted control and must not trigger anything.
+- Evidence checked: the gate was not enforced. PR #145 was merged into `main` by `cre8veheart-ai` on 2026-09-24 while its "Founder exact-head approval" status was pending and no `APPROVE` comment existed (VERIFIED from PR #145 status and comments). Commit `68c0d05` reached `main` directly without a pull request (VERIFIED from first-parent history). Because the check ran on `pull_request`, a PR could edit its own copy of the gate, and five branches edit gate files. Agent commits on `ari/*` branches are credited to `cre8veheart-ai`, so the login check could not distinguish the Founder from an agent using her account.
+- Changes made: deleted `.github/workflows/founder-exact-head-approval.yml`, `scripts/founder-exact-head-approval.mjs`, `lib/founder-approval-core.mjs` and `tests/founder-approval-core.test.mjs`. Replaced the `AGENTS.md` "Founder-authorized production rule" with "Production merge rule — standard GitHub controls". Earlier history entries about the gate are kept unchanged, per the append-only rule.
+- Verified result: `npm run verify` VERIFIED passing after removal (lint, 6/6 production-gate tests, all chassis, security and black-box checks, production build); no references to the gate remain outside docs history.
+- Remaining blocker or unknown: the Founder must create the GitHub branch ruleset on `main`; until then nothing blocks merges or direct pushes (the same as before, since the removed gate was not required). Ari/Codex needs its own GitHub identity so the Founder can approve its PRs and approvals from her account are unambiguous. Open PRs #136, #140 and #143 and branch `codex/restore-exact-head-gate` edit the removed gate and should be closed.
+- Relevant PR, branch and commit identifiers: branch `claude/nice-hopper-qi0hk1`.

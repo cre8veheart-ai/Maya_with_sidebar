@@ -34,15 +34,16 @@ Rules:
 - Use a focused feature/fix branch and a pull request for every engineering change.
 - Do not deploy a non-`main` branch to production.
 
-## Founder-authorized production rule — REQUIRED
+## Production merge rule — standard GitHub controls
 
-This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
+This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents. There is no custom approval workflow, comment phrase or bot gate; merges are controlled only by GitHub's standard features.
 
-- Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
-- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes that exact current PR head after its latest commit.
-- The live, enforced mechanism for that authorization is the `founder-exact-head-approval` GitHub Actions check (`.github/workflows/founder-exact-head-approval.yml` / `scripts/founder-exact-head-approval.mjs`): a PR comment reading exactly `APPROVE <head_sha>`, posted by GitHub user `cre8veheart-ai`, after the PR's latest commit. A PR is not mergeable until this check passes — no chat instruction, agent-side judgment, or other repository-local claim substitutes for it.
-- Claude, Ari/Codex, Copilot, and later collaborators operate under the same rule; repository-local instructions must not create provider-specific bypasses of this gate.
-- Any commit added after an `APPROVE <sha>` comment invalidates that authorization. A fresh `APPROVE <new_sha>` comment is required for the new head.
+- Agents may inspect the repository, create a non-production branch, edit files, run tests, and open or update pull requests.
+- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes it.
+- Founder authorization is given through GitHub's standard pull request review: an **Approve** review from Leslie's account ([GitHub docs: approving a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews)), or Leslie merging the pull request herself.
+- `main` is protected with a standard GitHub branch ruleset ([GitHub docs: rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)): changes arrive only through pull requests, the `npm run verify` check must pass, an approving review is required, new commits dismiss stale approvals, and force pushes and branch deletion are blocked.
+- Claude, Ari/Codex, Copilot, and later collaborators operate under the same rule. No agent may add a provider-specific gate, approval phrase, or merge workflow.
+- Agents must not act under Leslie's GitHub account; an approval from her account must always be hers.
 - Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
 - Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
 
