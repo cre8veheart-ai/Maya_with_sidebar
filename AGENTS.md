@@ -34,17 +34,21 @@ Rules:
 - Use a focused feature/fix branch and a pull request for every engineering change.
 - Do not deploy a non-`main` branch to production.
 
-## Founder-authorized production rule — REQUIRED
+## Standard GitHub production governance — REQUIRED
 
 This rule applies to every engineering agent, including Ari/Codex, Claude, Copilot, and later agents.
 
+- `main` must be protected by a no-bypass GitHub ruleset before standard GitHub governance is described as enforced.
+- The required settings are: pull request required; one approving review from Founder Leslie via `@cre8veheart-ai`/CODEOWNERS; stale approvals dismissed after every new commit; required conversations resolved; required status checks passing; force pushes blocked; branch deletion blocked; and no administrator, app, bot, or agent bypass.
 - Agents may inspect the repository, create an approved non-production branch, edit files, run tests, and open or update pull requests without separate merge permission.
-- No agent may merge a pull request into `main`, promote or trigger production, or invoke a production deployment unless Founder Leslie explicitly authorizes that exact current PR head after its latest commit.
-- The live, enforced mechanism for that authorization is the `founder-exact-head-approval` GitHub Actions check (`.github/workflows/founder-exact-head-approval.yml` / `scripts/founder-exact-head-approval.mjs`): a PR comment reading exactly `APPROVE <head_sha>`, posted by GitHub user `cre8veheart-ai`, after the PR's latest commit. A PR is not mergeable until this check passes — no chat instruction, agent-side judgment, or other repository-local claim substitutes for it.
-- Claude, Ari/Codex, Copilot, and later collaborators operate under the same rule; repository-local instructions must not create provider-specific bypasses of this gate.
-- Any commit added after an `APPROVE <sha>` comment invalidates that authorization. A fresh `APPROVE <new_sha>` comment is required for the new head.
-- Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger the production path.
-- Founder authorization never permits bypassing failing required checks, exposing secrets, or weakening the zero-access client-vault boundary.
+- No agent may merge into `main`, promote production, or trigger production unless Founder Leslie approves the exact current PR head after its latest commit and all required checks pass.
+- Until the GitHub ruleset is active and independently verified, the existing `Founder Exact-Head Approval` workflow remains a transitional defense-in-depth check. It is not a substitute for branch protection and must not be removed merely because standard governance is planned.
+- Any commit after Leslie's approval invalidates that approval. A fresh approval is required for the new head.
+- Preview deployments may run from pull-request branches. Only an authorized merge to `main` may trigger production.
+- Founder authorization never permits bypassing failing checks, exposing secrets, or weakening the zero-access client-vault boundary.
+- Repository documentation must distinguish the desired governance configuration from verified live enforcement.
+
+See `docs/STANDARD_GITHUB_GOVERNANCE.md` for the activation and verification checklist.
 
 ## Required validation
 
