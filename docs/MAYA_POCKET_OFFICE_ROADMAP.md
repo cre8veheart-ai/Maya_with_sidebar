@@ -185,6 +185,19 @@ External distribution destinations are modular and decided later.
 
 ## 7. Art Gallery Module
 
+### Founder decision — Freebird Gallery connection gate (2026-09-24)
+
+Freebird Gallery is a separate product with its own repository. It must not be merged into MAYA or connected to MAYA until both conditions are met:
+
+1. Freebird Gallery has been built into a VR gallery website.
+2. That website is hosted on GoDaddy.
+
+Until then:
+- The `freebird-gallery` Vercel project must not build or deploy from `cre8veheart-ai/Maya_with_sidebar`. As of 2026-09-19 it was building MAYA branch previews (VERIFIED from the Vercel bot comment on PR #138), which makes it a MAYA clone, not the gallery.
+- Freebird Gallery work belongs in the Freebird Gallery repository, not in this one. Two repositories currently exist, `cre8veheart-ai/Freebird-gallery` (public) and `cre8veheart-ai/Freebird_gallery` (private); which one is canonical is UNKNOWN and needs a Founder decision.
+- MAYA's existing `/art-gallery` page stays as it is. It is not a connection to Freebird Gallery.
+- When both conditions are met, the connection (link, embed, API or merge) is a new decision to present to the Founder with options before any work starts.
+
 The Art Gallery is a real HTML website/module, not a Whiteboard page.
 
 Separation of concerns:
