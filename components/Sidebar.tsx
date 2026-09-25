@@ -58,6 +58,7 @@ const navGroups: NavGroup[] = [
       { label: "Saved Files", href: "/library/documents", icon: "📄" },
       { label: "Knowledge Vault", href: "/library/knowledge", icon: "🔒" },
       { label: "Intel Vault", href: "/library/intel", icon: "🧠" },
+      { label: "Continuity Context", href: "/continuity", icon: "📖" },
     ],
   },
   {
